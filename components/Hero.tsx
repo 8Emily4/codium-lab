@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { company } from "@/lib/brand";
 
 export default function Hero() {
@@ -20,7 +21,8 @@ export default function Hero() {
         </div>
 
         <h1 className="mt-6 max-w-4xl text-4xl leading-[1.05] font-semibold tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl dark:text-zinc-50">
-          기술의 본질을 연구하고{" "}
+          기술의 본질을 연구하고
+          <br />
           <span className="bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent">
             가치를 구현
           </span>
@@ -32,8 +34,8 @@ export default function Hero() {
         </p>
 
         <div className="mt-10 flex flex-wrap items-center gap-3">
-          <a
-            href="#contact"
+          <Link
+            href="/contact"
             className="group inline-flex h-12 items-center gap-2 rounded-full bg-zinc-900 px-6 text-sm font-medium text-white transition hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
           >
             컨설팅·협업 문의
@@ -51,12 +53,12 @@ export default function Hero() {
             >
               <path d="M5 12h14M13 5l7 7-7 7" />
             </svg>
-          </a>
+          </Link>
           <a
-            href="#services"
+            href="#brands"
             className="inline-flex h-12 items-center rounded-full border border-zinc-300 bg-white/70 px-6 text-sm font-medium text-zinc-900 backdrop-blur transition hover:border-zinc-400 hover:bg-white dark:border-zinc-700 dark:bg-zinc-950/60 dark:text-zinc-100 dark:hover:border-zinc-500 dark:hover:bg-zinc-900"
           >
-            서비스 둘러보기
+            브랜드 둘러보기
           </a>
         </div>
 
