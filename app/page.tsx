@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Hero from "@/components/Hero";
-import Services from "@/components/Services";
 import BrandShowcase from "@/components/BrandShowcase";
 import FAQ from "@/components/FAQ";
 
@@ -10,8 +9,6 @@ export default function Home() {
       <Hero />
 
       <BrandShowcase />
-
-      <Services />
 
       <FAQ />
 
