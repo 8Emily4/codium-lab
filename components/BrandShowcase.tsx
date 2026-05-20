@@ -69,7 +69,7 @@ export default function BrandShowcase() {
                   {brand.nameKo}
                 </h3>
               </div>
-              <p className="text-base leading-7 text-zinc-700 dark:text-zinc-300">
+              <p className="text-base leading-7 whitespace-pre-line text-zinc-700 dark:text-zinc-300">
                 {brand.description}
               </p>
               <ul className="grid grid-cols-1 gap-2 text-sm text-zinc-600 dark:text-zinc-300">

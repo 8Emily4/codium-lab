@@ -64,7 +64,7 @@ export default function AdiumPage() {
             </span>{" "}
             공간
           </h1>
-          <p className="mt-6 max-w-3xl text-base leading-7 text-zinc-600 sm:text-lg sm:leading-8 dark:text-zinc-300">
+          <p className="mt-6 max-w-3xl text-base leading-7 whitespace-pre-line text-zinc-600 sm:text-lg sm:leading-8 dark:text-zinc-300">
             {brand.description}
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
