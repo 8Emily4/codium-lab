@@ -29,7 +29,7 @@ export default function Hero() {
           하는 IT 솔루션 연구소
         </h1>
 
-        <p className="mt-6 max-w-2xl text-base leading-7 text-zinc-600 sm:text-lg sm:leading-8 dark:text-zinc-300">
+        <p className="mt-6 max-w-2xl text-base leading-7 whitespace-pre-line text-zinc-600 sm:text-lg sm:leading-8 dark:text-zinc-300">
           {company.description}
         </p>
 

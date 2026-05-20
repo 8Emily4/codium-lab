@@ -8,7 +8,7 @@ export const company = {
   tagline:
     "AI 마스터가 이끄는 트렌디한 디지털 비즈니스 — 기술과 디자인을 한 손에 잇는 IT 솔루션 연구소",
   description:
-    "코디움랩은 LLM과 자동화의 경계에서 실제로 동작하는 도구를 연구하고, 그 결과를 일상의 디자인까지 잇는 IT 솔루션 연구소입니다.",
+    "코디움랩은 LLM과 자동화의 경계에서 실제로 동작하는 도구를 연구하고,\n그 결과를 일상의 디자인까지 잇는 IT 솔루션 연구소입니다.",
   contactEmail: "narimagic@naver.com",
   vision: {
     title: "AI 연구가 일상의 디자인이 되는 곳",
