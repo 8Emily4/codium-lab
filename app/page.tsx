@@ -1,10 +1,8 @@
 import Link from "next/link";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
-import Process from "@/components/Process";
 import BrandShowcase from "@/components/BrandShowcase";
 import FAQ from "@/components/FAQ";
-import { company } from "@/lib/brand";
 
 export default function Home() {
   return (
@@ -14,41 +12,6 @@ export default function Home() {
       <BrandShowcase />
 
       <Services />
-      <Process />
-
-      <section
-        id="philosophy"
-        className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950"
-      >
-        <div className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
-          <div className="flex flex-col gap-3">
-            <p className="text-sm font-medium tracking-[0.2em] text-indigo-600 uppercase dark:text-indigo-400">
-              Philosophy
-            </p>
-            <h2 className="max-w-3xl text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-50">
-              코디움랩이 일하는 방식
-            </h2>
-          </div>
-          <ul className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
-            {company.philosophy.map((item, idx) => (
-              <li
-                key={item.title}
-                className="rounded-2xl border border-zinc-200 bg-white p-7 transition hover:-translate-y-0.5 hover:border-indigo-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-500/50"
-              >
-                <p className="bg-gradient-to-br from-indigo-500 to-fuchsia-500 bg-clip-text text-2xl font-bold tracking-tight text-transparent">
-                  0{idx + 1}
-                </p>
-                <h3 className="mt-3 text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-zinc-300">
-                  {item.body}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
 
       <FAQ />
 
