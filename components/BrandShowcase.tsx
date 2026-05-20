@@ -29,11 +29,14 @@ export default function BrandShowcase() {
               Two Tracks
             </p>
             <h2 className="mt-2 max-w-3xl text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-50">
-              코디움랩의 두 트랙 — 가르치는 브랜드와 디자인하는 브랜드
+              코디움랩의 두 트랙 —
+              <br />
+              에듀테크 브랜드와 디자인굿즈 브랜드
             </h2>
             <p className="mt-3 max-w-2xl text-zinc-600 dark:text-zinc-300">
-              교육과 디자인, 결이 다른 두 브랜드가 한 연구소 안에서 함께
-              굴러갑니다. 원하는 결의 서비스로 바로 들어가세요.
+              교육과 디자인, 결이 다른 두 브랜드가 한 연구소에서 함께 운영됩니다.
+              <br />
+              원하는 서비스로 바로 만나보세요.
             </p>
           </div>
           <div className="inline-flex rounded-full border border-zinc-200 bg-white p-1 text-sm dark:border-zinc-800 dark:bg-zinc-950">
