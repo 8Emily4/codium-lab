@@ -62,32 +62,6 @@ export default function Hero() {
           </a>
         </div>
 
-        <dl className="mt-16 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-zinc-200 pt-10 text-sm sm:grid-cols-4 dark:border-zinc-800">
-          <div>
-            <dt className="text-zinc-500 dark:text-zinc-400">소재지</dt>
-            <dd className="mt-1 font-medium text-zinc-900 dark:text-zinc-100">
-              {company.location}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-zinc-500 dark:text-zinc-400">대표자</dt>
-            <dd className="mt-1 font-medium text-zinc-900 dark:text-zinc-100">
-              {company.ceo}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-zinc-500 dark:text-zinc-400">R&amp;D 분야</dt>
-            <dd className="mt-1 font-medium text-zinc-900 dark:text-zinc-100">
-              {company.rdFields.join(", ")}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-zinc-500 dark:text-zinc-400">운영 브랜드</dt>
-            <dd className="mt-1 font-medium text-zinc-900 dark:text-zinc-100">
-              에이디움 · 베이디움
-            </dd>
-          </div>
-        </dl>
       </div>
     </section>
   );
