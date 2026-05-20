@@ -23,33 +23,6 @@ export default function AboutPage() {
           <p className="mt-6 max-w-3xl text-base leading-7 text-zinc-600 sm:text-lg sm:leading-8 dark:text-zinc-300">
             {company.vision.body}
           </p>
-
-          <dl className="mt-14 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-zinc-200 pt-10 text-sm sm:grid-cols-4 dark:border-zinc-800">
-            <div>
-              <dt className="text-zinc-500 dark:text-zinc-400">설립</dt>
-              <dd className="mt-1 font-medium text-zinc-900 dark:text-zinc-100">
-                {company.foundedYear}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-zinc-500 dark:text-zinc-400">대표</dt>
-              <dd className="mt-1 font-medium text-zinc-900 dark:text-zinc-100">
-                {company.ceo}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-zinc-500 dark:text-zinc-400">소재지</dt>
-              <dd className="mt-1 font-medium text-zinc-900 dark:text-zinc-100">
-                {company.location}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-zinc-500 dark:text-zinc-400">운영 브랜드</dt>
-              <dd className="mt-1 font-medium text-zinc-900 dark:text-zinc-100">
-                Adium · Badium
-              </dd>
-            </div>
-          </dl>
         </div>
       </section>
 
