@@ -41,8 +41,8 @@ export default function Footer() {
               <span>{company.nameKo}</span>
             </Link>
             <p className="mt-4 text-sm leading-6 text-zinc-500 dark:text-zinc-400">
-              AI 마스터가 이끄는 트렌디한 디지털 비즈니스. 연구와 디자인의 두
-              바퀴를 굴립니다.
+              AI 마스터가 이끄는 트렌디한 디지털 비즈니스. 연구와 디자인, 두
+              트랙으로 나아갑니다.
             </p>
           </div>
           {footerLinks.map((group) => (

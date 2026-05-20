@@ -26,10 +26,10 @@ export default function BrandShowcase() {
         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm font-medium tracking-[0.2em] text-indigo-600 uppercase dark:text-indigo-400">
-              Two Wheels
+              Two Tracks
             </p>
             <h2 className="mt-2 max-w-3xl text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-50">
-              코디움랩의 두 바퀴 — 가르치는 브랜드와 디자인하는 브랜드
+              코디움랩의 두 트랙 — 가르치는 브랜드와 디자인하는 브랜드
             </h2>
             <p className="mt-3 max-w-2xl text-zinc-600 dark:text-zinc-300">
               교육과 디자인, 결이 다른 두 브랜드가 한 연구소 안에서 함께
