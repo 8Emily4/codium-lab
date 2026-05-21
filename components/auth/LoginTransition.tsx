@@ -34,7 +34,7 @@ export default function LoginTransition({
   const progress = Math.min(1, (step + 1) / (STEPS.length + 1));
 
   return (
-    <div className="relative isolate flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden bg-gradient-to-br from-zinc-50 via-white to-indigo-50/40 px-4 py-12 dark:from-black dark:via-zinc-950 dark:to-indigo-950/30">
+    <div className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-zinc-50 via-white to-indigo-50/40 px-4 pt-24 pb-12 dark:from-black dark:via-zinc-950 dark:to-indigo-950/30">
       <div className="bg-mesh absolute inset-0 opacity-80" aria-hidden />
       <div className="bg-grid absolute inset-0 opacity-50" aria-hidden />
       <div className="bg-noise" aria-hidden />

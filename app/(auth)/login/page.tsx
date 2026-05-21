@@ -25,7 +25,7 @@ export default async function LoginPage({
   const error = params.error;
 
   return (
-    <div className="relative isolate flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden bg-gradient-to-br from-zinc-50 via-white to-indigo-50/40 px-4 py-12 dark:from-black dark:via-zinc-950 dark:to-indigo-950/30">
+    <div className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-zinc-50 via-white to-indigo-50/40 px-4 pt-24 pb-12 dark:from-black dark:via-zinc-950 dark:to-indigo-950/30">
       <div className="bg-mesh absolute inset-0 opacity-70" aria-hidden />
       <div className="bg-grid absolute inset-0 opacity-50" aria-hidden />
       <div className="bg-noise" aria-hidden />
@@ -112,14 +112,6 @@ export default async function LoginPage({
           </p>
         </div>
 
-        <div className="mt-6 text-center">
-          <Link
-            href="/"
-            className="text-xs text-zinc-500 underline-offset-4 hover:text-zinc-700 hover:underline dark:text-zinc-400 dark:hover:text-zinc-200"
-          >
-            ← 메인으로
-          </Link>
-        </div>
       </div>
     </div>
   );
