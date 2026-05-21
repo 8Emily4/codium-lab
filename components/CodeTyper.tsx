@@ -65,7 +65,7 @@ export default function CodeTyper({
   position,
   startIdx = 0,
 }: {
-  position: "topLeft" | "bottomRight";
+  position: "topLeft" | "topRight" | "bottomLeft" | "bottomRight";
   startIdx?: number;
 }) {
   const [snippetIdx, setSnippetIdx] = useState(startIdx % CODE_SNIPPETS.length);
@@ -106,10 +106,13 @@ export default function CodeTyper({
   const currentLine =
     lineIdx < snippet.lines.length ? snippet.lines[lineIdx].slice(0, charIdx) : null;
 
-  const posCls =
-    position === "topLeft"
-      ? "top-6 left-6 hidden lg:block"
-      : "bottom-6 right-6 hidden lg:block";
+  const posMap: Record<typeof position, string> = {
+    topLeft: "top-6 left-6 hidden lg:block",
+    topRight: "top-6 right-6 hidden lg:block",
+    bottomLeft: "bottom-6 left-6 hidden lg:block",
+    bottomRight: "bottom-6 right-6 hidden lg:block",
+  };
+  const posCls = posMap[position];
 
   return (
     <div className={`absolute ${posCls} z-0 w-[380px] pointer-events-none`}>

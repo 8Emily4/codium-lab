@@ -97,17 +97,42 @@ function tokenStyle(idx: number, token: string): string {
 
 export default function FloatingTokens({
   density = "normal",
+  mask = "fade",
   className = "",
 }: {
   density?: "light" | "normal" | "dense";
+  /**
+   * - `none`: full bleed
+   * - `fade`: soft radial fade so center text stays readable
+   * - `right-half`: only show tokens in the right half (text-safe left)
+   */
+  mask?: "none" | "fade" | "right-half";
   className?: string;
 }) {
-  const sliceMap = { light: 28, normal: 48, dense: 80 } as const;
+  const sliceMap = { light: 22, normal: 40, dense: 64 } as const;
   const tokens = FLOATING_TOKENS.slice(0, sliceMap[density]);
+
+  const maskStyle =
+    mask === "fade"
+      ? {
+          maskImage:
+            "radial-gradient(ellipse 75% 70% at 50% 50%, transparent 0%, transparent 30%, black 75%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse 75% 70% at 50% 50%, transparent 0%, transparent 30%, black 75%)",
+        }
+      : mask === "right-half"
+        ? {
+            maskImage:
+              "linear-gradient(to right, transparent 0%, transparent 42%, black 62%, black 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to right, transparent 0%, transparent 42%, black 62%, black 100%)",
+          }
+        : undefined;
 
   return (
     <div
       aria-hidden
+      style={maskStyle}
       className={`pointer-events-none absolute inset-0 overflow-hidden select-none ${className}`}
     >
       {tokens.map((token, i) => {

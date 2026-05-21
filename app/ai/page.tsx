@@ -22,8 +22,8 @@ export default function AiPage() {
         <div className="bg-mesh absolute inset-0" aria-hidden />
         <div className="bg-grid absolute inset-0" aria-hidden />
         <div className="bg-noise" aria-hidden />
-        <FloatingTokens density="dense" />
-        <CodeTyper position="topLeft" startIdx={0} />
+        <FloatingTokens density="light" mask="right-half" />
+        <CodeTyper position="topRight" startIdx={0} />
         <CodeTyper position="bottomRight" startIdx={2} />
         <div
           className="anim-float pointer-events-none absolute -top-24 right-[-10%] h-80 w-80 rounded-full bg-gradient-to-br from-indigo-400/30 to-fuchsia-400/20 blur-3xl dark:from-indigo-500/20 dark:to-fuchsia-500/10"
@@ -387,21 +387,6 @@ export default function AiPage() {
         </div>
       </section>
 
-      <footer className="border-t border-zinc-200/70 bg-zinc-50 dark:border-zinc-800/70 dark:bg-zinc-950">
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-10 text-sm text-zinc-500 sm:flex-row sm:items-center sm:justify-between dark:text-zinc-400">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-[10px] font-bold text-white">
-              CL
-            </span>
-            <p>
-              © {new Date().getFullYear()} {company.nameKo} ({company.nameEn})
-            </p>
-          </div>
-          <p>
-            {company.location} · {company.contactEmail}
-          </p>
-        </div>
-      </footer>
     </>
   );
 }
