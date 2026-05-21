@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Hero from "@/components/Hero";
-import Stats from "@/components/Stats";
 import Reveal from "@/components/Reveal";
 import { homeGateways } from "@/lib/brand";
 
@@ -8,7 +7,6 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <Stats />
 
       <section
         id="explore"
