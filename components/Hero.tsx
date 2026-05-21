@@ -28,7 +28,7 @@ export default function Hero() {
           {company.nameEn} · since {company.foundedYear}
         </div>
 
-        <h1 className="mt-7 max-w-4xl text-[2.5rem] leading-[1.05] font-semibold tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl dark:text-zinc-50">
+        <h1 className="mt-7 max-w-6xl text-[2.5rem] leading-[1.05] font-semibold tracking-tight text-balance text-zinc-900 sm:text-5xl lg:text-6xl dark:text-zinc-50">
           기술의 본질을 연구하고{" "}
           <span className="relative inline-block">
             <span className="text-gradient">가치를 구현</span>
