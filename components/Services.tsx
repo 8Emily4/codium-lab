@@ -1,12 +1,11 @@
 import { company } from "@/lib/brand";
+import Reveal from "./Reveal";
 
 const icons: Record<string, React.ReactElement> = {
   Consulting: (
     <path d="M4 19V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12M4 19h16M8 11l3 3 5-5" />
   ),
-  Engineering: (
-    <path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16" />
-  ),
+  Engineering: <path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16" />,
   Education: (
     <path d="M3 9l9-5 9 5-9 5-9-5zM7 11v5c0 1.5 2.2 3 5 3s5-1.5 5-3v-5M21 9v5" />
   ),
@@ -19,29 +18,35 @@ export default function Services() {
   return (
     <section
       id="services"
-      className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950"
+      className="relative overflow-hidden border-b border-zinc-200/70 bg-zinc-50 dark:border-zinc-800/70 dark:bg-zinc-950"
     >
-      <div className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
-        <div className="flex flex-col gap-3">
-          <p className="text-sm font-medium tracking-[0.2em] text-indigo-600 uppercase dark:text-indigo-400">
-            Services
-          </p>
-          <h2 className="max-w-3xl text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-50">
-            연구가 일이 되도록, 일이 도구가 되도록
-          </h2>
-          <p className="max-w-2xl text-zinc-600 dark:text-zinc-300">
-            데모로 끝나지 않는 자동화. 코디움랩이 드릴 수 있는 네 가지 결의 협업.
-          </p>
-        </div>
+      <div className="bg-dots absolute inset-0 opacity-60" aria-hidden />
+      <div className="relative mx-auto max-w-6xl px-6 py-24 sm:py-28">
+        <Reveal>
+          <div className="flex flex-col gap-3">
+            <p className="text-sm font-medium tracking-[0.2em] text-indigo-600 uppercase dark:text-indigo-400">
+              Services
+            </p>
+            <h2 className="max-w-3xl text-3xl font-semibold tracking-tight text-zinc-900 sm:text-5xl dark:text-zinc-50">
+              연구가 일이 되도록,{" "}
+              <span className="text-gradient">일이 도구가 되도록</span>
+            </h2>
+            <p className="max-w-2xl text-zinc-600 dark:text-zinc-300">
+              데모로 끝나지 않는 자동화. 코디움랩이 드릴 수 있는 네 가지 결의 협업.
+            </p>
+          </div>
+        </Reveal>
 
-        <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          {company.services.map((svc) => (
-            <article
+        <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          {company.services.map((svc, i) => (
+            <Reveal
               key={svc.title}
-              className="group relative flex flex-col rounded-2xl border border-zinc-200 bg-white p-7 transition hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-[0_18px_40px_-20px_rgba(79,70,229,0.35)] dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-500/50"
+              delay={i * 100}
+              as="article"
+              className="group card-elevate relative flex flex-col rounded-2xl border border-zinc-200/80 bg-white p-7 hover:border-indigo-300 hover:shadow-[0_24px_50px_-30px_rgba(79,70,229,0.45)] dark:border-zinc-800/80 dark:bg-zinc-900 dark:hover:border-indigo-500/50"
             >
               <div className="flex items-center gap-3">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-300 dark:ring-indigo-500/20">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-50 to-violet-50 text-indigo-600 ring-1 ring-indigo-100 transition group-hover:from-indigo-100 group-hover:to-violet-100 dark:from-indigo-500/10 dark:to-violet-500/10 dark:text-indigo-300 dark:ring-indigo-500/20">
                   <svg
                     width="20"
                     height="20"
@@ -61,16 +66,21 @@ export default function Services() {
                 </span>
               </div>
 
-              <h3 className="mt-5 text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+              <h3 className="mt-6 text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
                 {svc.title}
               </h3>
-              <p className="mt-1 text-sm font-medium text-indigo-600 dark:text-indigo-400">
+              <p className="mt-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400">
                 {svc.summary}
               </p>
               <p className="mt-3 text-sm leading-6 text-zinc-600 dark:text-zinc-300">
                 {svc.body}
               </p>
-            </article>
+
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-x-7 bottom-0 h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent opacity-0 transition group-hover:opacity-100"
+              />
+            </Reveal>
           ))}
         </div>
       </div>

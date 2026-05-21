@@ -1,11 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafaf9;
+  --foreground: #0a0a0b;
+  --surface: #ffffff;
+  --surface-soft: #f5f5f4;
+  --border: #e7e5e4;
   --accent: #6366f1;
   --accent-strong: #4f46e5;
   --accent-soft: #eef2ff;
+  --accent-violet: #8b5cf6;
+  --accent-fuchsia: #d946ef;
+  --accent-emerald: #10b981;
 }
 
 @theme inline {
@@ -20,8 +26,11 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #050507;
+    --foreground: #f4f4f5;
+    --surface: #0c0c10;
+    --surface-soft: #111114;
+    --border: #1f1f24;
     --accent: #818cf8;
     --accent-strong: #a5b4fc;
     --accent-soft: #1e1b4b;
@@ -36,27 +45,32 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
   background: color-mix(in srgb, var(--accent) 35%, transparent);
+  color: var(--foreground);
 }
+
+/* ── Background textures ─────────────────────────── */
 
 .bg-mesh {
   background-image:
     radial-gradient(
       ellipse 60% 50% at 12% 8%,
-      color-mix(in srgb, var(--accent) 22%, transparent),
+      color-mix(in srgb, var(--accent) 24%, transparent),
       transparent 60%
     ),
     radial-gradient(
       ellipse 50% 45% at 92% 18%,
-      color-mix(in srgb, #ec4899 18%, transparent),
+      color-mix(in srgb, var(--accent-fuchsia) 22%, transparent),
       transparent 55%
     ),
     radial-gradient(
       ellipse 70% 55% at 50% 110%,
-      color-mix(in srgb, var(--accent) 14%, transparent),
+      color-mix(in srgb, var(--accent-violet) 18%, transparent),
       transparent 60%
     );
 }
@@ -65,12 +79,12 @@ body {
   background-image:
     linear-gradient(
       to right,
-      color-mix(in srgb, var(--foreground) 6%, transparent) 1px,
+      color-mix(in srgb, var(--foreground) 5%, transparent) 1px,
       transparent 1px
     ),
     linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--foreground) 6%, transparent) 1px,
+      color-mix(in srgb, var(--foreground) 5%, transparent) 1px,
       transparent 1px
     );
   background-size: 56px 56px;
@@ -78,11 +92,168 @@ body {
   -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 30%, transparent 75%);
 }
 
-@keyframes float-slow {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+.bg-dots {
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--foreground) 12%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black 30%, transparent 75%);
 }
 
+.bg-noise {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* ── Hero gradient title underline ───────────────── */
+
+.text-gradient {
+  background: linear-gradient(
+    110deg,
+    var(--accent) 0%,
+    var(--accent-violet) 45%,
+    var(--accent-fuchsia) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ── Hover lift card ─────────────────────────────── */
+
+.card-elevate {
+  transition:
+    transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 0.3s ease;
+}
+.card-elevate:hover {
+  transform: translateY(-4px);
+}
+
+/* ── Floating token drift animations ─────────────── */
+
+@keyframes driftA {
+  0% { transform: translate(-30px, 10px); opacity: 0; }
+  10% { opacity: 1; }
+  50% { transform: translate(40px, -25px); opacity: 1; }
+  90% { opacity: 0.85; }
+  100% { transform: translate(120px, -50px); opacity: 0; }
+}
+@keyframes driftB {
+  0% { transform: translate(20px, 40px); opacity: 0; }
+  12% { opacity: 1; }
+  50% { transform: translate(-30px, -10px); opacity: 1; }
+  90% { opacity: 0.8; }
+  100% { transform: translate(-90px, -60px); opacity: 0; }
+}
+@keyframes driftC {
+  0% { transform: translate(0, 50px); opacity: 0; }
+  12% { opacity: 1; }
+  50% { transform: translate(20px, -10px); opacity: 1; }
+  90% { opacity: 0.8; }
+  100% { transform: translate(-15px, -80px); opacity: 0; }
+}
+@keyframes driftD {
+  0% { transform: translate(-40px, 20px); opacity: 0; }
+  12% { opacity: 1; }
+  50% { transform: translate(30px, 5px); opacity: 1; }
+  90% { opacity: 0.8; }
+  100% { transform: translate(90px, -30px); opacity: 0; }
+}
+
+/* ── Hero floating orb ───────────────────────────── */
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
 .anim-float {
-  animation: float-slow 7s ease-in-out infinite;
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+.anim-pulse-soft {
+  animation: pulse-soft 3.2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.anim-shimmer {
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    color-mix(in srgb, var(--accent) 28%, transparent) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ── Scroll reveal — applied by Reveal component ── */
+
+.reveal-init {
+  opacity: 0;
+  transform: translateY(48px);
+  transition:
+    opacity 0.95s cubic-bezier(0.16, 0.84, 0.24, 1),
+    transform 0.95s cubic-bezier(0.16, 0.84, 0.24, 1),
+    filter 0.95s cubic-bezier(0.16, 0.84, 0.24, 1);
+  filter: blur(6px);
+  will-change: opacity, transform, filter;
+}
+.reveal-init.reveal-up { transform: translateY(48px); }
+.reveal-init.reveal-scale { transform: scale(0.92); }
+.reveal-init.reveal-left { transform: translateX(-56px); }
+.reveal-init.reveal-right { transform: translateX(56px); }
+
+.reveal-shown {
+  opacity: 1 !important;
+  transform: translate(0, 0) scale(1) !important;
+  filter: blur(0) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-init {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+}
+
+/* Stagger child reveals when parent has `data-stagger` */
+[data-stagger] > .reveal-init { transition-delay: calc(var(--i, 0) * 80ms); }
+
+/* ── Section divider gradient line ───────────────── */
+
+.divider-gradient {
+  background: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in srgb, var(--accent) 50%, transparent),
+    transparent
+  );
+  height: 1px;
+}
+
+/* ── Marquee for partner-style logos / keywords ── */
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.anim-marquee {
+  animation: marquee 28s linear infinite;
 }
