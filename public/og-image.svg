@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a0a0a" />
+      <stop offset="1" stop-color="#1c1b29" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#818CF8" />
+      <stop offset="0.5" stop-color="#A78BFA" />
+      <stop offset="1" stop-color="#E879F9" />
+    </linearGradient>
+    <radialGradient id="glow" cx="0.85" cy="0.15" r="0.7">
+      <stop offset="0" stop-color="#8B5CF6" stop-opacity="0.5" />
+      <stop offset="1" stop-color="#8B5CF6" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="url(#glow)" />
+
+  <!-- Logo -->
+  <g transform="translate(80 80)">
+    <rect width="64" height="64" rx="14" fill="url(#accent)" />
+    <g transform="translate(15 16)" fill="none" stroke="#0a0a0a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 6 a12 12 0 1 0 0 22" />
+      <path d="M17 6 v22 h13" />
+    </g>
+  </g>
+
+  <text x="80" y="280" fill="#ffffff" font-family="-apple-system, system-ui, sans-serif" font-size="84" font-weight="600" letter-spacing="-2">
+    코디움랩
+  </text>
+  <text x="80" y="380" fill="url(#accent)" font-family="-apple-system, system-ui, sans-serif" font-size="60" font-weight="600" letter-spacing="-1.5">
+    기술의 본질을 연구하고
+  </text>
+  <text x="80" y="460" fill="url(#accent)" font-family="-apple-system, system-ui, sans-serif" font-size="60" font-weight="600" letter-spacing="-1.5">
+    가치를 구현합니다
+  </text>
+
+  <text x="80" y="560" fill="#A1A1AA" font-family="-apple-system, system-ui, sans-serif" font-size="24" letter-spacing="0.5">
+    Codium Lab · AI 자동화 IT 솔루션 연구소
+  </text>
+</svg>
