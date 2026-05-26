@@ -73,6 +73,44 @@ export const viewport: Viewport = {
   ],
 };
 
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": `${SITE_URL}/#organization`,
+  name: company.nameKo,
+  alternateName: company.nameEn,
+  url: SITE_URL,
+  logo: `${SITE_URL}/app-icon-512.png`,
+  image: `${SITE_URL}/og-image.png`,
+  description: company.description,
+  email: company.contactEmail,
+  foundingDate: String(company.foundedYear),
+  founder: { "@type": "Person", name: company.ceo },
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: company.location,
+    addressCountry: "KR",
+  },
+  knowsAbout: company.rdFields,
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${SITE_URL}/#website`,
+  url: SITE_URL,
+  name: company.nameKo,
+  alternateName: company.nameEn,
+  description: company.tagline,
+  inLanguage: "ko-KR",
+  publisher: { "@id": `${SITE_URL}/#organization` },
+};
+
+const jsonLdHtml = JSON.stringify([organizationJsonLd, websiteJsonLd]).replace(
+  /</g,
+  "\\u003c",
+);
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -84,6 +122,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth antialiased`}
     >
       <body className="flex min-h-full flex-col bg-white text-zinc-900 dark:bg-black dark:text-zinc-100">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLdHtml }}
+        />
         {children}
       </body>
     </html>
