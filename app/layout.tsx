@@ -92,6 +92,7 @@ const organizationJsonLd = {
     addressCountry: "KR",
   },
   knowsAbout: company.rdFields,
+  sameAs: company.sns,
 };
 
 const websiteJsonLd = {
