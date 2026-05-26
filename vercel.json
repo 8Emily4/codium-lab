@@ -1,0 +1,16 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "www.codiumlab.ai.kr" }],
+      "destination": "https://codiumlab.ai.kr",
+      "permanent": true
+    },
+    {
+      "source": "/:path+",
+      "has": [{ "type": "host", "value": "www.codiumlab.ai.kr" }],
+      "destination": "https://codiumlab.ai.kr/:path+",
+      "permanent": true
+    }
+  ]
+}
