@@ -6,9 +6,16 @@ import Reveal from "@/components/Reveal";
 import { brandsPage, company, subBrands } from "@/lib/brand";
 
 export const metadata: Metadata = {
-  title: `브랜드 · ${company.nameKo}`,
+  title: "브랜드",
   description:
     "코디움랩이 운영하는 두 결의 브랜드 — 에이디움(AI 리터러시 교육)과 베이디움(디지털 굿즈 스튜디오).",
+  alternates: { canonical: "/brands" },
+  openGraph: {
+    title: `브랜드 · ${company.nameKo}`,
+    description:
+      "코디움랩이 운영하는 두 결의 브랜드 — 에이디움과 베이디움.",
+    url: "/brands",
+  },
 };
 
 export default function BrandsPage() {

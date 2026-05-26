@@ -5,8 +5,14 @@ import Reveal from "@/components/Reveal";
 import { company, servicesPage } from "@/lib/brand";
 
 export const metadata: Metadata = {
-  title: `서비스 · ${company.nameKo}`,
+  title: "서비스",
   description: "코디움랩의 네 결의 협업 — 컨설팅, 엔지니어링, 교육, 스튜디오.",
+  alternates: { canonical: "/services" },
+  openGraph: {
+    title: `서비스 · ${company.nameKo}`,
+    description: "코디움랩의 네 결의 협업 — 컨설팅, 엔지니어링, 교육, 스튜디오.",
+    url: "/services",
+  },
 };
 
 export default function ServicesPage() {

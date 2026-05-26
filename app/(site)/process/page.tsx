@@ -5,8 +5,14 @@ import Reveal from "@/components/Reveal";
 import { company, processPage } from "@/lib/brand";
 
 export const metadata: Metadata = {
-  title: `프로세스 · ${company.nameKo}`,
+  title: "프로세스",
   description: "코디움랩의 네 단계 협업 — 발견 → 설계 → 구현 → 이관.",
+  alternates: { canonical: "/process" },
+  openGraph: {
+    title: `프로세스 · ${company.nameKo}`,
+    description: "코디움랩의 네 단계 협업 — 발견 → 설계 → 구현 → 이관.",
+    url: "/process",
+  },
 };
 
 export default function ProcessPage() {

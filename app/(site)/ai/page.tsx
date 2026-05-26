@@ -6,9 +6,16 @@ import CodeTyper from "@/components/CodeTyper";
 import Reveal from "@/components/Reveal";
 
 export const metadata: Metadata = {
-  title: `AI · ${company.nameKo} | ${company.nameEn}`,
+  title: "AI",
   description:
     "코디움랩의 AI 접근: AI로 개발하고, 업무에 녹이는 시스템을 만듭니다. Claude·Cursor·MCP·RAG 기반 사내 도입.",
+  alternates: { canonical: "/ai" },
+  openGraph: {
+    title: `AI · ${company.nameKo}`,
+    description:
+      "코디움랩의 AI 접근: AI로 개발하고, 업무에 녹이는 시스템을 만듭니다.",
+    url: "/ai",
+  },
 };
 
 export default function AiPage() {

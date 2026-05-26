@@ -5,8 +5,14 @@ import InquiryForm from "@/components/InquiryForm";
 import { company, contactPage } from "@/lib/brand";
 
 export const metadata: Metadata = {
-  title: `문의 · ${company.nameKo}`,
+  title: "문의",
   description: "코디움랩 · 컨설팅·협업 문의. 초기 진단 미팅은 무료입니다.",
+  alternates: { canonical: "/contact" },
+  openGraph: {
+    title: `문의 · ${company.nameKo}`,
+    description: "코디움랩 · 컨설팅·협업 문의. 초기 진단 미팅은 무료입니다.",
+    url: "/contact",
+  },
 };
 
 export default function ContactPage() {
