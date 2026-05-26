@@ -3,6 +3,7 @@ import { company } from "@/lib/brand";
 import { getSession } from "@/lib/auth";
 import NavLinks from "./NavLinks";
 import SessionMenu from "./auth/SessionMenu";
+import Logo from "./Logo";
 
 export default async function Nav() {
   const session = await getSession();
@@ -14,9 +15,7 @@ export default async function Nav() {
           href="/"
           className="flex items-center gap-2 text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-50"
         >
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-[11px] font-bold text-white">
-            CL
-          </span>
+          <Logo className="h-7 w-7 shrink-0" />
           <span>{company.nameKo}</span>
         </Link>
 

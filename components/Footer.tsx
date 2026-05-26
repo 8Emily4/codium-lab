@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { company } from "@/lib/brand";
+import Logo from "./Logo";
 
 const navGroups = [
   {
@@ -25,9 +26,7 @@ export default function Footer() {
               href="/"
               className="inline-flex items-center gap-2 text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-50"
             >
-              <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-[11px] font-bold text-white">
-                CL
-              </span>
+              <Logo className="h-7 w-7 shrink-0" />
               <span>{company.nameKo}</span>
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-6 text-zinc-600 dark:text-zinc-400">
