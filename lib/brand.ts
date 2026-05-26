@@ -9,6 +9,7 @@ export const company = {
   description:
     "코디움랩은 LLM과 자동화의 경계에서 실제로 동작하는 도구를 연구합니다. 데모로 끝나지 않는 솔루션, 사람의 일을 한 단계 위로 올려놓는 기술을 만듭니다.",
   contactEmail: "narimagic@naver.com",
+  sns: ["https://github.com/8Emily4"],
   philosophy: [
     {
       title: "본질에서 출발합니다",
