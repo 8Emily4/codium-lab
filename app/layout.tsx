@@ -59,6 +59,11 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
+  verification: {
+    other: {
+      "naver-site-verification": "52ef2ad74eaf24b5ff77ec661c83792746f39376",
+    },
+  },
   icons: {
     // app/favicon.ico is picked up automatically by Next.
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
