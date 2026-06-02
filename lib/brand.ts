@@ -603,6 +603,7 @@ export const subBrands: SubBrand[] = [
       "AI와 배움이 만나 일상의 지능을 높이는 인공지능 리터러시 교육 브랜드. 임원 워크샵부터 실무자 핸즈온, 학교 단위 정규 과정까지 포괄합니다.",
     highlights: ["임원·실무자 트랙 분리", "조직 전용 커리큘럼", "수료 후 운영 코칭"],
     accent: "from-indigo-500 to-violet-500",
+    href: "https://ririssaem-ai-landing.vercel.app",
   },
   {
     slug: "badium",
