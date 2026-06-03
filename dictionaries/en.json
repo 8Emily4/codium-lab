@@ -644,6 +644,43 @@
     "harnessTitlePost": "",
     "harnessDesc": "The moment an issue arrives, the pipeline wakes. An orchestrator coordinates every step, AI routes by task type, and the skill engine executes. People only step in at approval gates.",
     "harnessDiagramLabel": "Pipeline Flow",
+    "harnessDiagramStages": [
+      {
+        "step": "01",
+        "label": "TRIGGER",
+        "title": "Issue Detection",
+        "subtitle": "AutoPilot",
+        "items": ["JQL condition detection", "AutoPilot trigger", "Issue type classification"]
+      },
+      {
+        "step": "02",
+        "label": "HARNESS",
+        "title": "Pipeline Control",
+        "subtitle": "Orchestrator",
+        "items": ["Scheduler / AutoPilot", "Approval gate", "MCP Server", "WebSocket control"]
+      },
+      {
+        "step": "03",
+        "label": "AI ENGINE",
+        "title": "AI Processing",
+        "subtitle": "Task Routing",
+        "items": ["Task type routing", "Cost & quality optimization", "Parallel processing"]
+      },
+      {
+        "step": "04",
+        "label": "SKILLS",
+        "title": "Skill Execution",
+        "subtitle": "Skill Engine",
+        "items": ["Auto development", "Workflow execution", "Auto testing", "35+ automation skills"]
+      },
+      {
+        "step": "05",
+        "label": "OUTPUT",
+        "title": "Output",
+        "subtitle": "Deploy & Report",
+        "items": ["Pull Request", "Issue update", "Auto report generation"]
+      }
+    ],
     "harnessCapabilitiesTitle": "What the harness does",
     "harnessCapabilities": [
       {

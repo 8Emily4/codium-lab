@@ -4,7 +4,7 @@ import PageHeader from "@/components/PageHeader";
 import Reveal from "@/components/Reveal";
 import { getDictionary, hasLocale } from "../../dictionaries";
 import { notFound } from "next/navigation";
-import { subBrands } from "@/lib/brand";
+
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params;
@@ -203,7 +203,7 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
           </Reveal>
 
           <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {subBrands.map((brand, i) => (
+            {dict.brands.subBrands.map((brand, i) => (
               <Reveal
                 key={brand.slug}
                 delay={i * 160}

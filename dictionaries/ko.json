@@ -644,6 +644,43 @@
     "harnessTitlePost": "로 달립니다",
     "harnessDesc": "이슈가 들어오는 순간 파이프라인이 깨어납니다. 관제 시스템이 전 과정을 조율하고, AI가 작업 유형에 맞게 처리하며, 스킬 엔진이 실행합니다. 사람은 승인 게이트에서만 개입합니다.",
     "harnessDiagramLabel": "파이프라인 흐름",
+    "harnessDiagramStages": [
+      {
+        "step": "01",
+        "label": "TRIGGER",
+        "title": "이슈 감지",
+        "subtitle": "AutoPilot",
+        "items": ["JQL 조건 감지", "오토파일럿 트리거", "이슈 유형 분류"]
+      },
+      {
+        "step": "02",
+        "label": "HARNESS",
+        "title": "파이프라인 관제",
+        "subtitle": "Orchestrator",
+        "items": ["스케줄러 / 오토파일럿", "승인 게이트", "MCP Server", "WebSocket 관제"]
+      },
+      {
+        "step": "03",
+        "label": "AI ENGINE",
+        "title": "AI 처리",
+        "subtitle": "Task Routing",
+        "items": ["작업 유형별 라우팅", "비용·품질 최적화", "병렬 처리"]
+      },
+      {
+        "step": "04",
+        "label": "SKILLS",
+        "title": "스킬 실행",
+        "subtitle": "Skill Engine",
+        "items": ["자동 개발", "워크플로우 실행", "자동 테스트", "35+ 자동화 스킬"]
+      },
+      {
+        "step": "05",
+        "label": "OUTPUT",
+        "title": "산출물",
+        "subtitle": "Deploy & Report",
+        "items": ["Pull Request", "이슈 업데이트", "보고서 자동생성"]
+      }
+    ],
     "harnessCapabilitiesTitle": "하네스가 하는 일",
     "harnessCapabilities": [
       {
