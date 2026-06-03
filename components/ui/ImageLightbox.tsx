@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
 type GalleryImage = { src: string; alt?: string }
@@ -13,6 +13,7 @@ type Props = {
 
 export function ImageLightbox({ images, initialIndex = 0, onClose }: Props) {
   const [current, setCurrent] = useState(initialIndex)
+  const touchStartX = useRef<number | null>(null)
 
   const prev = () => setCurrent(i => Math.max(0, i - 1))
   const next = () => setCurrent(i => Math.min(images.length - 1, i + 1))
@@ -22,6 +23,20 @@ export function ImageLightbox({ images, initialIndex = 0, onClose }: Props) {
     if (e.key === 'ArrowLeft') prev()
     if (e.key === 'ArrowRight') next()
   }, [onClose]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+  }, [])
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (touchStartX.current === null) return
+    const delta = touchStartX.current - e.changedTouches[0].clientX
+    if (Math.abs(delta) > 50) {
+      if (delta > 0) next()
+      else prev()
+    }
+    touchStartX.current = null
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     document.addEventListener('keydown', handleKey)
@@ -38,6 +53,8 @@ export function ImageLightbox({ images, initialIndex = 0, onClose }: Props) {
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm"
       onClick={onClose}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       <button
         onClick={onClose}
