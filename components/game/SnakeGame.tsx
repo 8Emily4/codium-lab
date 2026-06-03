@@ -1049,7 +1049,7 @@ function PerkDraft({draft,onPick}:{draft:PerkId[];onPick:(p:PerkId)=>void}) {
   )
 }
 
-const JMAX = 55
+const JMAX = 70
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1066,7 +1066,7 @@ export default function SnakeGame({onClose}: Props) {
   const frameRef=useRef(0)
   const camRef=useRef({x:0,y:0,zoom:CAM_MAX})
   const joystickDirRef=useRef<{active:boolean;angle:number}>({active:false,angle:0})
-  const [display,setDisplay]=useState({phase:'playing' as GamePhase,score:0,kills:0})
+  const [display,setDisplay]=useState({phase:'playing' as GamePhase,score:0,kills:0,ult:0})
   const [draft,setDraft]=useState<PerkId[]|null>(null)
   const [isTouch,setIsTouch]=useState(false)
   const [joyVis,setJoyVis]=useState<{active:boolean;baseX:number;baseY:number;thumbX:number;thumbY:number}>({active:false,baseX:0,baseY:0,thumbX:0,thumbY:0})
@@ -1076,8 +1076,31 @@ export default function SnakeGame({onClose}: Props) {
   },[])
 
   useEffect(()=>{setIsTouch('ontouchstart' in window||navigator.maxTouchPoints>0)},[])
+  const [mmPx,setMmPx]=useState(60)
+  useEffect(()=>{
+    const calc=()=>setMmPx(Math.max(60,Math.min(window.innerWidth,window.innerHeight)*0.14))
+    calc(); window.addEventListener('resize',calc); return()=>window.removeEventListener('resize',calc)
+  },[])
+  useEffect(()=>{
+    window.history.pushState(null,'',window.location.href)
+    const onPop=()=>onClose()
+    window.addEventListener('popstate',onPop)
+    return()=>window.removeEventListener('popstate',onPop)
+  },[onClose])
+  useEffect(()=>{
+    const prevTa=document.body.style.touchAction, prevOv=document.body.style.overflow
+    document.body.style.touchAction='none'; document.body.style.overflow='hidden'
+    const block=(e:TouchEvent)=>e.preventDefault()
+    document.addEventListener('touchstart',block,{passive:false})
+    document.addEventListener('touchmove',block,{passive:false})
+    return()=>{
+      document.body.style.touchAction=prevTa; document.body.style.overflow=prevOv
+      document.removeEventListener('touchstart',block)
+      document.removeEventListener('touchmove',block)
+    }
+  },[])
 
-  const restart=useCallback(()=>{worldRef.current=initWorld();setDisplay({phase:'playing',score:0,kills:0});setDraft(null)},[])
+  const restart=useCallback(()=>{worldRef.current=initWorld();setDisplay({phase:'playing',score:0,kills:0,ult:0});setDraft(null)},[])
   const pickPerk=useCallback((p:PerkId)=>{worldRef.current.perks.push(p);worldRef.current.draft=null;setDraft(null)},[])
 
   const handleJoyStart=useCallback((e:React.TouchEvent)=>{
@@ -1093,8 +1116,8 @@ export default function SnakeGame({onClose}: Props) {
       if(!prev.active) return prev
       const dx=t.clientX-prev.baseX, dy=t.clientY-prev.baseY
       const d=Math.sqrt(dx*dx+dy*dy), angle=Math.atan2(dy,dx)
-      joystickDirRef.current={active:true,angle}
-      boostRef.current=d>JMAX*0.6
+      if(d>10) joystickDirRef.current={active:true,angle}
+      boostRef.current=d>JMAX*0.65
       const cd=Math.min(d,JMAX)
       return {...prev,thumbX:prev.baseX+Math.cos(angle)*cd,thumbY:prev.baseY+Math.sin(angle)*cd}
     })
@@ -1129,10 +1152,10 @@ export default function SnakeGame({onClose}: Props) {
         if (w.draft) setDraft(w.draft)
       }
 
-      if (frameRef.current%20===0||w.phase!=='playing') setDisplay({phase:w.phase,score:Math.floor(w.score||w.snakes[0]?.len||0),kills:w.pKills})
+      if (frameRef.current%20===0||w.phase!=='playing') setDisplay({phase:w.phase,score:Math.floor(w.score||w.snakes[0]?.len||0),kills:w.pKills,ult:Math.floor(w.ultCharge)})
 
       const p=w.snakes[0],cam=camRef.current
-      if (p?.alive){cam.x+=(p.segs[0].x-cam.x)*0.12;cam.y+=(p.segs[0].y-cam.y)*0.12;cam.zoom+=(zoomForLen(p.len)-cam.zoom)*0.05}
+      if (p?.alive){cam.x+=(p.segs[0].x-cam.x)*0.12;cam.y+=(p.segs[0].y-cam.y)*0.12;cam.zoom+=(zoomForLen(p.peakLen)-cam.zoom)*0.03}
 
       render(ctx,w,cw,ch,now,camRef.current)
       renderHUD(ctx,w,cw,ch,now,camRef.current)
@@ -1169,9 +1192,9 @@ export default function SnakeGame({onClose}: Props) {
   },[onClose])
 
   return (
-    <div className="relative h-full w-full bg-[#07071a]">
+    <div className="relative h-full w-full overflow-hidden touch-none bg-[#07071a]">
       <canvas ref={canvasRef} className="h-full w-full cursor-none touch-none" />
-      <button onClick={onClose} className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-zinc-400 transition hover:bg-black/80 hover:text-white">
+      <button onClick={onClose} className="absolute flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-zinc-400 transition hover:bg-black/80 hover:text-white" style={{top:mmPx+24,right:8}}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       {draft&&<PerkDraft draft={draft} onPick={pickPerk}/>}
@@ -1179,7 +1202,7 @@ export default function SnakeGame({onClose}: Props) {
         <>
           {/* Left joystick zone */}
           <div
-            className="pointer-events-auto absolute bottom-0 left-0 top-0 w-1/2"
+            className="pointer-events-auto absolute bottom-0 left-0 top-0 w-3/5 touch-none"
             onTouchStart={handleJoyStart}
             onTouchMove={handleJoyMove}
             onTouchEnd={handleJoyEnd}
@@ -1197,11 +1220,11 @@ export default function SnakeGame({onClose}: Props) {
           {/* Right DASH button */}
           <div className="pointer-events-none absolute inset-x-0 bottom-6 flex items-end justify-end px-6">
             <button
-              className="pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 border-indigo-500/60 bg-black/60 text-indigo-300 active:bg-indigo-900/60"
+              className={`pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 transition-colors ${display.ult>=100?'border-purple-400 bg-purple-900/60 text-purple-100':'border-zinc-600/40 bg-black/60 text-zinc-500'}`}
               onTouchStart={e=>{e.preventDefault();ultRef.current=true;getSfxCtx()?.resume()}}
             >
               <span className="text-2xl leading-none">⚡</span>
-              <span className="text-[11px] font-bold">DASH</span>
+              <span className="text-[11px] font-bold">{display.ult>=100?'READY!':display.ult+'%'}</span>
             </button>
           </div>
         </>
