@@ -25,6 +25,11 @@ const AI_DECISION_INTERVAL = 0.45
 const ITEM_TARGET = 10
 const ITEM_RADIUS = 28
 const BOOST_DRAIN_INTERVAL = 0.5
+const DRONE_ORBIT_R = 58
+const DRONE_ORBIT_SPD = 2.2
+const DRONE_FIRE_RATE = 0.55
+const DRONE_RESPAWN = 4.0
+const DRONE_RADIUS = 9
 
 const AI_NAMES = [
   'Viper', 'Cobra', 'Falcon', 'Eagle', 'Hawk',
@@ -101,6 +106,14 @@ interface Particle {
   r: number
 }
 
+interface Drone {
+  id: number
+  angle: number
+  fireTimer: number
+  alive: boolean
+  respawnTimer: number
+}
+
 type StormPhase = 'hold' | 'warn' | 'shrink'
 
 interface World {
@@ -108,6 +121,8 @@ interface World {
   bullets: Bullet[]
   items: GameItem[]
   particles: Particle[]
+  drones: Drone[]
+  maxDrones: number
   stormR: number
   stormNextR: number
   stormPhase: StormPhase
@@ -115,6 +130,7 @@ interface World {
   nextBulletId: number
   nextItemId: number
   nextPlaneId: number
+  nextDroneId: number
   kills: number
   phase: 'playing' | 'dead' | 'win'
 }
@@ -144,12 +160,21 @@ function spawnItem(world: World) {
   world.items.push({ id: world.nextItemId++, x: p.x, y: p.y, kind })
 }
 
-function applyItem(plane: Plane, kind: ItemKind, now: number) {
+function applyItem(plane: Plane, kind: ItemKind, now: number, world?: World) {
   switch (kind) {
     case 'shield': plane.shieldActive = true; break
     case 'speed': plane.speedUntil = Math.max(plane.speedUntil, now + ITEM_DURATION.speed); break
     case 'rapidfire': plane.rapidFireUntil = Math.max(plane.rapidFireUntil, now + ITEM_DURATION.rapidfire); break
-    case 'multishot': plane.multiShotUntil = Math.max(plane.multiShotUntil, now + ITEM_DURATION.multishot); break
+    case 'multishot':
+      plane.multiShotUntil = Math.max(plane.multiShotUntil, now + ITEM_DURATION.multishot)
+      if (plane.isPlayer && world && world.maxDrones < 4) {
+        const add = Math.min(2, 4 - world.maxDrones)
+        for (let i = 0; i < add; i++) {
+          world.drones.push({ id: world.nextDroneId++, angle: Math.random() * Math.PI * 2, fireTimer: 0, alive: true, respawnTimer: 0 })
+        }
+        world.maxDrones += add
+      }
+      break
     case 'repair': plane.hp = Math.min(plane.maxHp, plane.hp + 40); break
   }
 }
@@ -485,12 +510,21 @@ function makePlane(world: World, isPlayer: boolean, colorIdx: number, name: stri
   }
 }
 
+function makeDrones(count: number): Drone[] {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i, angle: (Math.PI * 2 / count) * i,
+    fireTimer: DRONE_FIRE_RATE * (i / count),
+    alive: true, respawnTimer: 0,
+  }))
+}
+
 function initWorld(playerName: string): World {
   const world: World = {
     planes: [], bullets: [], items: [], particles: [],
+    drones: makeDrones(2), maxDrones: 2,
     stormR: ARENA_RADIUS, stormNextR: ARENA_RADIUS * (1 - STORM_SHRINK_RATIO),
     stormPhase: 'hold', stormTimer: STORM_HOLD_MS / 1000,
-    nextBulletId: 0, nextItemId: 0, nextPlaneId: 0,
+    nextBulletId: 0, nextItemId: 0, nextPlaneId: 0, nextDroneId: 2,
     kills: 0, phase: 'playing',
   }
   world.planes.push(makePlane(world, true, 0, playerName))
@@ -791,6 +825,39 @@ function render(
     }
   }
 
+  // Drones
+  const playerForDrone = world.planes.find(p => p.isPlayer && p.alive)
+  if (playerForDrone) {
+    for (const drone of world.drones) {
+      const ox = playerForDrone.x + Math.cos(drone.angle) * DRONE_ORBIT_R
+      const oy = playerForDrone.y + Math.sin(drone.angle) * DRONE_ORBIT_R
+      if (!drone.alive) {
+        // Ghost (respawning)
+        const pulse = 0.3 + 0.2 * Math.sin(now * 6)
+        ctx.globalAlpha = pulse
+        ctx.strokeStyle = '#4ade80'; ctx.lineWidth = 2 / scale
+        ctx.beginPath(); ctx.arc(ox, oy, DRONE_RADIUS / scale, 0, 2 * Math.PI); ctx.stroke()
+        ctx.globalAlpha = 1
+        continue
+      }
+      // Glow
+      ctx.save(); ctx.shadowColor = '#4ade80'; ctx.shadowBlur = 10
+      // Body
+      ctx.fillStyle = '#166534'
+      ctx.beginPath(); ctx.arc(ox, oy, DRONE_RADIUS / scale, 0, 2 * Math.PI); ctx.fill()
+      ctx.fillStyle = '#4ade80'
+      ctx.beginPath(); ctx.arc(ox, oy, (DRONE_RADIUS * 0.6) / scale, 0, 2 * Math.PI); ctx.fill()
+      ctx.fillStyle = 'rgba(255,255,255,0.6)'
+      ctx.beginPath(); ctx.arc(ox - (DRONE_RADIUS * 0.2) / scale, oy - (DRONE_RADIUS * 0.2) / scale, (DRONE_RADIUS * 0.22) / scale, 0, 2 * Math.PI); ctx.fill()
+      ctx.restore()
+      // Orbit trail line to player
+      ctx.globalAlpha = 0.18
+      ctx.strokeStyle = '#4ade80'; ctx.lineWidth = 1 / scale; ctx.setLineDash([6 / scale, 4 / scale])
+      ctx.beginPath(); ctx.moveTo(playerForDrone.x, playerForDrone.y); ctx.lineTo(ox, oy); ctx.stroke()
+      ctx.setLineDash([]); ctx.globalAlpha = 1
+    }
+  }
+
   ctx.restore()
 }
 
@@ -883,6 +950,16 @@ function renderHUD(
     ctx.fillText(item.value, x, ch - 26)
   })
 
+  // Drone indicator
+  {
+    const aliveDrones = world.drones.filter(d => d.alive).length
+    const totalDrones = world.drones.length
+    ctx.fillStyle = 'rgba(0,0,0,0.62)'
+    ctx.beginPath(); ctx.roundRect(12, ch - 76 - 34, 120, 26, 6); ctx.fill()
+    ctx.font = 'bold 11px system-ui'; ctx.fillStyle = '#4ade80'; ctx.textAlign = 'left'
+    ctx.fillText(`🤖 드론 ${aliveDrones}/${totalDrones}`, 20, ch - 76 - 16)
+  }
+
   // Active effects
   const effects: { emoji: string; color: string; remaining: number; always?: boolean }[] = []
   if (player.shieldActive) effects.push({ emoji: '🛡️', color: '#22d3ee', remaining: 999, always: true })
@@ -949,6 +1026,7 @@ export default function AirplaneGame({ onClose, strings }: Props) {
 
   const [display, setDisplay] = useState({ phase: 'playing' as World['phase'], hp: MAX_HP, kills: 0 })
   const [muted, setMuted] = useState(false)
+  const [isTouch, setIsTouch] = useState(false)
 
   const worldToScreen = useCallback((cx: number, cy: number, cw: number, ch: number) => {
     const cam = camRef.current
@@ -1067,10 +1145,63 @@ export default function AirplaneGame({ onClose, strings }: Props) {
           for (let ii = world.items.length - 1; ii >= 0; ii--) {
             const item = world.items[ii]
             if (dist(plane.x, plane.y, item.x, item.y) < ITEM_RADIUS + PLANE_RADIUS) {
-              applyItem(plane, item.kind, now)
+              applyItem(plane, item.kind, now, world)
               spawnParticles(world, item.x, item.y, ITEM_COLOR[item.kind], 12)
               world.items.splice(ii, 1)
               if (plane.isPlayer) sfx.pickup()
+            }
+          }
+        }
+
+        // Drones update
+        {
+          const player = world.planes.find(p => p.isPlayer)
+          if (player?.alive) {
+            for (const drone of world.drones) {
+              // Respawn
+              if (!drone.alive) {
+                drone.respawnTimer -= dt
+                if (drone.respawnTimer <= 0) { drone.alive = true; drone.fireTimer = DRONE_FIRE_RATE }
+                continue
+              }
+              // Orbit
+              drone.angle += DRONE_ORBIT_SPD * dt
+
+              // Auto-fire at nearest enemy
+              drone.fireTimer -= dt
+              if (drone.fireTimer <= 0) {
+                drone.fireTimer = DRONE_FIRE_RATE
+                const dx = player.x + Math.cos(drone.angle) * DRONE_ORBIT_R
+                const dy = player.y + Math.sin(drone.angle) * DRONE_ORBIT_R
+                const enemies = world.planes.filter(p => p.alive && !p.isPlayer)
+                if (enemies.length > 0) {
+                  const tgt = enemies.reduce((a, b) => dist(dx, dy, a.x, a.y) < dist(dx, dy, b.x, b.y) ? a : b)
+                  const ad = Math.atan2(tgt.y - dy, tgt.x - dx)
+                  world.bullets.push({
+                    id: world.nextBulletId++, x: dx, y: dy,
+                    vx: Math.cos(ad) * BULLET_SPEED, vy: Math.sin(ad) * BULLET_SPEED,
+                    ownerId: player.id, lifetime: BULLET_LIFETIME, damage: BULLET_DAMAGE * 0.7,
+                  })
+                }
+              }
+            }
+
+            // Check drone hit by enemy bullets
+            for (let bi = world.bullets.length - 1; bi >= 0; bi--) {
+              const b = world.bullets[bi]
+              if (b.ownerId === player.id) continue
+              for (const drone of world.drones) {
+                if (!drone.alive) continue
+                const ox = player.x + Math.cos(drone.angle) * DRONE_ORBIT_R
+                const oy = player.y + Math.sin(drone.angle) * DRONE_ORBIT_R
+                if (dist(b.x, b.y, ox, oy) < DRONE_RADIUS * 1.4) {
+                  drone.alive = false
+                  drone.respawnTimer = DRONE_RESPAWN
+                  spawnParticles(world, ox, oy, '#4ade80', 8)
+                  world.bullets.splice(bi, 1)
+                  break
+                }
+              }
             }
           }
         }
@@ -1160,6 +1291,9 @@ export default function AirplaneGame({ onClose, strings }: Props) {
     return () => sfx.destroy()
   }, [])
 
+  // Detect touch device
+  useEffect(() => { setIsTouch('ontouchstart' in window || navigator.maxTouchPoints > 0) }, [])
+
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -1170,7 +1304,7 @@ export default function AirplaneGame({ onClose, strings }: Props) {
     const onTouch = (e: TouchEvent) => {
       e.preventDefault()
       const r = canvas.getBoundingClientRect(), t = e.touches[0]
-      mouseRef.current = { cx: t.clientX - r.left, cy: t.clientY - r.top }
+      if (t) mouseRef.current = { cx: t.clientX - r.left, cy: t.clientY - r.top }
     }
     const onDown = () => { boostRef.current = true }
     const onUp = () => { boostRef.current = false }
@@ -1185,8 +1319,6 @@ export default function AirplaneGame({ onClose, strings }: Props) {
     canvas.addEventListener('touchstart', onTouch, { passive: false })
     canvas.addEventListener('mousedown', onDown)
     canvas.addEventListener('mouseup', onUp)
-    canvas.addEventListener('touchstart', onDown, { passive: false })
-    canvas.addEventListener('touchend', onUp)
     window.addEventListener('keydown', onKey)
     window.addEventListener('keyup', onKey)
     return () => {
@@ -1195,16 +1327,35 @@ export default function AirplaneGame({ onClose, strings }: Props) {
       canvas.removeEventListener('touchstart', onTouch)
       canvas.removeEventListener('mousedown', onDown)
       canvas.removeEventListener('mouseup', onUp)
-      canvas.removeEventListener('touchstart', onDown)
-      canvas.removeEventListener('touchend', onUp)
       window.removeEventListener('keydown', onKey)
       window.removeEventListener('keyup', onKey)
     }
   }, [onClose])
 
   return (
-    <div className="relative h-full w-full bg-[#07091a]">
-      <canvas ref={canvasRef} className="h-full w-full cursor-crosshair" />
+    <div className="relative h-full w-full bg-[#07091a] touch-none select-none">
+      <canvas ref={canvasRef} className="h-full w-full cursor-crosshair" style={{ touchAction: 'none' }} />
+
+      {/* Mobile controls */}
+      {isTouch && display.phase === 'playing' && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-6 flex items-end justify-center px-6">
+          <button
+            className="pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 border-white/20 bg-black/60 text-white active:bg-white/20"
+            onTouchStart={e => { e.preventDefault(); boostRef.current = true; sfxRef.current.boost() }}
+            onTouchEnd={e => { e.preventDefault(); boostRef.current = false }}
+          >
+            <span className="text-2xl leading-none">🚀</span>
+            <span className="text-[11px] font-bold">BOOST</span>
+          </button>
+        </div>
+      )}
+
+      {/* Mobile aim hint */}
+      {isTouch && display.phase === 'playing' && (
+        <div className="pointer-events-none absolute left-1/2 top-14 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-[10px] text-zinc-400">
+          화면 터치 → 조준 방향 | BOOST → 가속
+        </div>
+      )}
 
       {/* Mute button */}
       <button

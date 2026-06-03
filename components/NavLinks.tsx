@@ -136,9 +136,7 @@ export default function NavLinks({
               );
             })}
 
-            <div className="mt-2 px-4 py-2">
-              <LanguageSwitcher currentLang={lang} />
-            </div>
+            <LanguageSwitcher currentLang={lang} mobile onSwitch={() => setOpen(false)} />
 
             {session ? (
               <div className="mt-2 flex items-center justify-between rounded-lg bg-zinc-100 px-4 py-3 text-sm dark:bg-zinc-900">
