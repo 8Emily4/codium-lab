@@ -770,20 +770,49 @@ function render(
   for (const b of world.bullets) {
     const sx = (b.x - camX) * scale + cw / 2
     const sy = (b.y - camY) * scale + ch / 2
-    if (sx < -20 || sx > cw + 20 || sy < -20 || sy > ch + 20) continue
+    if (sx < -40 || sx > cw + 40 || sy < -40 || sy > ch + 40) continue
     const owner = world.planes.find(p => p.id === b.ownerId)
-    const bc = owner ? owner.color : '#fbbf24'
-    ctx.shadowColor = bc; ctx.shadowBlur = 8 / scale
+    const ev = (owner?.evolveLevel ?? 0)
+    const dmgScale = b.damage / BULLET_DAMAGE  // 1.0 / 1.25 / 1.5 / 1.75
+    const bR = (BULLET_RADIUS * (1 + ev * 0.45)) / scale
+
+    // Bullet color by evolve level
+    const bc = ev >= 3 ? '#fde68a'
+             : ev >= 2 ? '#c084fc'
+             : ev >= 1 ? '#67e8f9'
+             : (owner?.color ?? '#fbbf24')
+
+    ctx.shadowColor = bc
+    ctx.shadowBlur = (6 + ev * 5) / scale
+
+    // Outer glow shell (evolve only)
+    if (ev >= 1) {
+      ctx.globalAlpha = 0.3 + ev * 0.1
+      const glowGrd = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, bR * 2.2)
+      glowGrd.addColorStop(0, bc + 'cc')
+      glowGrd.addColorStop(1, 'transparent')
+      ctx.fillStyle = glowGrd
+      ctx.beginPath(); ctx.arc(b.x, b.y, bR * 2.2, 0, 2 * Math.PI); ctx.fill()
+      ctx.globalAlpha = 1
+    }
+
+    // White outer
     ctx.fillStyle = '#fff'
-    ctx.beginPath(); ctx.arc(b.x, b.y, BULLET_RADIUS / scale, 0, 2 * Math.PI); ctx.fill()
-    // glowing core
+    ctx.beginPath(); ctx.arc(b.x, b.y, bR, 0, 2 * Math.PI); ctx.fill()
+    // Colored core
     ctx.fillStyle = bc
-    ctx.beginPath(); ctx.arc(b.x, b.y, (BULLET_RADIUS * 0.65) / scale, 0, 2 * Math.PI); ctx.fill()
-    // trail
-    ctx.globalAlpha = 0.35; ctx.fillStyle = bc
-    ctx.beginPath()
-    ctx.arc(b.x - b.vx * 0.014, b.y - b.vy * 0.014, (BULLET_RADIUS * 0.5) / scale, 0, 2 * Math.PI)
-    ctx.fill()
+    ctx.beginPath(); ctx.arc(b.x, b.y, bR * 0.65, 0, 2 * Math.PI); ctx.fill()
+
+    // Trail — longer and brighter for higher levels
+    const trailLen = 0.014 + ev * 0.008
+    const trailSteps = 1 + ev
+    for (let t = 1; t <= trailSteps; t++) {
+      ctx.globalAlpha = (0.35 - t * 0.06) * dmgScale
+      ctx.fillStyle = bc
+      ctx.beginPath()
+      ctx.arc(b.x - b.vx * trailLen * t, b.y - b.vy * trailLen * t, bR * (0.55 - t * 0.1), 0, 2 * Math.PI)
+      ctx.fill()
+    }
     ctx.globalAlpha = 1; ctx.shadowBlur = 0
   }
 
@@ -1648,10 +1677,10 @@ export default function AirplaneGame({ onClose, strings }: Props) {
           cam.y += (pl.y - cam.y) * 0.1
           const alive = world.planes.filter(p => p.alive).length
           const baseZoom = Math.max(CAM_MIN_ZOOM, Math.min(CAM_MAX_ZOOM, 1.6 - alive * 0.028))
-          // Zoom out more per evolve level: Lv1→−15%, Lv2→−30%, Lv3→−45%
-          const evolveZoomOut = pl.evolveLevel * 0.15
-          const targetZoom = Math.max(0.45, baseZoom - evolveZoomOut)
-          cam.zoom += (targetZoom - cam.zoom) * 0.04
+          // Dramatic zoom-out per evolve level: Lv1→32%, Lv2→52%, Lv3→67%
+          const zoomScale = ([1.0, 0.68, 0.48, 0.33] as const)[Math.min(3, pl.evolveLevel)]
+          const targetZoom = Math.max(0.30, baseZoom * zoomScale)
+          cam.zoom += (targetZoom - cam.zoom) * (pl.evolveLevel > 0 ? 0.055 : 0.04)
         }
       }
 
