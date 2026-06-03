@@ -219,6 +219,12 @@ body {
 .reveal-init.reveal-left { transform: translateX(-56px); }
 .reveal-init.reveal-right { transform: translateX(56px); }
 
+/* 모바일에서 좌우 슬라이드 → 세로로 대체 (가로 overflow 방지) */
+@media (max-width: 639px) {
+  .reveal-init.reveal-left,
+  .reveal-init.reveal-right { transform: translateY(48px); }
+}
+
 .reveal-shown {
   opacity: 1 !important;
   transform: translate(0, 0) scale(1) !important;

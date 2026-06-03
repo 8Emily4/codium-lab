@@ -47,7 +47,7 @@ export default async function ProcessPage({ params }: { params: Promise<{ lang: 
         }
       />
 
-      <section className="relative border-b border-zinc-200/70 bg-zinc-50 dark:border-zinc-800/70 dark:bg-zinc-950">
+      <section className="relative overflow-hidden border-b border-zinc-200/70 bg-zinc-50 dark:border-zinc-800/70 dark:bg-zinc-950">
         <div className="bg-dots absolute inset-0 opacity-50" aria-hidden />
         <div className="relative mx-auto max-w-6xl px-6 py-24 sm:py-28">
           <Reveal>
@@ -113,7 +113,7 @@ export default async function ProcessPage({ params }: { params: Promise<{ lang: 
         </div>
       </section>
 
-      <section className="relative border-b border-zinc-200/70 bg-white dark:border-zinc-800/70 dark:bg-black">
+      <section className="relative overflow-hidden border-b border-zinc-200/70 bg-white dark:border-zinc-800/70 dark:bg-black">
         <div className="bg-grid absolute inset-0 opacity-40" aria-hidden />
         <div className="relative mx-auto max-w-6xl px-6 py-24 sm:py-28">
           <Reveal>

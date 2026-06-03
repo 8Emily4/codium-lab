@@ -70,7 +70,7 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
       />
 
       {/* Team section */}
-      <section className="relative border-b border-zinc-200/70 bg-white dark:border-zinc-800/70 dark:bg-black">
+      <section className="relative overflow-hidden border-b border-zinc-200/70 bg-white dark:border-zinc-800/70 dark:bg-black">
         <div className="bg-grid absolute inset-0 opacity-40" aria-hidden />
         <div className="relative mx-auto max-w-6xl px-6 py-24 sm:py-28">
           <Reveal>
@@ -135,7 +135,7 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
       </section>
 
       {/* What we do section */}
-      <section className="relative border-b border-zinc-200/70 bg-zinc-50 dark:border-zinc-800/70 dark:bg-zinc-950">
+      <section className="relative overflow-hidden border-b border-zinc-200/70 bg-zinc-50 dark:border-zinc-800/70 dark:bg-zinc-950">
         <div className="bg-dots absolute inset-0 opacity-50" aria-hidden />
         <div className="relative mx-auto max-w-6xl px-6 py-24 sm:py-28">
           <Reveal>
@@ -186,7 +186,7 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
       </section>
 
       {/* Brands section */}
-      <section className="relative border-b border-zinc-200/70 bg-white dark:border-zinc-800/70 dark:bg-black">
+      <section className="relative overflow-hidden border-b border-zinc-200/70 bg-white dark:border-zinc-800/70 dark:bg-black">
         <div className="bg-mesh absolute inset-0 opacity-40" aria-hidden />
         <div className="relative mx-auto max-w-6xl px-6 py-24 sm:py-28">
           <Reveal>
@@ -251,7 +251,7 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
       </section>
 
       {/* CTA section */}
-      <section className="relative border-b border-zinc-200/70 bg-zinc-50 dark:border-zinc-800/70 dark:bg-zinc-950">
+      <section className="relative overflow-hidden border-b border-zinc-200/70 bg-zinc-50 dark:border-zinc-800/70 dark:bg-zinc-950">
         <div className="relative mx-auto max-w-6xl px-6 py-24 text-center">
           <Reveal>
             <h2 className="text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-50">
