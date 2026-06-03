@@ -794,13 +794,6 @@ function render(ctx: CanvasRenderingContext2D, w: World, cw: number, ch: number,
         {ctx.beginPath();ctx.arc(gx,gy,2.5,0,Math.PI*2);ctx.fill()}
   ctx.globalAlpha=1
 
-  // Safe zones
-  for (const z of w.safeZones) {
-    const pulse=0.3+0.1*Math.sin(now*1.5)
-    ctx.strokeStyle=`rgba(74,222,128,${pulse})`;ctx.lineWidth=4;ctx.setLineDash([12,8])
-    ctx.beginPath();ctx.arc(z.x,z.y,z.r,0,Math.PI*2);ctx.stroke();ctx.setLineDash([])
-    ctx.fillStyle='rgba(74,222,128,0.03)';ctx.beginPath();ctx.arc(z.x,z.y,z.r,0,Math.PI*2);ctx.fill()
-  }
 
   // Storm red zone
   if (w.curR<ARENA_R) {
@@ -1076,6 +1069,7 @@ export default function SnakeGame({onClose}: Props) {
   const worldRef=useRef<World>(initWorld())
   const mouseRef=useRef({cx:0,cy:0})
   const boostRef=useRef(false)
+  const boostButtonRef=useRef(false)
   const ultRef=useRef(false)
   const useItemRef=useRef(false)
   const rafRef=useRef(0)
@@ -1137,7 +1131,7 @@ export default function SnakeGame({onClose}: Props) {
         }
         const inputUlt=ultRef.current; ultRef.current=false
         if (useItemRef.current&&player.heldItems.length>0){applyItem(player,player.heldItems.shift()!,now);useItemRef.current=false}
-        tick(w,dt,inputDir,boostRef.current,inputUlt)
+        tick(w,dt,inputDir,boostRef.current||boostButtonRef.current,inputUlt)
         for(const ev of w.soundEvents)playSound(ev);w.soundEvents.length=0
         if (w.draft) setDraft(w.draft)
       }
@@ -1235,13 +1229,22 @@ export default function SnakeGame({onClose}: Props) {
       </button>
       {draft&&<PerkDraft draft={draft} onPick={pickPerk}/>}
       {isTouch&&(
-        <div className="pointer-events-none absolute inset-x-0 bottom-6 flex items-end justify-end px-6">
+        <div className="pointer-events-none absolute inset-x-0 bottom-6 flex items-end justify-end gap-3 px-6">
           <button
             className={`pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 transition-colors ${display.ult>=100?'border-purple-400 bg-purple-900/60 text-purple-100':'border-zinc-600/40 bg-black/60 text-zinc-500'}`}
             onTouchStart={e=>{e.preventDefault();ultRef.current=true;getSfxCtx()?.resume()}}
           >
             <span className="text-2xl leading-none">⚡</span>
             <span className="text-[11px] font-bold">{display.ult>=100?'READY!':display.ult+'%'}</span>
+          </button>
+          <button
+            className="pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 border-white/20 bg-black/60 text-white active:bg-white/20"
+            onTouchStart={e=>{e.preventDefault();boostButtonRef.current=true;getSfxCtx()?.resume()}}
+            onTouchEnd={e=>{e.preventDefault();boostButtonRef.current=false}}
+            onTouchCancel={e=>{e.preventDefault();boostButtonRef.current=false}}
+          >
+            <span className="text-2xl leading-none">🚀</span>
+            <span className="text-[11px] font-bold">BOOST</span>
           </button>
         </div>
       )}
