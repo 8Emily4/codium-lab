@@ -1678,9 +1678,9 @@ export default function AirplaneGame({ onClose, strings }: Props) {
           const alive = world.planes.filter(p => p.alive).length
           const baseZoom = Math.max(CAM_MIN_ZOOM, Math.min(CAM_MAX_ZOOM, 1.6 - alive * 0.028))
           // Dramatic zoom-out per evolve level: Lv1→32%, Lv2→52%, Lv3→67%
-          const zoomScale = ([1.0, 0.68, 0.48, 0.33] as const)[Math.min(3, pl.evolveLevel)]
-          const targetZoom = Math.max(0.30, baseZoom * zoomScale)
-          cam.zoom += (targetZoom - cam.zoom) * (pl.evolveLevel > 0 ? 0.055 : 0.04)
+          const zoomScale = ([1.0, 0.50, 0.33, 0.20] as const)[Math.min(3, pl.evolveLevel)]
+          const targetZoom = Math.max(0.15, baseZoom * zoomScale)
+          cam.zoom += (targetZoom - cam.zoom) * (pl.evolveLevel > 0 ? 0.07 : 0.04)
         }
       }
 
