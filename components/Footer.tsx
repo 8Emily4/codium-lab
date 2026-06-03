@@ -4,9 +4,9 @@ import Logo from "./Logo";
 import type { Dictionary } from "@/app/[lang]/dictionaries";
 
 const navLinks = [
-  { key: "brands" as const, href: "brands" },
+  { key: "about" as const, href: "about" },
+  { key: "game" as const, href: "game" },
   { key: "services" as const, href: "services" },
-  { key: "process" as const, href: "process" },
   { key: "ai" as const, href: "ai" },
   { key: "faq" as const, href: "faq" },
   { key: "contact" as const, href: "contact" },

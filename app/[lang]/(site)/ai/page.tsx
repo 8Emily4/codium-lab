@@ -3,6 +3,7 @@ import Link from "next/link";
 import FloatingTokens from "@/components/FloatingTokens";
 import CodeTyper from "@/components/CodeTyper";
 import Reveal from "@/components/Reveal";
+import HarnessDiagram from "@/components/HarnessDiagram";
 import { getDictionary, hasLocale } from "../../dictionaries";
 import { notFound } from "next/navigation";
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
@@ -181,6 +182,54 @@ export default async function AiPage({ params }: { params: Promise<{ lang: strin
                 <p className="mt-6 border-t border-zinc-200/80 pt-4 font-mono text-[11px] text-zinc-400 dark:border-zinc-800/80 dark:text-zinc-500">{c.meta}</p>
               </Reveal>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Harness Pipeline */}
+      <section className="relative overflow-hidden border-b border-zinc-800/80 bg-zinc-900 dark:border-zinc-800/70 dark:bg-zinc-950">
+        <div className="bg-grid absolute inset-0 opacity-10" aria-hidden />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-indigo-950/30 via-transparent to-fuchsia-950/20" aria-hidden />
+        <div className="relative mx-auto max-w-6xl px-6 py-24 sm:py-28">
+          <Reveal>
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <p className="text-sm font-medium tracking-[0.2em] text-indigo-400 uppercase">{ai.harnessEyebrow}</p>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-semibold tracking-[0.15em] text-emerald-400 uppercase">
+                  <span className="relative inline-flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  </span>
+                  LIVE
+                </span>
+              </div>
+              <h2 className="max-w-3xl text-3xl font-semibold tracking-tight text-zinc-50 sm:text-5xl">
+                {ai.harnessTitle} <span className="text-gradient">{ai.harnessTitleHighlight}</span>{ai.harnessTitlePost}
+              </h2>
+              <p className="max-w-2xl text-zinc-400">{ai.harnessDesc}</p>
+            </div>
+          </Reveal>
+
+          {/* Pipeline diagram */}
+          <div className="mt-12">
+            <p className="mb-5 text-[10px] font-semibold tracking-[0.25em] text-zinc-500 uppercase">{ai.harnessDiagramLabel}</p>
+            <HarnessDiagram />
+          </div>
+
+          {/* Capability cards */}
+          <div className="mt-14">
+            <Reveal>
+              <p className="mb-8 text-sm font-medium tracking-[0.2em] text-indigo-400 uppercase">{ai.harnessCapabilitiesTitle}</p>
+            </Reveal>
+            <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {ai.harnessCapabilities.map((cap, i) => (
+                <Reveal key={cap.tag} as="li" delay={i * 100} className="card-elevate rounded-2xl border border-zinc-700/50 bg-zinc-800/40 p-6 hover:border-indigo-500/50 hover:bg-zinc-800/60">
+                  <span className="inline-block rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 text-[10px] font-semibold tracking-[0.18em] text-indigo-400 uppercase">{cap.tag}</span>
+                  <h3 className="mt-4 text-base font-semibold text-zinc-100">{cap.label}</h3>
+                  <p className="mt-2 text-sm leading-6 text-zinc-400">{cap.body}</p>
+                </Reveal>
+              ))}
+            </ul>
           </div>
         </div>
       </section>

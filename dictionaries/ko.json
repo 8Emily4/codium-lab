@@ -5,15 +5,16 @@
     "backToMain": "메인으로"
   },
   "company": {
-    "description": "코디움랩은 LLM과 자동화의 경계에서 실제로 동작하는 도구를 연구합니다. 데모로 끝나지 않는 솔루션, 사람의 일을 한 단계 위로 올려놓는 기술을 만듭니다.",
-    "tagline": "기술의 본질을 연구하고 가치를 구현하는 프리미엄 IT 솔루션 연구소",
-    "rdFields": "AI 자동화 도구",
+    "description": "풀스택 개발과 AI 자동화의 깊이 위에서, 게임·콘텐츠·교육까지 확장하는 스튜디오. 코디움랩은 AI가 실제로 작동하는 자리를 탐구하고, 그 결과물을 세상에 내놓습니다.",
+    "tagline": "AI 개발·자동화부터 콘텐츠·교육까지 — 실제로 작동하는 것을 만드는 스튜디오",
+    "rdFields": "AI 개발 · 자동화 · 콘텐츠",
     "location": "경기도 광명시",
-    "ceo": "임나리",
+    "ceo": "데이먼 · 나리",
     "siteComingSoon": "사이트 준비 중",
     "viewDetails": "자세히 보기"
   },
   "nav": {
+    "about": "소개",
     "brands": "브랜드",
     "services": "서비스",
     "process": "프로세스",
@@ -23,64 +24,52 @@
     "game": "게임",
     "login": "로그인",
     "logout": "로그아웃",
-    "inquiry": "문의 보내기",
+    "inquiry": "문의하기",
     "menuOpen": "메뉴 열기"
   },
   "hero": {
-    "titlePre": "기술의 본질을 연구하고",
-    "titleHighlight": "가치를 구현",
-    "titlePost": "하는 IT 솔루션 연구소",
-    "ctaPrimary": "컨설팅·협업 문의",
+    "titlePre": "AI로 개발하고,",
+    "titleHighlight": "만들고, 가르칩니다",
+    "titlePost": "",
+    "ctaPrimary": "소개 보기",
     "ctaSecondary": "서비스 둘러보기",
     "locationLabel": "소재지",
-    "ceoLabel": "대표자",
-    "rdLabel": "R&D 분야",
-    "brandsLabel": "운영 브랜드",
+    "ceoLabel": "운영",
+    "rdLabel": "분야",
+    "brandsLabel": "브랜드",
     "brandsValue": "에이디움 · 베이디움"
   },
   "home": {
     "exploreEyebrow": "Explore",
-    "exploreTitle": "무엇을",
-    "exploreTitleHighlight": "먼저",
-    "exploreTitlePost": "보고 싶으세요?",
-    "exploreDesc": "여섯 가지 입구 — 어디로 들어와도 코디움랩이 어떤 결로 일하는지 보입니다.",
+    "exploreTitle": "코디움랩을",
+    "exploreTitleHighlight": "만나는",
+    "exploreTitlePost": "네 가지 방법",
+    "exploreDesc": "개발, 콘텐츠, 교육, 게임 — AI로 연결된 코디움랩의 네 가지 이야기.",
     "readMore": "더 보기",
     "gateways": [
       {
-        "slug": "brands",
-        "eyebrow": "Brands",
-        "title": "두 결의 브랜드",
-        "description": "에이디움 · 베이디움 — 교육과 디자인의 결로 일상에 닿는 브랜드들."
+        "slug": "about",
+        "eyebrow": "About",
+        "title": "코디움랩 소개",
+        "description": "AI 자동화·개발 컨설팅부터 콘텐츠·교육까지. 코디움랩이 하는 일 전체를 한 눈에."
+      },
+      {
+        "slug": "game",
+        "eyebrow": "Game",
+        "title": "직접 만든 게임",
+        "description": "웹 게임부터 안드로이드 앱까지. 브라우저에서 바로 즐기세요."
       },
       {
         "slug": "services",
         "eyebrow": "Services",
-        "title": "네 가지 결의 협업",
-        "description": "컨설팅 · 엔지니어링 · 교육 · 스튜디오. 운영까지 가는 자동화."
-      },
-      {
-        "slug": "process",
-        "eyebrow": "Process",
-        "title": "네 단계로 일합니다",
-        "description": "발견 → 설계 → 구현 → 이관. 어느 시점에 무엇이 결정되는지 함께."
-      },
-      {
-        "slug": "ai",
-        "eyebrow": "AI",
-        "title": "AI로 개발하고, 업무에 녹입니다",
-        "description": "Claude · Cursor · MCP · RAG — 도입과 운영의 결을 함께 만듭니다."
+        "title": "무엇을 해드리나요",
+        "description": "IT 개발 의뢰 · AI 자동화 컨설팅 · AI 교육 · 콘텐츠 제작."
       },
       {
         "slug": "faq",
         "eyebrow": "FAQ",
         "title": "자주 묻는 질문",
-        "description": "협업 일반 · 보안 · 비용 · 운영. 자주 듣는 질문을 모았습니다."
-      },
-      {
-        "slug": "contact",
-        "eyebrow": "Contact",
-        "title": "협업 문의",
-        "description": "초기 진단 미팅은 무료. 평일 기준 1–2영업일 안에 회신드립니다."
+        "description": "협업 · 비용 · 일정 · 운영. 없으면 바로 문의하세요."
       }
     ]
   },
@@ -177,14 +166,14 @@
     "exploreLabel": "Explore",
     "contactLabel": "Contact",
     "links": {
-      "brands": "브랜드",
+      "about": "소개",
+      "game": "게임",
       "services": "서비스",
-      "process": "프로세스",
-      "ai": "AI",
+      "ai": "AI 개발",
       "faq": "FAQ",
       "contact": "문의"
     },
-    "ceoLabel": "대표 ·"
+    "ceoLabel": "운영 ·"
   },
   "brands": {
     "metaTitle": "브랜드",
@@ -643,6 +632,35 @@
     "casesTitleHighlight": "시스템",
     "casesTitlePost": "을 만듭니다",
     "casesDesc": "도입 가능한 시나리오 — 작게 시작해 운영까지 가져갑니다.",
+    "harnessEyebrow": "Harness Pipeline",
+    "harnessTitle": "Jira 이슈 하나가",
+    "harnessTitleHighlight": "완성된 코드",
+    "harnessTitlePost": "로 달립니다",
+    "harnessDesc": "이슈가 들어오는 순간 파이프라인이 깨어납니다. 관제 시스템이 전 과정을 조율하고, AI가 작업 유형에 맞게 처리하며, 스킬 엔진이 실행합니다. 사람은 승인 게이트에서만 개입합니다.",
+    "harnessDiagramLabel": "파이프라인 흐름",
+    "harnessCapabilitiesTitle": "하네스가 하는 일",
+    "harnessCapabilities": [
+      {
+        "tag": "AutoPilot",
+        "label": "오토파일럿",
+        "body": "JQL 조건으로 이슈를 감지하고 AI 파이프라인을 자동 실행합니다. macOS LaunchAgent로 데몬 등록까지."
+      },
+      {
+        "tag": "Scheduler",
+        "label": "스케줄러",
+        "body": "Cron 기반으로 스킬·워크플로우를 정기 실행하고, AI가 자연어로 Cron 표현식을 생성해줍니다."
+      },
+      {
+        "tag": "Approval Gate",
+        "label": "승인 게이트",
+        "body": "기획서·산출물 단계마다 사람이 검토하고 승인한 뒤 다음 단계로 넘어갑니다. 자동화 안에 통제권을 둡니다."
+      },
+      {
+        "tag": "Live Monitor",
+        "label": "실시간 관제",
+        "body": "WebSocket으로 모든 세션·도구·Sub-Agent 실행을 대시보드에서 라이브로 관제합니다."
+      }
+    ],
     "principlesEyebrow": "Principles",
     "principlesTitle": "AI를 다룰 때",
     "principlesTitleHighlight": "지키는 결",
@@ -911,6 +929,63 @@
       "players": "1인",
       "difficulty": "보통"
     }
+  },
+  "about": {
+    "metaTitle": "소개 | 코디움랩",
+    "metaDesc": "코디움랩 소개 — AI 자동화·개발 컨설팅, 게임, 콘텐츠, 교육. 실제로 작동하는 것들을 만드는 스튜디오.",
+    "eyebrow": "About",
+    "title": "코디움랩은",
+    "titleHighlight": "이렇게 일합니다",
+    "desc": "AI 자동화와 풀스택 개발을 기반으로, 게임·콘텐츠·교육까지. 코디움랩은 AI가 실제로 작동하는 자리를 탐구하고, 그 결과물을 세상에 내놓습니다.",
+    "teamEyebrow": "Team",
+    "teamTitle": "두 가지 전문성,",
+    "teamTitleHighlight": "하나의 스튜디오",
+    "damon": {
+      "name": "데이먼",
+      "role": "풀스택 개발 · AI 자동화",
+      "desc": "20년 경력의 풀스택 개발자. AI 바이브코딩, 하네스 구축, 자동화 시스템 설계를 연구합니다. IT 개발 의뢰와 AI 컨설팅을 담당하며, 안드로이드 게임도 직접 만듭니다.",
+      "tags": ["20년 풀스택", "AI 하네스 구축", "자동화 설계", "게임 개발", "Claude · Cursor · MCP"]
+    },
+    "nari": {
+      "name": "임나리",
+      "role": "AI 콘텐츠 · 교육",
+      "desc": "AI로 동영상을 제작해 유튜브와 인스타에 올립니다. 블로그와 SNS로 AI 활용을 공유하고, 초등학교 AI 교육도 함께 합니다.",
+      "tags": ["AI 동영상 제작", "유튜브 · 인스타", "초등 AI 교육", "블로그 운영"]
+    },
+    "whatEyebrow": "What we do",
+    "whatTitle": "코디움랩이",
+    "whatTitleHighlight": "만드는 것들",
+    "whatItems": [
+      {
+        "tag": "Development",
+        "title": "IT 개발 · AI 자동화",
+        "desc": "풀스택 개발 의뢰, AI 하네스 구축, 자동화 시스템 설계. PoC가 아닌 운영까지 가는 결과물."
+      },
+      {
+        "tag": "Game",
+        "title": "게임 개발",
+        "desc": "웹 게임부터 안드로이드 앱까지. 실제로 출시되는 게임을 만듭니다."
+      },
+      {
+        "tag": "Content",
+        "title": "AI 콘텐츠 제작",
+        "desc": "AI로 만드는 동영상 콘텐츠. 유튜브·인스타그램에 실제로 올라가는 것들."
+      },
+      {
+        "tag": "Education",
+        "title": "AI 교육",
+        "desc": "초등학교부터 기업까지. 에이디움 브랜드를 통한 실전 AI 리터러시 교육."
+      }
+    ],
+    "brandsEyebrow": "Our Brands",
+    "brandsTitle": "두 개의",
+    "brandsTitleHighlight": "자매 브랜드",
+    "brandsDesc": "코디움랩의 활동이 일상에 닿을 수 있도록, 교육과 디자인 두 결로 운영합니다.",
+    "ctaServices": "서비스 보기",
+    "ctaContact": "문의하기",
+    "closingTitle": "함께",
+    "closingTitleHighlight": "만들어볼까요?",
+    "closingDesc": "초기 진단 미팅은 무료입니다. 평일 기준 1–2영업일 안에 회신드립니다."
   },
   "login": {
     "metaTitle": "로그인",
