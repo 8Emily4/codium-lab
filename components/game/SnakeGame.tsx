@@ -699,8 +699,7 @@ function tick(w: World, dt: number, inputDir: number, inputBoost: boolean, input
     const toRm: number[]=[]
     for (let ii=0;ii<w.items.length;ii++) {
       const it=w.items[ii]; if (dist2(hx,hy,it.x,it.y)>pr2) continue
-      if (s.isPlayer){if(s.heldItems.length<MAX_ITEMS){s.heldItems.push(it.kind);toRm.push(ii);w.soundEvents.push('item')}}
-      else{applyItem(s,it.kind,now);toRm.push(ii)}
+      applyItem(s,it.kind,now);toRm.push(ii);if(s.isPlayer)w.soundEvents.push('item')
     }
     for (let i=toRm.length-1;i>=0;i--){w.items[toRm[i]]=w.items[w.items.length-1];w.items.pop()}
   }
@@ -1022,14 +1021,14 @@ function renderHUD(ctx: CanvasRenderingContext2D, w: World, cw: number, ch: numb
   }
 
   // Hint
-  ctx.textAlign='right';ctx.fillStyle='rgba(0,0,0,0.5)';ctx.beginPath();ctx.roundRect(cw-206,12,194,28,6);ctx.fill()
-  ctx.fillStyle='#71717a';ctx.font='10px system-ui';ctx.fillText('Space/클릭→부스트  Q→아이템  E/Z→궁극기',cw-14,30);ctx.textAlign='left'
+  ctx.textAlign='right';ctx.fillStyle='rgba(0,0,0,0.5)';ctx.beginPath();ctx.roundRect(cw-170,12,158,28,6);ctx.fill()
+  ctx.fillStyle='#71717a';ctx.font='10px system-ui';ctx.fillText('Space/클릭→부스트  E/Z→궁극기',cw-14,30);ctx.textAlign='left'
   void cam
 }
 
 // ─── Camera ───────────────────────────────────────────────────────────────────
-const CAM_MAX=1.5, CAM_MIN=0.35
-function zoomForLen(len: number){return Math.max(CAM_MIN,Math.min(CAM_MAX,1.5-(len-35)/600))}
+const CAM_MAX=0.9, CAM_MIN=0.28
+function zoomForLen(len: number){return Math.max(CAM_MIN,Math.min(CAM_MAX,0.9-(len-35)/900))}
 
 // ─── Perk Draft UI ────────────────────────────────────────────────────────────
 function PerkDraft({draft,onPick}:{draft:PerkId[];onPick:(p:PerkId)=>void}) {
@@ -1068,10 +1067,13 @@ export default function SnakeGame({onClose}: Props) {
   const camRef=useRef({x:0,y:0,zoom:CAM_MAX})
   const [display,setDisplay]=useState({phase:'playing' as GamePhase,score:0,kills:0})
   const [draft,setDraft]=useState<PerkId[]|null>(null)
+  const [isTouch,setIsTouch]=useState(false)
 
   const worldToScreen=useCallback((cx:number,cy:number,cw:number,ch:number)=>{
     const cam=camRef.current; return {x:(cx-cw/2)/cam.zoom+cam.x,y:(cy-ch/2)/cam.zoom+cam.y}
   },[])
+
+  useEffect(()=>{setIsTouch('ontouchstart' in window||navigator.maxTouchPoints>0)},[])
 
   const restart=useCallback(()=>{worldRef.current=initWorld();setDisplay({phase:'playing',score:0,kills:0});setDraft(null)},[])
   const pickPerk=useCallback((p:PerkId)=>{worldRef.current.perks.push(p);worldRef.current.draft=null;setDraft(null)},[])
@@ -1125,23 +1127,40 @@ export default function SnakeGame({onClose}: Props) {
     }
     canvas.addEventListener('mousemove',onMove); canvas.addEventListener('touchmove',onTouch,{passive:false})
     canvas.addEventListener('touchstart',onTouch,{passive:false}); canvas.addEventListener('mousedown',onDown)
-    canvas.addEventListener('mouseup',onUp); canvas.addEventListener('touchstart',onDown,{passive:false})
-    canvas.addEventListener('touchend',onUp); window.addEventListener('keydown',onKey); window.addEventListener('keyup',onKey)
+    canvas.addEventListener('mouseup',onUp); window.addEventListener('keydown',onKey); window.addEventListener('keyup',onKey)
     return ()=>{
       canvas.removeEventListener('mousemove',onMove); canvas.removeEventListener('touchmove',onTouch)
       canvas.removeEventListener('touchstart',onTouch); canvas.removeEventListener('mousedown',onDown)
-      canvas.removeEventListener('mouseup',onUp); canvas.removeEventListener('touchstart',onDown)
-      canvas.removeEventListener('touchend',onUp); window.removeEventListener('keydown',onKey); window.removeEventListener('keyup',onKey)
+      canvas.removeEventListener('mouseup',onUp); window.removeEventListener('keydown',onKey); window.removeEventListener('keyup',onKey)
     }
   },[onClose])
 
   return (
     <div className="relative h-full w-full bg-[#07071a]">
-      <canvas ref={canvasRef} className="h-full w-full cursor-none" />
+      <canvas ref={canvasRef} className="h-full w-full cursor-none touch-none" />
       <button onClick={onClose} className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-zinc-400 transition hover:bg-black/80 hover:text-white">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       {draft&&<PerkDraft draft={draft} onPick={pickPerk}/>}
+      {isTouch&&(
+        <div className="pointer-events-none absolute inset-x-0 bottom-6 flex items-end justify-between px-6">
+          <button
+            className="pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 border-white/20 bg-black/60 text-white active:bg-white/20"
+            onTouchStart={e=>{e.preventDefault();boostRef.current=true;getSfxCtx()?.resume()}}
+            onTouchEnd={e=>{e.preventDefault();boostRef.current=false}}
+          >
+            <span className="text-2xl leading-none">🚀</span>
+            <span className="text-[11px] font-bold">BOOST</span>
+          </button>
+          <button
+            className="pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 border-indigo-500/60 bg-black/60 text-indigo-300 active:bg-indigo-900/60"
+            onTouchStart={e=>{e.preventDefault();ultRef.current=true;getSfxCtx()?.resume()}}
+          >
+            <span className="text-2xl leading-none">⚡</span>
+            <span className="text-[11px] font-bold">DASH</span>
+          </button>
+        </div>
+      )}
       {display.phase==='dead'&&(
         <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm">
           <div className="rounded-2xl border border-zinc-800 bg-zinc-950/90 px-10 py-8 text-center shadow-2xl">
