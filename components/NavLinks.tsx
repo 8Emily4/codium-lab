@@ -24,9 +24,10 @@ export default function NavLinks({
 
   const links: NavLink[] = [
     { href: `/${lang}/about`, label: dict.nav.about },
-    { href: `/${lang}/game`, label: dict.nav.game },
     { href: `/${lang}/services`, label: dict.nav.services },
+    { href: `/${lang}/ai`, label: dict.nav.ai },
     { href: `/${lang}/faq`, label: dict.nav.faq },
+    { href: `/${lang}/game`, label: dict.nav.game },
   ];
 
   function isActive(href: string) {
