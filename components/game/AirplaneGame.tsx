@@ -116,6 +116,14 @@ interface Drone {
 
 type StormPhase = 'hold' | 'warn' | 'shrink'
 
+interface JoystickState {
+  active: boolean
+  angle: number      // radians — target direction for the plane
+  magnitude: number  // 0..1
+  knobDx: number     // screen-pixel offset from base center
+  knobDy: number
+}
+
 interface World {
   planes: Plane[]
   bullets: Bullet[]
@@ -869,6 +877,13 @@ interface AirplaneStrings {
   gameOver: string; win: string; kills: string; retry: string; playAgain: string; exit: string;
 }
 
+// ─── Joystick constants ───────────────────────────────────────────────────────
+const JOY_BASE_OFFSET = 94  // px from left/bottom edge
+const JOY_BASE_R = 58       // visual base radius
+const JOY_KNOB_R = 24       // knob radius
+const JOY_KNOB_MAX = 48     // max knob displacement
+const JOY_HIT_R = 90        // touch/mouse activation zone radius
+
 function renderHUD(
   ctx: CanvasRenderingContext2D,
   world: World,
@@ -877,6 +892,7 @@ function renderHUD(
   now: number,
   cam: { x: number; y: number; zoom: number },
   strings: AirplaneStrings,
+  joy: JoystickState,
 ) {
   const player = world.planes.find(p => p.isPlayer)
   if (!player) return
@@ -1001,6 +1017,46 @@ function renderHUD(
   ctx.fillText(strings.boostHint, cw - 20, 30)
   ctx.textAlign = 'left'
 
+  // Joystick
+  const jbx = JOY_BASE_OFFSET, jby = ch - JOY_BASE_OFFSET
+  // Base ring
+  ctx.globalAlpha = joy.active ? 0.55 : 0.30
+  ctx.fillStyle = '#0d1225'
+  ctx.beginPath(); ctx.arc(jbx, jby, JOY_BASE_R, 0, 2 * Math.PI); ctx.fill()
+  ctx.strokeStyle = joy.active ? 'rgba(99,102,241,0.85)' : 'rgba(99,102,241,0.40)'
+  ctx.lineWidth = 2
+  ctx.beginPath(); ctx.arc(jbx, jby, JOY_BASE_R, 0, 2 * Math.PI); ctx.stroke()
+  // Direction lines
+  ctx.globalAlpha = 0.18
+  ctx.strokeStyle = '#818cf8'; ctx.lineWidth = 1
+  for (let a = 0; a < 4; a++) {
+    const ang = (a * Math.PI) / 2
+    ctx.beginPath()
+    ctx.moveTo(jbx + Math.cos(ang) * 14, jby + Math.sin(ang) * 14)
+    ctx.lineTo(jbx + Math.cos(ang) * (JOY_BASE_R - 6), jby + Math.sin(ang) * (JOY_BASE_R - 6))
+    ctx.stroke()
+  }
+  // Direction glow when active
+  if (joy.active && joy.magnitude > 0.1) {
+    ctx.globalAlpha = 0.18 * joy.magnitude
+    const grd = ctx.createRadialGradient(jbx, jby, 0, jbx, jby, JOY_BASE_R)
+    grd.addColorStop(0, 'rgba(99,102,241,0.6)')
+    grd.addColorStop(1, 'transparent')
+    ctx.fillStyle = grd
+    ctx.beginPath(); ctx.arc(jbx, jby, JOY_BASE_R, 0, 2 * Math.PI); ctx.fill()
+  }
+  // Knob
+  const kx = jbx + joy.knobDx, ky = jby + joy.knobDy
+  ctx.globalAlpha = joy.active ? 0.95 : 0.55
+  const kgrd = ctx.createRadialGradient(kx - JOY_KNOB_R * 0.3, ky - JOY_KNOB_R * 0.3, 0, kx, ky, JOY_KNOB_R)
+  kgrd.addColorStop(0, joy.active ? '#a5b4fc' : '#818cf8')
+  kgrd.addColorStop(1, joy.active ? '#4f46e5' : '#312e81')
+  ctx.fillStyle = kgrd
+  ctx.beginPath(); ctx.arc(kx, ky, JOY_KNOB_R, 0, 2 * Math.PI); ctx.fill()
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 1.5
+  ctx.beginPath(); ctx.arc(kx, ky, JOY_KNOB_R, 0, 2 * Math.PI); ctx.stroke()
+  ctx.globalAlpha = 1
+
   void now
 }
 
@@ -1013,7 +1069,7 @@ const CAM_MIN_ZOOM = 0.75
 export default function AirplaneGame({ onClose, strings }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const worldRef = useRef<World>(initWorld(strings.playerName))
-  const mouseRef = useRef({ cx: 0, cy: 0 })
+  const joystickRef = useRef<JoystickState>({ active: false, angle: 0, magnitude: 0, knobDx: 0, knobDy: 0 })
   const boostRef = useRef(false)
   const rafRef = useRef<number>(0)
   const lastTimeRef = useRef(0)
@@ -1072,9 +1128,8 @@ export default function AirplaneGame({ onClose, strings }: Props) {
         // Player input
         const player = world.planes.find(p => p.isPlayer)
         if (player?.alive) {
-          const mw = worldToScreen(mouseRef.current.cx, mouseRef.current.cy, cw, ch)
-          const dx = mw.x - player.x, dy = mw.y - player.y
-          if (Math.abs(dx) > 8 || Math.abs(dy) > 8) player.targetDir = Math.atan2(dy, dx)
+          const joy = joystickRef.current
+          if (joy.active && joy.magnitude > 0.08) player.targetDir = joy.angle
           player.boosting = boostRef.current && player.hp > 20
 
           // Boost start sound
@@ -1270,7 +1325,7 @@ export default function AirplaneGame({ onClose, strings }: Props) {
       }
 
       render(ctx, world, cw, ch, now, camRef.current)
-      renderHUD(ctx, world, cw, ch, now, camRef.current, strings)
+      renderHUD(ctx, world, cw, ch, now, camRef.current, strings, joystickRef.current)
       rafRef.current = requestAnimationFrame(loop)
     }
 
@@ -1297,17 +1352,71 @@ export default function AirplaneGame({ onClose, strings }: Props) {
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
+    const getJoyBase = () => ({
+      x: JOY_BASE_OFFSET,
+      y: canvas.offsetHeight - JOY_BASE_OFFSET,
+    })
+
+    const updateJoystick = (cx: number, cy: number) => {
+      const joy = joystickRef.current
+      if (!joy.active) return
+      const { x: bx, y: by } = getJoyBase()
+      const dx = cx - bx, dy = cy - by
+      const d = Math.sqrt(dx * dx + dy * dy)
+      const clamped = Math.min(d, JOY_KNOB_MAX)
+      const nx = d > 0 ? dx / d : 0, ny = d > 0 ? dy / d : 0
+      joy.knobDx = nx * clamped
+      joy.knobDy = ny * clamped
+      joy.angle = Math.atan2(dy, dx)
+      joy.magnitude = Math.min(1, d / JOY_KNOB_MAX)
+    }
+
+    const startJoystick = (cx: number, cy: number): boolean => {
+      const { x: bx, y: by } = getJoyBase()
+      const d = Math.sqrt((cx - bx) ** 2 + (cy - by) ** 2)
+      if (d < JOY_HIT_R) {
+        joystickRef.current.active = true
+        updateJoystick(cx, cy)
+        return true
+      }
+      return false
+    }
+
+    const stopJoystick = () => {
+      joystickRef.current.active = false
+      joystickRef.current.knobDx = 0
+      joystickRef.current.knobDy = 0
+      joystickRef.current.magnitude = 0
+    }
+
     const onMove = (e: MouseEvent) => {
       const r = canvas.getBoundingClientRect()
-      mouseRef.current = { cx: e.clientX - r.left, cy: e.clientY - r.top }
+      updateJoystick(e.clientX - r.left, e.clientY - r.top)
     }
+    const onDown = (e: MouseEvent) => {
+      const r = canvas.getBoundingClientRect()
+      const cx = e.clientX - r.left, cy = e.clientY - r.top
+      if (!startJoystick(cx, cy)) boostRef.current = true
+    }
+    const onUp = () => { stopJoystick(); boostRef.current = false }
+
     const onTouch = (e: TouchEvent) => {
       e.preventDefault()
-      const r = canvas.getBoundingClientRect(), t = e.touches[0]
-      if (t) mouseRef.current = { cx: t.clientX - r.left, cy: t.clientY - r.top }
+      const r = canvas.getBoundingClientRect()
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i]
+        const cx = t.clientX - r.left, cy = t.clientY - r.top
+        if (e.type === 'touchstart') {
+          if (!startJoystick(cx, cy)) boostRef.current = true
+        } else if (e.type === 'touchmove') {
+          updateJoystick(cx, cy)
+        } else {
+          stopJoystick()
+          boostRef.current = false
+        }
+      }
     }
-    const onDown = () => { boostRef.current = true }
-    const onUp = () => { boostRef.current = false }
+
     const onKey = (e: KeyboardEvent) => {
       if (e.code === 'Space' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
         e.preventDefault(); boostRef.current = e.type === 'keydown'
@@ -1315,18 +1424,20 @@ export default function AirplaneGame({ onClose, strings }: Props) {
       if (e.key === 'Escape') onClose()
     }
     canvas.addEventListener('mousemove', onMove)
-    canvas.addEventListener('touchmove', onTouch, { passive: false })
-    canvas.addEventListener('touchstart', onTouch, { passive: false })
     canvas.addEventListener('mousedown', onDown)
     canvas.addEventListener('mouseup', onUp)
+    canvas.addEventListener('touchstart', onTouch, { passive: false })
+    canvas.addEventListener('touchmove', onTouch, { passive: false })
+    canvas.addEventListener('touchend', onTouch, { passive: false })
     window.addEventListener('keydown', onKey)
     window.addEventListener('keyup', onKey)
     return () => {
       canvas.removeEventListener('mousemove', onMove)
-      canvas.removeEventListener('touchmove', onTouch)
-      canvas.removeEventListener('touchstart', onTouch)
       canvas.removeEventListener('mousedown', onDown)
       canvas.removeEventListener('mouseup', onUp)
+      canvas.removeEventListener('touchstart', onTouch)
+      canvas.removeEventListener('touchmove', onTouch)
+      canvas.removeEventListener('touchend', onTouch)
       window.removeEventListener('keydown', onKey)
       window.removeEventListener('keyup', onKey)
     }
