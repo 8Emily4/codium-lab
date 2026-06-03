@@ -22,7 +22,7 @@ const STORM_SHRINK_MS = 12_000
 const STORM_SHRINK_RATIO = 0.24
 const STORM_DRAIN = 8
 const AI_DECISION_INTERVAL = 0.45
-const ITEM_TARGET = 10
+const ITEM_TARGET = 22
 const ITEM_RADIUS = 28
 const BOOST_DRAIN_INTERVAL = 0.5
 const DRONE_ORBIT_R = 58
@@ -43,16 +43,22 @@ const PALETTE = [
   '#f97316', '#14b8a6', '#a855f7', '#fb923c',
 ]
 
-type ItemKind = 'shield' | 'speed' | 'rapidfire' | 'multishot' | 'repair'
+type ItemKind = 'shield' | 'speed' | 'rapidfire' | 'multishot' | 'repair' | 'evolve' | 'drone'
 const ITEM_EMOJI: Record<ItemKind, string> = {
-  shield: '🛡️', speed: '⚡', rapidfire: '🔥', multishot: '💥', repair: '❤️',
+  shield: '🛡️', speed: '⚡', rapidfire: '🔥', multishot: '💥', repair: '❤️', evolve: '✨', drone: '🤖',
+}
+const ITEM_LABEL: Record<ItemKind, string> = {
+  shield: '방어막', speed: '속도 UP', rapidfire: '연사', multishot: '산탄', repair: '수리', evolve: '진화!', drone: '드론 출격',
+}
+const ITEM_DESC: Record<ItemKind, string> = {
+  shield: '피해 1회 흡수', speed: '이동속도 +40%', rapidfire: '발사속도 2배', multishot: '3방향 발사', repair: '+40 HP 회복', evolve: '기체 강화', drone: '호위 드론 +1',
 }
 const ITEM_DURATION: Record<ItemKind, number> = {
-  shield: 0, speed: 8, rapidfire: 10, multishot: 8, repair: 0,
+  shield: 0, speed: 8, rapidfire: 10, multishot: 8, repair: 0, evolve: 18, drone: 22,
 }
-const ITEM_KINDS: ItemKind[] = ['shield', 'speed', 'rapidfire', 'multishot', 'repair']
+const ITEM_KINDS: ItemKind[] = ['shield', 'speed', 'rapidfire', 'multishot', 'repair', 'evolve', 'drone', 'drone', 'repair']
 const ITEM_COLOR: Record<ItemKind, string> = {
-  shield: '#22d3ee', speed: '#fbbf24', rapidfire: '#f97316', multishot: '#a855f7', repair: '#f43f5e',
+  shield: '#22d3ee', speed: '#fbbf24', rapidfire: '#f97316', multishot: '#a855f7', repair: '#f43f5e', evolve: '#e879f9', drone: '#84cc16',
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -78,6 +84,8 @@ interface Plane {
   rapidFireUntil: number
   multiShotUntil: number
   boostDrainAcc: number
+  evolveLevel: number
+  evolveUntil: number
 }
 
 interface Bullet {
@@ -106,6 +114,14 @@ interface Particle {
   r: number
 }
 
+interface Popup {
+  x: number; y: number  // world position
+  text: string
+  sub: string
+  color: string
+  life: number  // 1 → 0
+}
+
 interface Drone {
   id: number
   angle: number
@@ -129,6 +145,7 @@ interface World {
   bullets: Bullet[]
   items: GameItem[]
   particles: Particle[]
+  popups: Popup[]
   drones: Drone[]
   maxDrones: number
   stormR: number
@@ -139,6 +156,7 @@ interface World {
   nextItemId: number
   nextPlaneId: number
   nextDroneId: number
+  droneUntil: number
   kills: number
   phase: 'playing' | 'dead' | 'win'
 }
@@ -173,18 +191,30 @@ function applyItem(plane: Plane, kind: ItemKind, now: number, world?: World) {
     case 'shield': plane.shieldActive = true; break
     case 'speed': plane.speedUntil = Math.max(plane.speedUntil, now + ITEM_DURATION.speed); break
     case 'rapidfire': plane.rapidFireUntil = Math.max(plane.rapidFireUntil, now + ITEM_DURATION.rapidfire); break
-    case 'multishot':
-      plane.multiShotUntil = Math.max(plane.multiShotUntil, now + ITEM_DURATION.multishot)
-      if (plane.isPlayer && world && world.maxDrones < 4) {
-        const add = Math.min(2, 4 - world.maxDrones)
-        for (let i = 0; i < add; i++) {
-          world.drones.push({ id: world.nextDroneId++, angle: Math.random() * Math.PI * 2, fireTimer: 0, alive: true, respawnTimer: 0 })
-        }
-        world.maxDrones += add
+    case 'multishot': plane.multiShotUntil = Math.max(plane.multiShotUntil, now + ITEM_DURATION.multishot); break
+    case 'repair': plane.hp = Math.min(plane.maxHp, plane.hp + 40); break
+    case 'evolve':
+      plane.evolveUntil = Math.max(plane.evolveUntil, now + ITEM_DURATION.evolve)
+      plane.evolveLevel = Math.min(3, plane.evolveLevel + 1)
+      break
+    case 'drone':
+      if (world && world.maxDrones < 4) {
+        world.drones.push({ id: world.nextDroneId++, angle: Math.random() * Math.PI * 2, fireTimer: 0, alive: true, respawnTimer: 0 })
+        world.maxDrones++
+        world.droneUntil = Math.max(world.droneUntil, now + ITEM_DURATION.drone)
       }
       break
-    case 'repair': plane.hp = Math.min(plane.maxHp, plane.hp + 40); break
   }
+}
+
+function spawnPopup(world: World, x: number, y: number, kind: ItemKind) {
+  world.popups.push({
+    x, y: y - 30,
+    text: `${ITEM_EMOJI[kind]} ${ITEM_LABEL[kind]}`,
+    sub: ITEM_DESC[kind],
+    color: ITEM_COLOR[kind],
+    life: 1,
+  })
 }
 
 function spawnParticles(world: World, x: number, y: number, color: string, count: number) {
@@ -224,7 +254,7 @@ function fireBullet(world: World, plane: Plane, angleOffset = 0) {
     vy: Math.sin(dir) * BULLET_SPEED,
     ownerId: plane.id,
     lifetime: BULLET_LIFETIME,
-    damage: BULLET_DAMAGE,
+    damage: BULLET_DAMAGE * (1 + plane.evolveLevel * 0.25),
   })
 }
 
@@ -514,7 +544,7 @@ function makePlane(world: World, isPlayer: boolean, colorIdx: number, name: stri
     aiBehavior: isPlayer ? 'pursuit' : behaviors[Math.floor(Math.random() * behaviors.length)],
     fireTimer: Math.random() * FIRE_RATE,
     shieldActive: false, speedUntil: 0, rapidFireUntil: 0, multiShotUntil: 0,
-    boostDrainAcc: 0,
+    boostDrainAcc: 0, evolveLevel: 0, evolveUntil: 0,
   }
 }
 
@@ -528,11 +558,11 @@ function makeDrones(count: number): Drone[] {
 
 function initWorld(playerName: string): World {
   const world: World = {
-    planes: [], bullets: [], items: [], particles: [],
-    drones: makeDrones(2), maxDrones: 2,
+    planes: [], bullets: [], items: [], particles: [], popups: [],
+    drones: [], maxDrones: 0, droneUntil: 0,
     stormR: ARENA_RADIUS, stormNextR: ARENA_RADIUS * (1 - STORM_SHRINK_RATIO),
     stormPhase: 'hold', stormTimer: STORM_HOLD_MS / 1000,
-    nextBulletId: 0, nextItemId: 0, nextPlaneId: 0, nextDroneId: 2,
+    nextBulletId: 0, nextItemId: 0, nextPlaneId: 0, nextDroneId: 0,
     kills: 0, phase: 'playing',
   }
   world.planes.push(makePlane(world, true, 0, playerName))
@@ -661,18 +691,44 @@ function render(
   for (const item of world.items) {
     const sx = (item.x - camX) * scale + cw / 2
     const sy = (item.y - camY) * scale + ch / 2
-    if (sx < -60 || sx > cw + 60 || sy < -60 || sy > ch + 60) continue
+    if (sx < -80 || sx > cw + 80 || sy < -80 || sy > ch + 80) continue
     const pulse = 0.5 + 0.5 * Math.sin(now * 3 + item.id)
-    const glowR = (36 + pulse * 8) / scale
+
+    // Glow (1.3× larger)
+    const glowR = (47 + pulse * 10) / scale
     const grd = ctx.createRadialGradient(item.x, item.y, 0, item.x, item.y, glowR)
-    grd.addColorStop(0, ITEM_COLOR[item.kind] + 'aa')
+    grd.addColorStop(0, ITEM_COLOR[item.kind] + 'bb')
     grd.addColorStop(1, 'transparent')
     ctx.fillStyle = grd
     ctx.beginPath(); ctx.arc(item.x, item.y, glowR, 0, 2 * Math.PI); ctx.fill()
-    const screenSize = 32
+
+    // Emoji icon (1.3× larger: 32 → 42)
+    const screenSize = 42
     const worldSize = screenSize / scale
     const c = getEmojiCanvas(ITEM_EMOJI[item.kind], screenSize * 2)
     if (c) ctx.drawImage(c, item.x - worldSize / 2, item.y - worldSize / 2, worldSize, worldSize)
+
+    // Item name label above the emoji
+    {
+      const labelFPx = 11
+      const wFont = labelFPx / scale
+      const labelY = item.y - worldSize / 2 - 4 / scale
+      ctx.save()
+      ctx.font = `bold ${wFont}px system-ui`
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'
+      const tw = ctx.measureText(ITEM_LABEL[item.kind]).width
+      const px = 4 / scale, py = 2 / scale
+      const pillH = wFont + py * 2
+      // Pill background
+      ctx.fillStyle = 'rgba(0,0,0,0.72)'
+      ctx.beginPath()
+      ctx.roundRect(item.x - tw / 2 - px, labelY - pillH, tw + px * 2, pillH, pillH / 2)
+      ctx.fill()
+      // Label text
+      ctx.fillStyle = ITEM_COLOR[item.kind]
+      ctx.fillText(ITEM_LABEL[item.kind], item.x, labelY - py)
+      ctx.restore()
+    }
   }
 
   // Bullets
@@ -694,6 +750,30 @@ function render(
     ctx.arc(b.x - b.vx * 0.014, b.y - b.vy * 0.014, (BULLET_RADIUS * 0.5) / scale, 0, 2 * Math.PI)
     ctx.fill()
     ctx.globalAlpha = 1; ctx.shadowBlur = 0
+  }
+
+  // Popups (item pickup notifications — world space, float upward)
+  for (const pop of world.popups) {
+    const sx = (pop.x - camX) * scale + cw / 2
+    const sy = (pop.y - camY) * scale + ch / 2
+    if (sx < -200 || sx > cw + 200 || sy < -60 || sy > ch + 60) continue
+    ctx.save()
+    ctx.globalAlpha = Math.min(1, pop.life * 1.8) * pop.life
+    // Main label
+    const fSize = 15 / scale
+    ctx.font = `bold ${fSize}px system-ui`
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+    // Shadow for legibility
+    ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 6 / scale
+    ctx.fillStyle = pop.color
+    ctx.fillText(pop.text, pop.x, pop.y)
+    // Sub label
+    const sfSize = 11 / scale
+    ctx.font = `${sfSize}px system-ui`
+    ctx.fillStyle = '#e4e4e7'
+    ctx.fillText(pop.sub, pop.x, pop.y + fSize * 1.2)
+    ctx.shadowBlur = 0
+    ctx.restore()
   }
 
   // Planes
@@ -899,7 +979,7 @@ function renderHUD(
 
   // Minimap
   const mmSize = Math.min(cw, ch) * 0.14
-  const mmX = cw - mmSize - 16, mmY = 16
+  const mmX = cw - mmSize - 12, mmY = 52
   const mmScale = mmSize / (ARENA_RADIUS * 2)
   ctx.globalAlpha = 0.75
   ctx.fillStyle = '#0a0d1a'; ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 1.5
@@ -934,69 +1014,55 @@ function renderHUD(
   }
   ctx.restore()
 
-  // HP bar top-left
-  const hpBarW = 200, hpBarH = 14
+  // HP + Stats panel (unified top-left block)
+  const hpBarW = 200, hpBarH = 12
   const hpBarX = 12, hpBarY = 12
+  const statsH = 30
+  const statsY = hpBarY + hpBarH + 4
+  const panelH = hpBarH + 4 + statsH   // total height of both
+
+  // Shared outer frame
   ctx.fillStyle = 'rgba(0,0,0,0.62)'
-  ctx.beginPath(); ctx.roundRect(hpBarX - 2, hpBarY - 2, hpBarW + 4, hpBarH + 4, 8); ctx.fill()
-  ctx.fillStyle = '#1e1e2e'
-  ctx.beginPath(); ctx.roundRect(hpBarX, hpBarY, hpBarW, hpBarH, 6); ctx.fill()
+  ctx.beginPath(); ctx.roundRect(hpBarX - 2, hpBarY - 2, hpBarW + 4, panelH + 4, 9); ctx.fill()
+
+  // HP bar
+  ctx.fillStyle = '#1a1a2e'
+  ctx.beginPath(); ctx.roundRect(hpBarX, hpBarY, hpBarW, hpBarH, 5); ctx.fill()
   const hpPct = Math.max(0, player.hp / player.maxHp)
   if (hpPct > 0) {
-    ctx.fillStyle = hpPct > 0.5 ? '#4ade80' : hpPct > 0.25 ? '#fbbf24' : '#f87171'
-    ctx.beginPath(); ctx.roundRect(hpBarX, hpBarY, hpBarW * hpPct, hpBarH, 6); ctx.fill()
+    const hpColor = hpPct > 0.5 ? '#4ade80' : hpPct > 0.25 ? '#fbbf24' : '#f87171'
+    ctx.fillStyle = hpColor
+    ctx.beginPath(); ctx.roundRect(hpBarX, hpBarY, hpBarW * hpPct, hpBarH, 5); ctx.fill()
   }
-  ctx.font = 'bold 10px system-ui'; ctx.fillStyle = '#f4f4f5'; ctx.textAlign = 'center'
-  ctx.fillText(`HP ${Math.ceil(player.hp)} / ${player.maxHp}`, hpBarX + hpBarW / 2, hpBarY + hpBarH - 2)
+  ctx.font = 'bold 9px system-ui'; ctx.fillStyle = '#f4f4f5'; ctx.textAlign = 'center'
+  ctx.fillText(`HP  ${Math.ceil(player.hp)} / ${player.maxHp}`, hpBarX + hpBarW / 2, hpBarY + hpBarH - 1)
 
-  // Score bar bottom-left
+  // Stats row (same inner background as HP bar track)
   const alive = world.planes.filter(p => p.alive).length
   const rank = world.planes.filter(p => p.alive).sort((a, b) => b.hp - a.hp).findIndex(p => p.isPlayer) + 1
-  ctx.fillStyle = 'rgba(0,0,0,0.62)'
-  ctx.beginPath(); ctx.roundRect(12, ch - 76, 248, 64, 12); ctx.fill()
-  ;[
-    { label: 'HP', value: Math.ceil(player.hp).toString() },
-    { label: strings.hudKills, value: world.kills.toString() },
-    { label: strings.hudRank, value: `${rank}${strings.hudRankSuffix}/${alive}${strings.hudAliveSuffix}` },
-  ].forEach((item, i) => {
-    const x = 24 + i * 80
-    ctx.font = 'bold 10px system-ui'; ctx.fillStyle = '#52525b'; ctx.textAlign = 'left'
-    ctx.fillText(item.label.toUpperCase(), x, ch - 46)
-    ctx.font = 'bold 15px system-ui'; ctx.fillStyle = '#f4f4f5'
-    ctx.fillText(item.value, x, ch - 26)
+  ctx.fillStyle = '#1a1a2e'
+  ctx.beginPath(); ctx.roundRect(hpBarX, statsY, hpBarW, statsH, 5); ctx.fill()
+
+  const statItems = [
+    { label: strings.hudKills, value: world.kills.toString(), color: '#818cf8' },
+    { label: strings.hudRank,  value: `${rank}/${alive}`,      color: '#fbbf24' },
+  ]
+  const colW = hpBarW / 2
+  statItems.forEach((item, i) => {
+    const sx = hpBarX + colW * i + colW / 2
+    // thin accent line at top matching bar style
+    ctx.fillStyle = item.color + '55'
+    ctx.beginPath(); ctx.roundRect(hpBarX + colW * i + 4, statsY, colW - 8, 2, 1); ctx.fill()
+    ctx.font = 'bold 9px system-ui'; ctx.fillStyle = '#71717a'; ctx.textAlign = 'center'
+    ctx.fillText(item.label.toUpperCase(), sx, statsY + 13)
+    ctx.font = 'bold 13px system-ui'; ctx.fillStyle = '#f4f4f5'
+    ctx.fillText(item.value, sx, statsY + 27)
+    if (i === 0) {
+      ctx.fillStyle = 'rgba(255,255,255,0.07)'
+      ctx.fillRect(hpBarX + colW - 0.5, statsY + 4, 1, statsH - 8)
+    }
   })
-
-  // Drone indicator
-  {
-    const aliveDrones = world.drones.filter(d => d.alive).length
-    const totalDrones = world.drones.length
-    ctx.fillStyle = 'rgba(0,0,0,0.62)'
-    ctx.beginPath(); ctx.roundRect(12, ch - 76 - 34, 120, 26, 6); ctx.fill()
-    ctx.font = 'bold 11px system-ui'; ctx.fillStyle = '#4ade80'; ctx.textAlign = 'left'
-    ctx.fillText(`🤖 드론 ${aliveDrones}/${totalDrones}`, 20, ch - 76 - 16)
-  }
-
-  // Active effects
-  const effects: { emoji: string; color: string; remaining: number; always?: boolean }[] = []
-  if (player.shieldActive) effects.push({ emoji: '🛡️', color: '#22d3ee', remaining: 999, always: true })
-  if (player.speedUntil > now) effects.push({ emoji: '⚡', color: '#fbbf24', remaining: player.speedUntil - now })
-  if (player.rapidFireUntil > now) effects.push({ emoji: '🔥', color: '#f97316', remaining: player.rapidFireUntil - now })
-  if (player.multiShotUntil > now) effects.push({ emoji: '💥', color: '#a855f7', remaining: player.multiShotUntil - now })
-  if (effects.length > 0) {
-    const boxW = effects.length * 52 + 8
-    ctx.fillStyle = 'rgba(0,0,0,0.62)'
-    ctx.beginPath(); ctx.roundRect(12, ch - 76 - 56, boxW, 48, 10); ctx.fill()
-    effects.forEach((eff, i) => {
-      const ex = 12 + 8 + i * 52, ey = ch - 76 - 56 + 4
-      ctx.fillStyle = eff.color + '33'
-      ctx.beginPath(); ctx.roundRect(ex, ey, 44, 40, 8); ctx.fill()
-      ctx.font = '18px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-      ctx.fillText(eff.emoji, ex + 22, ey + 16)
-      ctx.font = 'bold 10px system-ui'; ctx.fillStyle = '#d4d4d8'; ctx.textBaseline = 'alphabetic'
-      ctx.fillText(eff.always ? 'ON' : `${Math.ceil(eff.remaining)}s`, ex + 22, ey + 37)
-    })
-    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'
-  }
+  ctx.textAlign = 'left'
 
   // Storm timer
   if (world.stormPhase !== 'hold' || world.stormTimer < 12) {
@@ -1008,14 +1074,51 @@ function renderHUD(
     ctx.fillText(label, cw / 2, 28)
     ctx.fillStyle = '#f4f4f5'; ctx.font = '11px system-ui'
     ctx.fillText(`${Math.ceil(world.stormTimer)}s`, cw / 2, 42)
+    ctx.textAlign = 'left'
   }
 
-  // Hint
-  ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(0,0,0,0.5)'
-  ctx.beginPath(); ctx.roundRect(cw - 222, 12, 210, 28, 6); ctx.fill()
-  ctx.fillStyle = '#71717a'; ctx.font = '10px system-ui'
-  ctx.fillText(strings.boostHint, cw - 20, 30)
-  ctx.textAlign = 'left'
+  // Active effects — vertical list below stats row (each item fills full panel width)
+  const effects: { emoji: string; label: string; desc: string; color: string; remaining: number }[] = []
+  if (player.shieldActive) effects.push({ emoji: '🛡️', label: '방어막', desc: '피해 흡수', color: '#22d3ee', remaining: -1 })
+  if (player.speedUntil > now) effects.push({ emoji: '⚡', label: '속도 UP', desc: '+40%', color: '#fbbf24', remaining: player.speedUntil - now })
+  if (player.rapidFireUntil > now) effects.push({ emoji: '🔥', label: '연사', desc: '발사속도 2배', color: '#f97316', remaining: player.rapidFireUntil - now })
+  if (player.multiShotUntil > now) effects.push({ emoji: '💥', label: '산탄', desc: '3방향', color: '#a855f7', remaining: player.multiShotUntil - now })
+  if (player.evolveLevel > 0 && player.evolveUntil > now) effects.push({ emoji: '✨', label: `진화 Lv${player.evolveLevel}`, desc: `데미지 +${player.evolveLevel * 25}%`, color: '#e879f9', remaining: player.evolveUntil - now })
+  if (world.droneUntil > now) {
+    const alive = world.drones.filter(d => d.alive).length
+    effects.push({ emoji: '🤖', label: `드론 ${alive}기`, desc: '호위 중', color: '#84cc16', remaining: world.droneUntil - now })
+  }
+  if (effects.length > 0) {
+    const rowH = 26, gap = 3
+    const listX = hpBarX, listY = hpBarY + hpBarH + 5 + statsH + 6
+    effects.forEach((eff, i) => {
+      const ry = listY + i * (rowH + gap)
+      // Row background (same style as HP bar outer)
+      ctx.fillStyle = 'rgba(0,0,0,0.62)'
+      ctx.beginPath(); ctx.roundRect(listX - 2, ry - 1, hpBarW + 4, rowH + 2, 6); ctx.fill()
+      // Inner accent fill strip on left edge
+      ctx.fillStyle = eff.color
+      ctx.beginPath(); ctx.roundRect(listX, ry, 3, rowH, 2); ctx.fill()
+      // Inner background
+      ctx.fillStyle = '#1a1a2e'
+      ctx.beginPath(); ctx.roundRect(listX + 5, ry, hpBarW - 5, rowH, 4); ctx.fill()
+      // Emoji
+      ctx.font = `${rowH - 6}px system-ui`; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'
+      ctx.fillText(eff.emoji, listX + 9, ry + rowH / 2)
+      // Label
+      ctx.font = `bold 11px system-ui`; ctx.fillStyle = '#f4f4f5'
+      ctx.fillText(eff.label, listX + 34, ry + rowH / 2 - 1)
+      // Desc
+      ctx.font = `9px system-ui`; ctx.fillStyle = '#71717a'
+      ctx.fillText(eff.desc, listX + 34, ry + rowH / 2 + 10)
+      // Timer (right-aligned, -1 = no timer)
+      if (eff.remaining >= 0) {
+        ctx.textAlign = 'right'; ctx.font = 'bold 10px system-ui'; ctx.fillStyle = eff.color
+        ctx.fillText(`${Math.ceil(eff.remaining)}s`, listX + hpBarW - 4, ry + rowH / 2 + 4)
+      }
+    })
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'
+  }
 
   // Joystick
   const jbx = JOY_BASE_OFFSET, jby = ch - JOY_BASE_OFFSET
@@ -1070,6 +1173,7 @@ export default function AirplaneGame({ onClose, strings }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const worldRef = useRef<World>(initWorld(strings.playerName))
   const joystickRef = useRef<JoystickState>({ active: false, angle: 0, magnitude: 0, knobDx: 0, knobDy: 0 })
+  const mouseRef = useRef({ cx: 0, cy: 0, hasMoved: false })
   const boostRef = useRef(false)
   const rafRef = useRef<number>(0)
   const lastTimeRef = useRef(0)
@@ -1081,7 +1185,7 @@ export default function AirplaneGame({ onClose, strings }: Props) {
   const prevStormPhaseRef = useRef<StormPhase>('hold')
 
   const [display, setDisplay] = useState({ phase: 'playing' as World['phase'], hp: MAX_HP, kills: 0 })
-  const [muted, setMuted] = useState(false)
+  const [muted] = useState(false)
   const [isTouch, setIsTouch] = useState(false)
   const [mmPx, setMmPx] = useState(60)
 
@@ -1091,10 +1195,18 @@ export default function AirplaneGame({ onClose, strings }: Props) {
   }, [])
 
   const restart = useCallback(() => {
-    worldRef.current = initWorld(strings.playerName)
+    const newWorld = initWorld(strings.playerName)
+    worldRef.current = newWorld
     prevPhaseRef.current = 'playing'
     prevBoostingRef.current = false
     prevStormPhaseRef.current = 'hold'
+    // Reset camera to new player spawn position immediately
+    const player = newWorld.planes.find(p => p.isPlayer)
+    if (player) {
+      camRef.current.x = player.x
+      camRef.current.y = player.y
+      camRef.current.zoom = CAM_MAX_ZOOM
+    }
     setDisplay({ phase: 'playing', hp: MAX_HP, kills: 0 })
   }, [strings.playerName])
 
@@ -1130,7 +1242,15 @@ export default function AirplaneGame({ onClose, strings }: Props) {
         const player = world.planes.find(p => p.isPlayer)
         if (player?.alive) {
           const joy = joystickRef.current
-          if (joy.active && joy.magnitude > 0.08) player.targetDir = joy.angle
+          if (joy.active && joy.magnitude > 0.08) {
+            // Touch joystick takes priority
+            player.targetDir = joy.angle
+          } else if (mouseRef.current.hasMoved) {
+            // PC: mouse cursor direction
+            const mw = worldToScreen(mouseRef.current.cx, mouseRef.current.cy, cw, ch)
+            const dx = mw.x - player.x, dy = mw.y - player.y
+            if (dx * dx + dy * dy > 100) player.targetDir = Math.atan2(dy, dx)
+          }
           player.boosting = boostRef.current && player.hp > 20
 
           // Boost start sound
@@ -1203,8 +1323,11 @@ export default function AirplaneGame({ onClose, strings }: Props) {
             if (dist(plane.x, plane.y, item.x, item.y) < ITEM_RADIUS + PLANE_RADIUS) {
               applyItem(plane, item.kind, now, world)
               spawnParticles(world, item.x, item.y, ITEM_COLOR[item.kind], 12)
+              if (plane.isPlayer) {
+                spawnPopup(world, plane.x, plane.y, item.kind)
+                sfx.pickup()
+              }
               world.items.splice(ii, 1)
-              if (plane.isPlayer) sfx.pickup()
             }
           }
         }
@@ -1271,8 +1394,19 @@ export default function AirplaneGame({ onClose, strings }: Props) {
           if (p.life <= 0) world.particles.splice(pi, 1)
         }
 
+        // Popups (float upward and fade)
+        for (let pi = world.popups.length - 1; pi >= 0; pi--) {
+          const pop = world.popups[pi]
+          pop.y -= 55 * dt
+          pop.life -= dt * 0.55
+          if (pop.life <= 0) world.popups.splice(pi, 1)
+        }
+
         // Item spawn
-        if (world.items.length < ITEM_TARGET && frameRef.current % 240 === 0) spawnItem(world)
+        if (world.items.length < ITEM_TARGET && frameRef.current % 90 === 0) {
+          spawnItem(world)
+          if (world.items.length < ITEM_TARGET) spawnItem(world)
+        }
 
         // Storm
         world.stormTimer -= dt
@@ -1293,6 +1427,22 @@ export default function AirplaneGame({ onClose, strings }: Props) {
           world.stormR += (world.stormNextR - world.stormR) * Math.min(0.04, p * 0.04)
         }
         prevStormPhaseRef.current = world.stormPhase
+
+        // Expire timed buffs
+        {
+          const pl = world.planes.find(p => p.isPlayer)
+          if (pl) {
+            if (pl.evolveUntil > 0 && pl.evolveUntil <= now) {
+              pl.evolveLevel = 0
+              pl.evolveUntil = 0
+            }
+          }
+          if (world.droneUntil > 0 && world.droneUntil <= now) {
+            world.drones.forEach(d => { d.alive = false })
+            world.maxDrones = 0
+            world.droneUntil = 0
+          }
+        }
 
         // Win / lose
         const playerPlane = world.planes.find(p => p.isPlayer)
@@ -1392,7 +1542,9 @@ export default function AirplaneGame({ onClose, strings }: Props) {
 
     const onMove = (e: MouseEvent) => {
       const r = canvas.getBoundingClientRect()
-      updateJoystick(e.clientX - r.left, e.clientY - r.top)
+      const cx = e.clientX - r.left, cy = e.clientY - r.top
+      mouseRef.current = { cx, cy, hasMoved: true }
+      updateJoystick(cx, cy)  // only updates if joystick is already active
     }
     const onDown = (e: MouseEvent) => {
       const r = canvas.getBoundingClientRect()
@@ -1426,19 +1578,20 @@ export default function AirplaneGame({ onClose, strings }: Props) {
     }
     canvas.addEventListener('mousemove', onMove)
     canvas.addEventListener('mousedown', onDown)
-    canvas.addEventListener('mouseup', onUp)
     canvas.addEventListener('touchstart', onTouch, { passive: false })
     canvas.addEventListener('touchmove', onTouch, { passive: false })
     canvas.addEventListener('touchend', onTouch, { passive: false })
+    // mouseup on window so boost releases even if pointer leaves canvas
+    window.addEventListener('mouseup', onUp)
     window.addEventListener('keydown', onKey)
     window.addEventListener('keyup', onKey)
     return () => {
       canvas.removeEventListener('mousemove', onMove)
       canvas.removeEventListener('mousedown', onDown)
-      canvas.removeEventListener('mouseup', onUp)
       canvas.removeEventListener('touchstart', onTouch)
       canvas.removeEventListener('touchmove', onTouch)
       canvas.removeEventListener('touchend', onTouch)
+      window.removeEventListener('mouseup', onUp)
       window.removeEventListener('keydown', onKey)
       window.removeEventListener('keyup', onKey)
     }
@@ -1458,13 +1611,14 @@ export default function AirplaneGame({ onClose, strings }: Props) {
   useEffect(() => {
     const prevTa = document.body.style.touchAction, prevOv = document.body.style.overflow
     document.body.style.touchAction = 'none'; document.body.style.overflow = 'hidden'
-    const block = (e: TouchEvent) => e.preventDefault()
-    document.addEventListener('touchstart', block, { passive: false })
-    document.addEventListener('touchmove', block, { passive: false })
+    const blockPinch = (e: TouchEvent) => { if (e.touches.length > 1) e.preventDefault() }
+    const blockScroll = (e: TouchEvent) => e.preventDefault()
+    document.addEventListener('touchstart', blockPinch, { passive: false })
+    document.addEventListener('touchmove', blockScroll, { passive: false })
     return () => {
       document.body.style.touchAction = prevTa; document.body.style.overflow = prevOv
-      document.removeEventListener('touchstart', block)
-      document.removeEventListener('touchmove', block)
+      document.removeEventListener('touchstart', blockPinch)
+      document.removeEventListener('touchmove', blockScroll)
     }
   }, [])
 
@@ -1472,51 +1626,25 @@ export default function AirplaneGame({ onClose, strings }: Props) {
     <div className="relative h-full w-full overflow-hidden touch-none select-none bg-[#07091a]">
       <canvas ref={canvasRef} className="h-full w-full cursor-crosshair" style={{ touchAction: 'none' }} />
 
-      {/* Mobile controls */}
-      {isTouch && display.phase === 'playing' && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-6 flex items-end justify-end px-6">
-          <button
-            className="pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 border-white/20 bg-black/60 text-white active:bg-white/20"
-            onTouchStart={e => { e.preventDefault(); boostRef.current = true; sfxRef.current.boost() }}
-            onTouchEnd={e => { e.preventDefault(); boostRef.current = false }}
-          >
-            <span className="text-2xl leading-none">🚀</span>
-            <span className="text-[11px] font-bold">BOOST</span>
-          </button>
-        </div>
+      {/* Boost button — bottom-right, always shown during play */}
+      {display.phase === 'playing' && (
+        <button
+          className="absolute bottom-10 right-6 z-20 flex h-[76px] w-[76px] select-none flex-col items-center justify-center gap-1 rounded-full border-2 border-orange-400/50 bg-black/75 text-white shadow-xl shadow-orange-500/30 active:scale-95 active:bg-orange-500/30 active:border-orange-400 transition-all"
+          style={{ touchAction: 'none' }}
+          onMouseDown={e => { e.preventDefault(); boostRef.current = true; sfxRef.current.boost() }}
+          onMouseUp={e => { e.preventDefault(); boostRef.current = false }}
+          onTouchStart={e => { e.preventDefault(); e.stopPropagation(); boostRef.current = true; sfxRef.current.boost() }}
+          onTouchEnd={e => { e.preventDefault(); e.stopPropagation(); boostRef.current = false }}
+        >
+          <span className="text-2xl leading-none">🔥</span>
+          <span className="text-[10px] font-bold tracking-widest text-orange-300">BOOST</span>
+        </button>
       )}
 
-      {/* Mobile aim hint */}
-      {isTouch && display.phase === 'playing' && (
-        <div className="pointer-events-none absolute left-1/2 top-14 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-[10px] text-zinc-400">
-          화면 터치 → 조준 방향 | 우하단 BOOST → 가속
-        </div>
-      )}
-
-      {/* Mute button */}
-      <button
-        onClick={() => setMuted(m => !m)}
-        className="absolute flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-zinc-400 transition hover:bg-black/80 hover:text-white"
-        style={{ top: mmPx + 24, right: 48 }}
-        title={muted ? '소리 켜기' : '소리 끄기'}
-      >
-        {muted ? (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-            <line x1="23" y1="9" x2="17" y2="15" /><line x1="17" y1="9" x2="23" y2="15" />
-          </svg>
-        ) : (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-          </svg>
-        )}
-      </button>
 
       <button
         onClick={onClose}
-        className="absolute flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-zinc-400 transition hover:bg-black/80 hover:text-white"
-        style={{ top: mmPx + 24, right: 8 }}
+        className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-zinc-400 transition hover:bg-black/80 hover:text-white"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />

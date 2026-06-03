@@ -1024,7 +1024,7 @@ export default function DefenseGame({onClose}:Props){
   return(
     <div className="relative h-full w-full bg-[#060C18] touch-none select-none">
       <canvas ref={canvasRef} className="h-full w-full" style={{touchAction:'none'}}/>
-      <button onClick={onClose} className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-zinc-400 hover:bg-black/80 hover:text-white transition">
+      <button onClick={onClose} className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-zinc-400 hover:bg-black/80 hover:text-white transition">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       {ui.phase==='WIN'&&(
