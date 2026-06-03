@@ -2,7 +2,8 @@
   "common": {
     "readMore": "Learn more",
     "inquiry": "Send inquiry",
-    "backToMain": "Back to main"
+    "backToMain": "Back to main",
+    "installApp": "Install app"
   },
   "company": {
     "description": "Built on full-stack development and AI automation, Codium Lab expands into games, content, and education. We explore where AI actually works — and ship real results.",
@@ -263,6 +264,11 @@
     "engagementTitlePost": "to get started",
     "engagementDesc": "Choose the collaboration model that fits your needs. All are decided together in a diagnostic meeting.",
     "engagementCta": "Let's figure out the right model together",
+    "aiTeaserEyebrow": "How we build",
+    "aiTeaserTitle": "AI harness · pipeline · automation — ",
+    "aiTeaserHighlight": "our dev approach",
+    "aiTeaserDesc": "How we design and operate using Claude · Cursor · MCP · RAG — all open.",
+    "aiTeaserCta": "AI Dev",
     "deepServices": [
       {
         "tag": "Consulting",
@@ -808,6 +814,11 @@
     "difficultyLabel": "Difficulty",
     "controlsLabel": "Controls",
     "downloadLabel": "Download",
+    "appBannerName": "Snake Arena: Grow & Battle",
+    "appBannerDesc": "Everything about snake battle — 9 game modes, skin synthesis, and skill system, all in one app.",
+    "appBannerWebNote": "The games below are web previews of the app modes",
+    "appBannerAppStore": "App Store",
+    "appBannerGooglePlay": "Google Play",
     "snake": {
       "subtitle": "Battle Royale Snake",
       "description": "Control a snake with your mouse, eat food to grow. Hit another snake's body and it's game over. Be the last snake standing in the shrinking storm zone.",
@@ -983,6 +994,7 @@
     "brandsDesc": "Bringing Codium Lab's work into everyday life through education and design.",
     "ctaServices": "View services",
     "ctaContact": "Contact us",
+    "whatItemsLinkText": "View AI dev approach",
     "closingTitle": "Let's",
     "closingTitleHighlight": "build together.",
     "closingDesc": "Initial diagnostic meeting is free. Reply within 1–2 business days."

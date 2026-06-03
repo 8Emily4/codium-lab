@@ -175,7 +175,7 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
                     href={`/${lang}/ai`}
                     className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
                   >
-                    AI 개발 방법론 보기
+                    {about.whatItemsLinkText}
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 5l7 7-7 7" /></svg>
                   </Link>
                 )}

@@ -186,18 +186,18 @@ export default async function ServicesPage({ params }: { params: Promise<{ lang:
           >
             <div>
               <p className="text-[11px] font-semibold tracking-[0.24em] text-indigo-600 uppercase dark:text-indigo-400">
-                How we build
+                {services.aiTeaserEyebrow}
               </p>
               <h2 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-                AI 하네스 · 파이프라인 · 자동화 —{" "}
-                <span className="text-gradient">개발 방법론 보기</span>
+                {services.aiTeaserTitle}
+                <span className="text-gradient">{services.aiTeaserHighlight}</span>
               </h2>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-                Claude · Cursor · MCP · RAG 기반으로 어떻게 설계하고 운영하는지 공개합니다.
+                {services.aiTeaserDesc}
               </p>
             </div>
             <div className="flex shrink-0 items-center gap-2 text-sm font-medium text-indigo-600 transition group-hover:gap-3 dark:text-indigo-400">
-              AI Dev
+              {services.aiTeaserCta}
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="transition group-hover:translate-x-0.5">
                 <path d="M5 12h14M13 5l7 7-7 7" />
               </svg>

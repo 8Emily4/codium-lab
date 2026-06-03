@@ -2,7 +2,8 @@
   "common": {
     "readMore": "더 보기",
     "inquiry": "문의 보내기",
-    "backToMain": "메인으로"
+    "backToMain": "메인으로",
+    "installApp": "앱으로 설치하기"
   },
   "company": {
     "description": "풀스택 개발과 AI 자동화의 깊이 위에서, 게임·콘텐츠·교육까지 확장하는 스튜디오. 코디움랩은 AI가 실제로 작동하는 자리를 탐구하고, 그 결과물을 세상에 내놓습니다.",
@@ -263,6 +264,11 @@
     "engagementTitlePost": "로 시작합니다",
     "engagementDesc": "필요한 결에 맞춰 협업 모델을 고를 수 있습니다. 모두 진단 미팅에서 함께 결정합니다.",
     "engagementCta": "어떤 모델이 맞을지 함께 정해보기",
+    "aiTeaserEyebrow": "How we build",
+    "aiTeaserTitle": "AI 하네스 · 파이프라인 · 자동화 — ",
+    "aiTeaserHighlight": "개발 방법론 보기",
+    "aiTeaserDesc": "Claude · Cursor · MCP · RAG 기반으로 어떻게 설계하고 운영하는지 공개합니다.",
+    "aiTeaserCta": "AI Dev",
     "deepServices": [
       {
         "tag": "Consulting",
@@ -808,6 +814,11 @@
     "difficultyLabel": "난이도",
     "controlsLabel": "조작 방법",
     "downloadLabel": "앱 다운로드",
+    "appBannerName": "Snake Arena: Grow & Battle",
+    "appBannerDesc": "뱀 키우기 배틀의 모든 것 — 9가지 게임 모드, 스킨 합성, 스킬 시스템을 앱에서 즐기세요.",
+    "appBannerWebNote": "아래 게임들은 앱 모드의 웹 체험판입니다",
+    "appBannerAppStore": "App Store",
+    "appBannerGooglePlay": "Google Play",
     "snake": {
       "subtitle": "배틀로얄 스네이크",
       "description": "마우스로 뱀을 조종해 먹이를 먹고 몸집을 키우세요. 다른 뱀의 몸통에 부딪히면 게임 오버. 점점 좁아지는 폭풍 구역에서 최후의 1마리가 되어야 합니다.",
@@ -983,6 +994,7 @@
     "brandsDesc": "코디움랩의 활동이 일상에 닿을 수 있도록, 교육과 디자인 두 결로 운영합니다.",
     "ctaServices": "서비스 보기",
     "ctaContact": "문의하기",
+    "whatItemsLinkText": "AI 개발 방법론 보기",
     "closingTitle": "함께",
     "closingTitleHighlight": "만들어볼까요?",
     "closingDesc": "초기 진단 미팅은 무료입니다. 평일 기준 1–2영업일 안에 회신드립니다."
