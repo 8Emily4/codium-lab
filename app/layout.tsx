@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import { company } from "@/lib/brand";
 import PWARegister from "@/components/PWARegister";
+import { getDictionary, hasLocale } from "@/app/[lang]/dictionaries";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -130,6 +131,8 @@ export default async function RootLayout({
 }>) {
   const h = await headers();
   const lang = h.get("x-lang") ?? "ko";
+  const dict = hasLocale(lang) ? await getDictionary(lang) : null;
+  const installLabel = dict?.common?.installApp ?? "앱으로 설치하기";
 
   return (
     <html
@@ -142,7 +145,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: jsonLdHtml }}
         />
         {children}
-        <PWARegister />
+        <PWARegister installLabel={installLabel} />
       </body>
     </html>
   );

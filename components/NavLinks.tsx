@@ -23,12 +23,10 @@ export default function NavLinks({
   const pathname = usePathname();
 
   const links: NavLink[] = [
-    { href: `/${lang}/brands`, label: dict.nav.brands },
+    { href: `/${lang}/about`, label: dict.nav.about },
     { href: `/${lang}/services`, label: dict.nav.services },
-    { href: `/${lang}/process`, label: dict.nav.process },
     { href: `/${lang}/ai`, label: dict.nav.ai },
     { href: `/${lang}/faq`, label: dict.nav.faq },
-    { href: `/${lang}/contact`, label: dict.nav.contact },
     { href: `/${lang}/game`, label: dict.nav.game },
   ];
 

@@ -7,7 +7,7 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
 }
 
-export default function PWARegister() {
+export default function PWARegister({ installLabel = "앱으로 설치하기" }: { installLabel?: string }) {
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null)
   const [installed, setInstalled] = useState(false)
 
@@ -64,7 +64,7 @@ export default function PWARegister() {
           <path d="M12 2v13M7 11l5 5 5-5" />
           <rect x="2" y="17" width="20" height="4" rx="2" />
         </svg>
-        앱으로 설치하기
+        {installLabel}
       </button>
     </div>
   )

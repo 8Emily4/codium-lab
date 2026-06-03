@@ -2,18 +2,20 @@
   "common": {
     "readMore": "Learn more",
     "inquiry": "Send inquiry",
-    "backToMain": "Back to main"
+    "backToMain": "Back to main",
+    "installApp": "Install app"
   },
   "company": {
-    "description": "Codium Lab researches tools that actually work at the boundary of LLMs and automation. We build solutions that don't stop at demos, and technology that elevates human work to the next level.",
-    "tagline": "A premium IT solutions lab that researches the essence of technology and delivers real value.",
-    "rdFields": "AI Automation Tools",
+    "description": "Built on full-stack development and AI automation, Codium Lab expands into games, content, and education. We explore where AI actually works — and ship real results.",
+    "tagline": "From AI development & automation to content & education — a studio that ships what works.",
+    "rdFields": "AI Dev · Automation · Content",
     "location": "Gwangmyeong-si, Gyeonggi-do",
-    "ceo": "Nari Im",
+    "ceo": "Damon · Emily",
     "siteComingSoon": "Site coming soon",
     "viewDetails": "Learn more"
   },
   "nav": {
+    "about": "About",
     "brands": "Brands",
     "services": "Services",
     "process": "Process",
@@ -23,64 +25,52 @@
     "game": "Game",
     "login": "Log in",
     "logout": "Log out",
-    "inquiry": "Inquire",
+    "inquiry": "Contact us",
     "menuOpen": "Open menu"
   },
   "hero": {
-    "titlePre": "Researching the essence of technology,",
-    "titleHighlight": "delivering real value",
-    "titlePost": "— a premium IT solutions lab",
-    "ctaPrimary": "Consulting & Collaboration",
+    "titlePre": "AI to",
+    "titleHighlight": "build, create & teach.",
+    "titlePost": "",
+    "ctaPrimary": "About us",
     "ctaSecondary": "Explore Services",
     "locationLabel": "Location",
-    "ceoLabel": "CEO",
-    "rdLabel": "R&D Fields",
+    "ceoLabel": "Team",
+    "rdLabel": "Fields",
     "brandsLabel": "Brands",
     "brandsValue": "Adium · Badium"
   },
   "home": {
     "exploreEyebrow": "Explore",
-    "exploreTitle": "Where would you",
-    "exploreTitleHighlight": "like to start?",
+    "exploreTitle": "Four ways to",
+    "exploreTitleHighlight": "find Codium Lab",
     "exploreTitlePost": "",
-    "exploreDesc": "Six entry points — each one reveals how Codium Lab works and what it stands for.",
+    "exploreDesc": "Development, content, education, games — four stories connected by AI.",
     "readMore": "Learn more",
     "gateways": [
       {
-        "slug": "brands",
-        "eyebrow": "Brands",
-        "title": "Two distinct brands",
-        "description": "Adium · Badium — brands that bring education and design into everyday life."
+        "slug": "about",
+        "eyebrow": "About",
+        "title": "Who we are",
+        "description": "AI automation, full-stack dev, content creation, education — all under one studio."
+      },
+      {
+        "slug": "game",
+        "eyebrow": "Game",
+        "title": "Games we built",
+        "description": "Web and Android games. Play directly in your browser, or download the app."
       },
       {
         "slug": "services",
         "eyebrow": "Services",
-        "title": "Four ways to collaborate",
-        "description": "Consulting · Engineering · Education · Studio. Automation that reaches production."
-      },
-      {
-        "slug": "process",
-        "eyebrow": "Process",
-        "title": "Four-step process",
-        "description": "Discover → Design → Build → Transfer. Clear deliverables at every stage."
-      },
-      {
-        "slug": "ai",
-        "eyebrow": "AI",
-        "title": "Build with AI, embed in workflow",
-        "description": "Claude · Cursor · MCP · RAG — shaping how AI is adopted and operated."
+        "title": "What we do",
+        "description": "IT development · AI automation consulting · AI education · content production."
       },
       {
         "slug": "faq",
         "eyebrow": "FAQ",
         "title": "Frequently asked questions",
-        "description": "Collaboration · Security · Cost · Operations. The questions we hear most."
-      },
-      {
-        "slug": "contact",
-        "eyebrow": "Contact",
-        "title": "Collaboration inquiry",
-        "description": "Free initial diagnostic meeting. Reply within 1–2 business days."
+        "description": "Collaboration · cost · timeline · operations. No answer? Just ask."
       }
     ]
   },
@@ -177,14 +167,14 @@
     "exploreLabel": "Explore",
     "contactLabel": "Contact",
     "links": {
-      "brands": "Brands",
+      "about": "About",
+      "game": "Game",
       "services": "Services",
-      "process": "Process",
-      "ai": "AI",
+      "ai": "AI Dev",
       "faq": "FAQ",
       "contact": "Contact"
     },
-    "ceoLabel": "CEO ·"
+    "ceoLabel": "Team ·"
   },
   "brands": {
     "metaTitle": "Brands",
@@ -274,6 +264,11 @@
     "engagementTitlePost": "to get started",
     "engagementDesc": "Choose the collaboration model that fits your needs. All are decided together in a diagnostic meeting.",
     "engagementCta": "Let's figure out the right model together",
+    "aiTeaserEyebrow": "How we build",
+    "aiTeaserTitle": "AI harness · pipeline · automation — ",
+    "aiTeaserHighlight": "our dev approach",
+    "aiTeaserDesc": "How we design and operate using Claude · Cursor · MCP · RAG — all open.",
+    "aiTeaserCta": "AI Dev",
     "deepServices": [
       {
         "tag": "Consulting",
@@ -631,9 +626,9 @@
     "pillarsTitlePost": "",
     "pillarsDesc": "The place where things are built (development) and the place where work happens (workflow). Codium Lab's approach is to weave AI naturally into both.",
     "stackEyebrow": "Stack",
-    "stackTitle": "The tools",
-    "stackTitleHighlight": "Codium Lab wields",
-    "stackDesc": "Not locked into any single vendor — we assemble the best tools for each situation.",
+    "stackTitle": "Technologies",
+    "stackTitleHighlight": "Codium Lab can leverage",
+    "stackDesc": "Not locked into any single vendor — we combine the right tools for each purpose.",
     "patternsEyebrow": "Pattern",
     "patternsTitleHighlight": "Four stages",
     "patternsTitlePost": "of AI adoption",
@@ -643,6 +638,35 @@
     "casesTitleHighlight": "build",
     "casesTitlePost": "like these",
     "casesDesc": "Adoptable scenarios — start small, reach production.",
+    "harnessEyebrow": "Harness Pipeline",
+    "harnessTitle": "One Jira issue,",
+    "harnessTitleHighlight": "shipped as code",
+    "harnessTitlePost": "",
+    "harnessDesc": "The moment an issue arrives, the pipeline wakes. An orchestrator coordinates every step, AI routes by task type, and the skill engine executes. People only step in at approval gates.",
+    "harnessDiagramLabel": "Pipeline Flow",
+    "harnessCapabilitiesTitle": "What the harness does",
+    "harnessCapabilities": [
+      {
+        "tag": "AutoPilot",
+        "label": "AutoPilot",
+        "body": "Detects issues via JQL and automatically triggers the AI pipeline. Registered as a macOS LaunchAgent daemon."
+      },
+      {
+        "tag": "Scheduler",
+        "label": "Scheduler",
+        "body": "Runs skills and workflows on a Cron schedule. AI generates Cron expressions from plain language."
+      },
+      {
+        "tag": "Approval Gate",
+        "label": "Approval Gates",
+        "body": "Every planning and output stage requires human review and approval before proceeding. Control lives inside automation."
+      },
+      {
+        "tag": "Live Monitor",
+        "label": "Live Monitor",
+        "body": "Every session, tool, and Sub-Agent run is visible live on the dashboard via WebSocket."
+      }
+    ],
     "principlesEyebrow": "Principles",
     "principlesTitle": "Principles we keep",
     "principlesTitleHighlight": "when working with AI",
@@ -682,11 +706,11 @@
       {
         "label": "Models",
         "items": [
-          "Claude Opus 4.7",
-          "Sonnet 4.6",
-          "Haiku 4.5",
-          "GPT-4o · 5",
-          "Gemini Pro"
+          "Claude (Anthropic)",
+          "GPT (OpenAI)",
+          "Gemini (Google)",
+          "Open-source LLMs",
+          "Model selection by purpose"
         ]
       },
       {
@@ -790,6 +814,11 @@
     "difficultyLabel": "Difficulty",
     "controlsLabel": "Controls",
     "downloadLabel": "Download",
+    "appBannerName": "Snake Arena: Grow & Battle",
+    "appBannerDesc": "Everything about snake battle — 9 game modes, skin synthesis, and skill system, all in one app.",
+    "appBannerWebNote": "The games below are web previews of the app modes",
+    "appBannerAppStore": "App Store",
+    "appBannerGooglePlay": "Google Play",
     "snake": {
       "subtitle": "Battle Royale Snake",
       "description": "Control a snake with your mouse, eat food to grow. Hit another snake's body and it's game over. Be the last snake standing in the shrinking storm zone.",
@@ -911,6 +940,64 @@
       "players": "1 player",
       "difficulty": "Normal"
     }
+  },
+  "about": {
+    "metaTitle": "About | Codium Lab",
+    "metaDesc": "About Codium Lab — AI automation, development consulting, games, content, and education. A studio that ships what works.",
+    "eyebrow": "About",
+    "title": "This is how",
+    "titleHighlight": "Codium Lab works",
+    "desc": "Built on full-stack development and AI automation, expanding into games, content, and education. We find where AI actually works — and ship real results.",
+    "teamEyebrow": "Team",
+    "teamTitle": "Two specialties,",
+    "teamTitleHighlight": "one studio",
+    "damon": {
+      "name": "Damon",
+      "role": "Full-Stack Dev · AI Automation",
+      "desc": "20-year full-stack developer. Researches AI vibe-coding, harness building, and automation system design. Handles IT development and AI consulting — and builds Android games too.",
+      "tags": ["20yr Full-Stack", "AI Harness", "Automation Design", "Game Dev", "Claude · Cursor · MCP"]
+    },
+    "nari": {
+      "name": "Emily",
+      "role": "AI Content · Education",
+      "desc": "Former film power blogger with deep expertise in blog and SNS content strategy. Creates AI-generated videos for YouTube and Instagram, and runs elementary school AI education programs.",
+      "tags": ["AI Video Production", "YouTube · Instagram", "Elementary AI Ed.", "Blog · SNS Strategy", "Film Blogger"]
+    },
+    "whatEyebrow": "What we do",
+    "whatTitle": "Things",
+    "whatTitleHighlight": "Codium Lab ships",
+    "whatItems": [
+      {
+        "tag": "Development",
+        "title": "IT Dev · AI Automation",
+        "desc": "Full-stack projects, AI harness builds, automation system design. Production-ready, not just PoC."
+      },
+      {
+        "tag": "Game",
+        "title": "Game Development",
+        "desc": "From web games to Android apps. Real games that actually ship."
+      },
+      {
+        "tag": "Content",
+        "title": "AI Content Production",
+        "desc": "AI-generated video content that actually goes up on YouTube and Instagram."
+      },
+      {
+        "tag": "Education",
+        "title": "AI Education",
+        "desc": "From elementary schools to enterprises. Hands-on AI literacy through the Adium brand."
+      }
+    ],
+    "brandsEyebrow": "Our Brands",
+    "brandsTitle": "Two",
+    "brandsTitleHighlight": "sister brands",
+    "brandsDesc": "Bringing Codium Lab's work into everyday life through education and design.",
+    "ctaServices": "View services",
+    "ctaContact": "Contact us",
+    "whatItemsLinkText": "View AI dev approach",
+    "closingTitle": "Let's",
+    "closingTitleHighlight": "build together.",
+    "closingDesc": "Initial diagnostic meeting is free. Reply within 1–2 business days."
   },
   "login": {
     "metaTitle": "Log in",

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { company } from "@/lib/brand";
 import type { Dictionary } from "@/app/[lang]/dictionaries";
 
@@ -46,8 +47,8 @@ export default function Hero({ lang, dict }: { lang: string; dict: Dictionary })
         </p>
 
         <div className="mt-10 flex flex-wrap items-center gap-3">
-          <a
-            href={`#contact`}
+          <Link
+            href={`/${lang}/about`}
             className="group relative inline-flex h-12 items-center gap-2 overflow-hidden rounded-full bg-zinc-900 px-6 text-sm font-medium text-white shadow-[0_12px_30px_-12px_rgba(79,70,229,0.6)] transition hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
           >
             <span className="relative z-10">{dict.hero.ctaPrimary}</span>
@@ -69,13 +70,13 @@ export default function Hero({ lang, dict }: { lang: string; dict: Dictionary })
               aria-hidden
               className="absolute inset-0 -translate-x-full bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 opacity-0 transition group-hover:translate-x-0 group-hover:opacity-100"
             />
-          </a>
-          <a
-            href="#services"
+          </Link>
+          <Link
+            href={`/${lang}/services`}
             className="inline-flex h-12 items-center rounded-full border border-zinc-300/80 bg-white/70 px-6 text-sm font-medium text-zinc-900 backdrop-blur transition hover:border-zinc-400 hover:bg-white dark:border-zinc-700/80 dark:bg-zinc-950/60 dark:text-zinc-100 dark:hover:border-zinc-500 dark:hover:bg-zinc-900"
           >
             {dict.hero.ctaSecondary}
-          </a>
+          </Link>
         </div>
 
         <dl className="mt-16 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-zinc-200/70 pt-10 text-sm sm:grid-cols-4 dark:border-zinc-800/70">
