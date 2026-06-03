@@ -936,9 +936,10 @@ function render(ctx: CanvasRenderingContext2D, w: World, cw: number, ch: number,
 }
 
 // ─── HUD ─────────────────────────────────────────────────────────────────────
-function renderHUD(ctx: CanvasRenderingContext2D, w: World, cw: number, ch: number, now: number, cam: {x:number;y:number;zoom:number}) {
+type JoyState = {active:boolean;angle:number;magnitude:number;knobDx:number;knobDy:number}
+function renderHUD(ctx: CanvasRenderingContext2D, w: World, cw: number, ch: number, now: number, cam: {x:number;y:number;zoom:number}, joy: JoyState) {
   const player=w.snakes[0]; if (!player||cw<10||ch<10) return
-  // Minimap
+  // Minimap (top-right)
   const mm=Math.max(60,Math.min(cw,ch)*0.14), mmX=cw-mm-12, mmY=52, mmSc=mm/(ARENA_R*2)
   ctx.globalAlpha=0.75;ctx.fillStyle='#0d0d1a';ctx.strokeStyle='#6366f1';ctx.lineWidth=1.5
   ctx.beginPath();ctx.arc(mmX+mm/2,mmY+mm/2,mm/2,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.globalAlpha=1
@@ -953,44 +954,39 @@ function renderHUD(ctx: CanvasRenderingContext2D, w: World, cw: number, ch: numb
   for (const s of w.snakes){if(!s.alive)continue;ctx.fillStyle=s.isPlayer?'#a5b4fc':s.col;ctx.globalAlpha=s.isPlayer?1:0.7;ctx.beginPath();ctx.arc(mmX+mm/2+s.segs[0].x*mmSc,mmY+mm/2+s.segs[0].y*mmSc,s.isPlayer?4:s.isBoss?6:2.5,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1}
   ctx.restore()
 
-  // Score bar
+  // Stats (top-left)
   const alive=w.snakes.filter(s=>s.alive).length; let rank=1
   for (const s of w.snakes) if(s.alive&&!s.isBoss&&s!==player&&s.len>player.len) rank++
   const stats=[{l:'길이',v:Math.floor(player.len).toString()},{l:'처치',v:w.pKills.toString()},{l:'순위',v:`${rank}/${alive}`}]
-  ctx.fillStyle='rgba(0,0,0,0.62)';ctx.beginPath();ctx.roundRect(12,ch-76,248,64,12);ctx.fill()
-  stats.forEach((st,i)=>{const x=24+i*80;ctx.font='bold 10px system-ui';ctx.fillStyle='#52525b';ctx.textAlign='left';ctx.fillText(st.l.toUpperCase(),x,ch-46);ctx.font='bold 15px system-ui';ctx.fillStyle='#f4f4f5';ctx.fillText(st.v,x,ch-26)})
+  ctx.fillStyle='rgba(0,0,0,0.62)';ctx.beginPath();ctx.roundRect(12,60,228,56,12);ctx.fill()
+  stats.forEach((st,i)=>{const x=24+i*76;ctx.font='bold 10px system-ui';ctx.fillStyle='#52525b';ctx.textAlign='left';ctx.fillText(st.l.toUpperCase(),x,82);ctx.font='bold 15px system-ui';ctx.fillStyle='#f4f4f5';ctx.fillText(st.v,x,100)})
 
-  // Frenzy
+  // Frenzy / Combo / Effects / Ult bar stack above joystick
   const fr=now<w.frenzyUntil?w.frenzy:0; let yOff=0
-  if (fr>0){ctx.fillStyle='rgba(0,0,0,0.7)';ctx.beginPath();ctx.roundRect(12,ch-76-44,180,36,8);ctx.fill();ctx.font='bold 11px system-ui';ctx.fillStyle='#f97316';ctx.textAlign='left';ctx.fillText(`🔥 FRENZY x${fr}`,22,ch-76-20);yOff+=44}
+  if (fr>0){ctx.fillStyle='rgba(0,0,0,0.7)';ctx.beginPath();ctx.roundRect(12,ch-170-44,180,36,8);ctx.fill();ctx.font='bold 11px system-ui';ctx.fillStyle='#f97316';ctx.textAlign='left';ctx.fillText(`🔥 FRENZY x${fr}`,22,ch-170-20);yOff+=44}
+  if (w.comboMult>1){ctx.fillStyle='rgba(0,0,0,0.7)';ctx.beginPath();ctx.roundRect(12,ch-170-44-yOff,140,34,8);ctx.fill();ctx.font='bold 11px system-ui';ctx.fillStyle='#fbbf24';ctx.textAlign='left';ctx.fillText(`⚡ COMBO x${w.comboMult}`,20,ch-170-20-yOff);yOff+=42}
 
-  // Combo
-  if (w.comboMult>1){ctx.fillStyle='rgba(0,0,0,0.7)';ctx.beginPath();ctx.roundRect(12,ch-76-44-yOff,140,34,8);ctx.fill();ctx.font='bold 11px system-ui';ctx.fillStyle='#fbbf24';ctx.textAlign='left';ctx.fillText(`⚡ COMBO x${w.comboMult}`,20,ch-76-20-yOff);yOff+=42}
-
-  // Effects
   type E={emoji:string;col:string;rem:number}
   const effects:E[]=[]
   if (now<player.magUntil) effects.push({emoji:'🧲',col:'#818cf8',rem:player.magUntil-now})
   if (now<player.bootsUntil) effects.push({emoji:'⚡',col:'#fbbf24',rem:player.bootsUntil-now})
   if (now<player.dgUntil) effects.push({emoji:'✨',col:'#4ade80',rem:player.dgUntil-now})
   if (effects.length>0){
-    const bW=effects.length*52+8,bX=12,bY=ch-76-56-yOff
+    const bW=effects.length*52+8,bX=12,bY=ch-170-56-yOff
     ctx.fillStyle='rgba(0,0,0,0.62)';ctx.beginPath();ctx.roundRect(bX,bY,bW,48,10);ctx.fill()
     effects.forEach((ef,i)=>{const ex=bX+8+i*52,ey=bY+4;ctx.fillStyle=ef.col+'33';ctx.beginPath();ctx.roundRect(ex,ey,44,40,8);ctx.fill();ctx.font='18px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(ef.emoji,ex+22,ey+16);ctx.font='bold 10px system-ui';ctx.fillStyle='#d4d4d8';ctx.fillText(`${Math.ceil(ef.rem)}s`,ex+22,ey+33);ctx.textBaseline='alphabetic'})
     ctx.textAlign='left'; yOff+=56
   }
 
-  // Ultimate bar
-  const ultY=ch-76-108-yOff, ultBarW=180, ultFrac=w.ultCharge/ULT_MAX
+  const ultY=ch-170-108-yOff, ultBarW=180, ultFrac=w.ultCharge/ULT_MAX
   ctx.fillStyle='rgba(0,0,0,0.62)';ctx.beginPath();ctx.roundRect(12,ultY,ultBarW,32,8);ctx.fill()
   ctx.fillStyle=(ultFrac>=1?'#a78bfa':'#6366f1')+'33';ctx.beginPath();ctx.roundRect(14,ultY+2,(ultBarW-4)*ultFrac,28,6);ctx.fill()
-  if (ultFrac>=1){const p=0.5+0.5*Math.sin(now*6);ctx.fillStyle=`rgba(167,139,250,${0.3+p*0.3})`;ctx.beginPath();ctx.roundRect(14,ultY+2,ultBarW-4,28,6);ctx.fill()}
+  if (ultFrac>=1){const pu=0.5+0.5*Math.sin(now*6);ctx.fillStyle=`rgba(167,139,250,${0.3+pu*0.3})`;ctx.beginPath();ctx.roundRect(14,ultY+2,ultBarW-4,28,6);ctx.fill()}
   ctx.font='bold 10px system-ui';ctx.fillStyle=ultFrac>=1?'#c4b5fd':'#818cf8';ctx.textAlign='left'
   ctx.fillText(`DASH ${ultFrac>=1?'READY!':Math.floor(ultFrac*100)+'%'}`,22,ultY+20); yOff+=40
 
-  // Held items
   if (player.heldItems.length>0){
-    const itmY=ch-76-108-yOff, itmX=12
+    const itmY=ch-170-108-yOff, itmX=12
     ctx.fillStyle='rgba(0,0,0,0.62)';ctx.beginPath();ctx.roundRect(itmX,itmY,player.heldItems.length*46+8,38,8);ctx.fill()
     player.heldItems.forEach((kind,i)=>{const ix=itmX+8+i*46,iy=itmY+4;ctx.fillStyle=ITEM_COL[kind]+'44';ctx.beginPath();ctx.roundRect(ix,iy,38,30,6);ctx.fill();ctx.font='16px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(ITEM_EMOJI[kind],ix+19,iy+15);ctx.textBaseline='alphabetic'})
     ctx.textAlign='left';ctx.font='bold 9px system-ui';ctx.fillStyle='#71717a';ctx.fillText('Q → 아이템 사용',itmX+4,itmY-4)
@@ -1000,7 +996,7 @@ function renderHUD(ctx: CanvasRenderingContext2D, w: World, cw: number, ch: numb
   if (w.perks.length>0){
     ctx.textAlign='right'
     const perksY=mmY+mm+10
-    w.perks.forEach((p,i)=>{ctx.font='11px system-ui';ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(cw-94,perksY+i*20,90,18);ctx.fillStyle='#a1a1aa';ctx.fillText(`${PERKS[p].emoji} ${PERKS[p].title}`,cw-4,perksY+i*20+13)})
+    w.perks.forEach((pk,i)=>{ctx.font='11px system-ui';ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(cw-94,perksY+i*20,90,18);ctx.fillStyle='#a1a1aa';ctx.fillText(`${PERKS[pk].emoji} ${PERKS[pk].title}`,cw-4,perksY+i*20+13)})
     ctx.textAlign='left'
   }
 
@@ -1016,10 +1012,27 @@ function renderHUD(ctx: CanvasRenderingContext2D, w: World, cw: number, ch: numb
   // Boss warning HUD
   if (w.bPhase==='WARNING'){
     const rem=Math.ceil(Math.max(0,w.bWarnUntil-w.now)), pulse=0.5+0.5*Math.sin(now*6)
-    ctx.fillStyle=`rgba(239,68,68,${0.7+pulse*0.3})`;ctx.beginPath();ctx.roundRect(cw/2-120,60,240,44,8);ctx.fill()
-    ctx.textAlign='center';ctx.font='bold 15px system-ui';ctx.fillStyle='white';ctx.fillText(`⚠️ BOSS 출현 ${rem}s`,cw/2,80)
-    ctx.font='11px system-ui';ctx.fillStyle='rgba(255,255,255,0.8)';ctx.fillText('마커로 이동하세요!',cw/2,96);ctx.textAlign='left'
+    ctx.fillStyle=`rgba(239,68,68,${0.7+pulse*0.3})`;ctx.beginPath();ctx.roundRect(cw/2-120,120,240,44,8);ctx.fill()
+    ctx.textAlign='center';ctx.font='bold 15px system-ui';ctx.fillStyle='white';ctx.fillText(`⚠️ BOSS 출현 ${rem}s`,cw/2,140)
+    ctx.font='11px system-ui';ctx.fillStyle='rgba(255,255,255,0.8)';ctx.fillText('마커로 이동하세요!',cw/2,156);ctx.textAlign='left'
   }
+
+  // Joystick
+  const jbx=JOY_BASE_OFFSET, jby=ch-JOY_BASE_OFFSET
+  ctx.globalAlpha=joy.active?0.55:0.30
+  ctx.fillStyle='#0d0d1a';ctx.beginPath();ctx.arc(jbx,jby,JOY_BASE_R,0,Math.PI*2);ctx.fill()
+  ctx.strokeStyle=joy.active?'rgba(99,102,241,0.85)':'rgba(99,102,241,0.40)';ctx.lineWidth=2
+  ctx.beginPath();ctx.arc(jbx,jby,JOY_BASE_R,0,Math.PI*2);ctx.stroke()
+  ctx.globalAlpha=0.18;ctx.strokeStyle='#818cf8';ctx.lineWidth=1
+  for(let a=0;a<4;a++){const ang=a*Math.PI/2;ctx.beginPath();ctx.moveTo(jbx+Math.cos(ang)*14,jby+Math.sin(ang)*14);ctx.lineTo(jbx+Math.cos(ang)*(JOY_BASE_R-6),jby+Math.sin(ang)*(JOY_BASE_R-6));ctx.stroke()}
+  if(joy.active&&joy.magnitude>0.1){ctx.globalAlpha=0.18*joy.magnitude;const grd=ctx.createRadialGradient(jbx,jby,0,jbx,jby,JOY_BASE_R);grd.addColorStop(0,'rgba(99,102,241,0.6)');grd.addColorStop(1,'transparent');ctx.fillStyle=grd;ctx.beginPath();ctx.arc(jbx,jby,JOY_BASE_R,0,Math.PI*2);ctx.fill()}
+  const kx=jbx+joy.knobDx, ky=jby+joy.knobDy
+  ctx.globalAlpha=joy.active?0.95:0.55
+  const kgrd=ctx.createRadialGradient(kx-JOY_KNOB_R*0.3,ky-JOY_KNOB_R*0.3,0,kx,ky,JOY_KNOB_R)
+  kgrd.addColorStop(0,joy.active?'#a5b4fc':'#818cf8');kgrd.addColorStop(1,joy.active?'#4f46e5':'#312e81')
+  ctx.fillStyle=kgrd;ctx.beginPath();ctx.arc(kx,ky,JOY_KNOB_R,0,Math.PI*2);ctx.fill()
+  ctx.globalAlpha=0.6;ctx.strokeStyle=joy.active?'rgba(167,139,250,0.9)':'rgba(99,102,241,0.5)';ctx.lineWidth=1.5
+  ctx.beginPath();ctx.arc(kx,ky,JOY_KNOB_R,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1
 
   void cam
 }
@@ -1049,7 +1062,11 @@ function PerkDraft({draft,onPick}:{draft:PerkId[];onPick:(p:PerkId)=>void}) {
   )
 }
 
-const JMAX = 70
+const JOY_BASE_OFFSET = 94
+const JOY_BASE_R = 58
+const JOY_KNOB_R = 24
+const JOY_KNOB_MAX = 48
+const JOY_HIT_R = 90
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1065,22 +1082,17 @@ export default function SnakeGame({onClose}: Props) {
   const lastTRef=useRef(0)
   const frameRef=useRef(0)
   const camRef=useRef({x:0,y:0,zoom:CAM_MAX})
-  const joystickDirRef=useRef<{active:boolean;angle:number}>({active:false,angle:0})
+  const joystickRef=useRef<JoyState>({active:false,angle:0,magnitude:0,knobDx:0,knobDy:0})
+  const joystickTouchIdRef=useRef<number|null>(null)
   const [display,setDisplay]=useState({phase:'playing' as GamePhase,score:0,kills:0,ult:0})
   const [draft,setDraft]=useState<PerkId[]|null>(null)
   const [isTouch,setIsTouch]=useState(false)
-  const [joyVis,setJoyVis]=useState<{active:boolean;baseX:number;baseY:number;thumbX:number;thumbY:number}>({active:false,baseX:0,baseY:0,thumbX:0,thumbY:0})
 
   const worldToScreen=useCallback((cx:number,cy:number,cw:number,ch:number)=>{
     const cam=camRef.current; return {x:(cx-cw/2)/cam.zoom+cam.x,y:(cy-ch/2)/cam.zoom+cam.y}
   },[])
 
   useEffect(()=>{setIsTouch('ontouchstart' in window||navigator.maxTouchPoints>0)},[])
-  const [mmPx,setMmPx]=useState(60)
-  useEffect(()=>{
-    const calc=()=>setMmPx(Math.max(60,Math.min(window.innerWidth,window.innerHeight)*0.14))
-    calc(); window.addEventListener('resize',calc); return()=>window.removeEventListener('resize',calc)
-  },[])
   useEffect(()=>{
     window.history.pushState(null,'',window.location.href)
     const onPop=()=>onClose()
@@ -1104,30 +1116,6 @@ export default function SnakeGame({onClose}: Props) {
   const restart=useCallback(()=>{worldRef.current=initWorld();setDisplay({phase:'playing',score:0,kills:0,ult:0});setDraft(null)},[])
   const pickPerk=useCallback((p:PerkId)=>{worldRef.current.perks.push(p);worldRef.current.draft=null;setDraft(null)},[])
 
-  const handleJoyStart=useCallback((e:React.TouchEvent)=>{
-    e.preventDefault(); getSfxCtx()?.resume()
-    const t=e.touches[0]
-    setJoyVis({active:true,baseX:t.clientX,baseY:t.clientY,thumbX:t.clientX,thumbY:t.clientY})
-    joystickDirRef.current={active:false,angle:0}; boostRef.current=false
-  },[])
-  const handleJoyMove=useCallback((e:React.TouchEvent)=>{
-    e.preventDefault()
-    const t=e.touches[0]
-    setJoyVis(prev=>{
-      if(!prev.active) return prev
-      const dx=t.clientX-prev.baseX, dy=t.clientY-prev.baseY
-      const d=Math.sqrt(dx*dx+dy*dy), angle=Math.atan2(dy,dx)
-      if(d>10) joystickDirRef.current={active:true,angle}
-      boostRef.current=d>JMAX*0.65
-      const cd=Math.min(d,JMAX)
-      return {...prev,thumbX:prev.baseX+Math.cos(angle)*cd,thumbY:prev.baseY+Math.sin(angle)*cd}
-    })
-  },[])
-  const handleJoyEnd=useCallback((e:React.TouchEvent)=>{
-    e.preventDefault()
-    setJoyVis(prev=>({...prev,active:false}))
-    joystickDirRef.current={active:false,angle:0}; boostRef.current=false
-  },[])
 
   useEffect(()=>{
     const canvas=canvasRef.current; if (!canvas) return
@@ -1143,7 +1131,8 @@ export default function SnakeGame({onClose}: Props) {
       if (w.phase==='playing'&&!w.draft) {
         const player=w.snakes[0]; let inputDir=player.dir
         if (player.alive){
-          if(joystickDirRef.current.active){inputDir=joystickDirRef.current.angle}
+          const joy=joystickRef.current
+          if(joy.active&&joy.magnitude>0.08){inputDir=joy.angle}
           else{const mw=worldToScreen(mouseRef.current.cx,mouseRef.current.cy,cw,ch);const dx=mw.x-player.segs[0].x,dy=mw.y-player.segs[0].y;if(Math.abs(dx)>5||Math.abs(dy)>5) inputDir=Math.atan2(dy,dx)}
         }
         const inputUlt=ultRef.current; ultRef.current=false
@@ -1159,7 +1148,7 @@ export default function SnakeGame({onClose}: Props) {
       if (p?.alive){cam.x+=(p.segs[0].x-cam.x)*0.12;cam.y+=(p.segs[0].y-cam.y)*0.12;cam.zoom+=(zoomForLen(p.peakLen)-cam.zoom)*0.03}
 
       render(ctx,w,cw,ch,now,camRef.current)
-      renderHUD(ctx,w,cw,ch,now,camRef.current)
+      renderHUD(ctx,w,cw,ch,now,camRef.current,joystickRef.current)
       rafRef.current=requestAnimationFrame(loop)
     }
 
@@ -1169,24 +1158,70 @@ export default function SnakeGame({onClose}: Props) {
 
   useEffect(()=>{
     const canvas=canvasRef.current; if (!canvas) return
-    const onMove=(e:MouseEvent)=>{const r=canvas.getBoundingClientRect();mouseRef.current={cx:e.clientX-r.left,cy:e.clientY-r.top}}
-    const onTouchMove=(e:TouchEvent)=>{e.preventDefault();const r=canvas.getBoundingClientRect(),t=e.touches[0];mouseRef.current={cx:t.clientX-r.left,cy:t.clientY-r.top}}
-    const onTouchStart=(e:TouchEvent)=>{e.preventDefault();const r=canvas.getBoundingClientRect(),t=e.touches[0];mouseRef.current={cx:t.clientX-r.left,cy:t.clientY-r.top}}
-    const onDown=()=>{boostRef.current=true;getSfxCtx()?.resume()}
-    const onUp=()=>{boostRef.current=false}
+    const getJoyBase=()=>({x:JOY_BASE_OFFSET,y:canvas.offsetHeight-JOY_BASE_OFFSET})
+    const updateJoystick=(cx:number,cy:number)=>{
+      const joy=joystickRef.current, {x:bx,y:by}=getJoyBase()
+      const dx=cx-bx, dy=cy-by, d=Math.sqrt(dx*dx+dy*dy)
+      const clamped=Math.min(d,JOY_KNOB_MAX), nx=d>0?dx/d:0, ny=d>0?dy/d:0
+      joy.knobDx=nx*clamped; joy.knobDy=ny*clamped
+      joy.angle=Math.atan2(dy,dx); joy.magnitude=Math.min(1,d/JOY_KNOB_MAX)
+    }
+    const startJoystick=(cx:number,cy:number):boolean=>{
+      const {x:bx,y:by}=getJoyBase()
+      if(Math.sqrt((cx-bx)**2+(cy-by)**2)<JOY_HIT_R){joystickRef.current.active=true;updateJoystick(cx,cy);return true}
+      return false
+    }
+    const stopJoystick=()=>{
+      joystickRef.current.active=false;joystickRef.current.knobDx=0;joystickRef.current.knobDy=0
+      joystickRef.current.magnitude=0;boostRef.current=false;joystickTouchIdRef.current=null
+    }
+    const onTouchStart=(e:TouchEvent)=>{
+      e.preventDefault()
+      const r=canvas.getBoundingClientRect()
+      for(let i=0;i<e.changedTouches.length;i++){
+        const t=e.changedTouches[i], cx=t.clientX-r.left, cy=t.clientY-r.top
+        if(joystickTouchIdRef.current===null&&startJoystick(cx,cy)){joystickTouchIdRef.current=t.identifier;getSfxCtx()?.resume()}
+        else mouseRef.current={cx,cy}
+      }
+    }
+    const onTouchMove=(e:TouchEvent)=>{
+      e.preventDefault()
+      const r=canvas.getBoundingClientRect()
+      for(let i=0;i<e.changedTouches.length;i++){
+        const t=e.changedTouches[i], cx=t.clientX-r.left, cy=t.clientY-r.top
+        if(t.identifier===joystickTouchIdRef.current){updateJoystick(cx,cy);boostRef.current=joystickRef.current.magnitude>0.65}
+        else mouseRef.current={cx,cy}
+      }
+    }
+    const onTouchEnd=(e:TouchEvent)=>{
+      for(let i=0;i<e.changedTouches.length;i++) if(e.changedTouches[i].identifier===joystickTouchIdRef.current) stopJoystick()
+    }
+    const onMove=(e:MouseEvent)=>{
+      const r=canvas.getBoundingClientRect(), cx=e.clientX-r.left, cy=e.clientY-r.top
+      mouseRef.current={cx,cy}
+      if(joystickRef.current.active){updateJoystick(cx,cy);boostRef.current=joystickRef.current.magnitude>0.65}
+    }
+    const onDown=(e:MouseEvent)=>{
+      const r=canvas.getBoundingClientRect()
+      if(!startJoystick(e.clientX-r.left,e.clientY-r.top)) boostRef.current=true
+      getSfxCtx()?.resume()
+    }
+    const onUp=()=>{if(joystickRef.current.active) stopJoystick(); else boostRef.current=false}
     const onKey=(e:KeyboardEvent)=>{
       if (e.code==='Space'||e.code==='ShiftLeft'||e.code==='ShiftRight'){e.preventDefault();boostRef.current=e.type==='keydown'}
       if ((e.code==='KeyE'||e.code==='KeyZ')&&e.type==='keydown') ultRef.current=true
       if (e.code==='KeyQ'&&e.type==='keydown') useItemRef.current=true
       if (e.key==='Escape') onClose()
     }
-    canvas.addEventListener('mousemove',onMove); canvas.addEventListener('touchmove',onTouchMove,{passive:false})
     canvas.addEventListener('touchstart',onTouchStart,{passive:false})
+    canvas.addEventListener('touchmove',onTouchMove,{passive:false})
+    canvas.addEventListener('touchend',onTouchEnd)
+    canvas.addEventListener('mousemove',onMove)
     canvas.addEventListener('mousedown',onDown); canvas.addEventListener('mouseup',onUp)
     window.addEventListener('keydown',onKey); window.addEventListener('keyup',onKey)
     return ()=>{
-      canvas.removeEventListener('mousemove',onMove); canvas.removeEventListener('touchmove',onTouchMove)
-      canvas.removeEventListener('touchstart',onTouchStart)
+      canvas.removeEventListener('touchstart',onTouchStart); canvas.removeEventListener('touchmove',onTouchMove)
+      canvas.removeEventListener('touchend',onTouchEnd); canvas.removeEventListener('mousemove',onMove)
       canvas.removeEventListener('mousedown',onDown); canvas.removeEventListener('mouseup',onUp)
       window.removeEventListener('keydown',onKey); window.removeEventListener('keyup',onKey)
     }
@@ -1200,35 +1235,15 @@ export default function SnakeGame({onClose}: Props) {
       </button>
       {draft&&<PerkDraft draft={draft} onPick={pickPerk}/>}
       {isTouch&&(
-        <>
-          {/* Left joystick zone */}
-          <div
-            className="pointer-events-auto absolute bottom-0 left-0 top-0 w-3/5 touch-none"
-            onTouchStart={handleJoyStart}
-            onTouchMove={handleJoyMove}
-            onTouchEnd={handleJoyEnd}
-            onTouchCancel={handleJoyEnd}
-          />
-          {/* Joystick visual */}
-          {joyVis.active&&(
-            <div className="pointer-events-none absolute inset-0" style={{zIndex:20}}>
-              <div className="absolute rounded-full border-2 border-white/25 bg-white/5"
-                style={{width:JMAX*2,height:JMAX*2,left:joyVis.baseX-JMAX,top:joyVis.baseY-JMAX}}/>
-              <div className="absolute rounded-full bg-white/35 border border-white/20"
-                style={{width:JMAX*0.8,height:JMAX*0.8,left:joyVis.thumbX-JMAX*0.4,top:joyVis.thumbY-JMAX*0.4}}/>
-            </div>
-          )}
-          {/* Right DASH button */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-6 flex items-end justify-end px-6">
-            <button
-              className={`pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 transition-colors ${display.ult>=100?'border-purple-400 bg-purple-900/60 text-purple-100':'border-zinc-600/40 bg-black/60 text-zinc-500'}`}
-              onTouchStart={e=>{e.preventDefault();ultRef.current=true;getSfxCtx()?.resume()}}
-            >
-              <span className="text-2xl leading-none">⚡</span>
-              <span className="text-[11px] font-bold">{display.ult>=100?'READY!':display.ult+'%'}</span>
-            </button>
-          </div>
-        </>
+        <div className="pointer-events-none absolute inset-x-0 bottom-6 flex items-end justify-end px-6">
+          <button
+            className={`pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 transition-colors ${display.ult>=100?'border-purple-400 bg-purple-900/60 text-purple-100':'border-zinc-600/40 bg-black/60 text-zinc-500'}`}
+            onTouchStart={e=>{e.preventDefault();ultRef.current=true;getSfxCtx()?.resume()}}
+          >
+            <span className="text-2xl leading-none">⚡</span>
+            <span className="text-[11px] font-bold">{display.ult>=100?'READY!':display.ult+'%'}</span>
+          </button>
+        </div>
       )}
       {display.phase==='dead'&&(
         <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm">
