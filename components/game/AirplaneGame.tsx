@@ -529,10 +529,10 @@ function makeDrones(count: number): Drone[] {
 function initWorld(playerName: string): World {
   const world: World = {
     planes: [], bullets: [], items: [], particles: [],
-    drones: makeDrones(2), maxDrones: 2,
+    drones: [], maxDrones: 0,
     stormR: ARENA_RADIUS, stormNextR: ARENA_RADIUS * (1 - STORM_SHRINK_RATIO),
     stormPhase: 'hold', stormTimer: STORM_HOLD_MS / 1000,
-    nextBulletId: 0, nextItemId: 0, nextPlaneId: 0, nextDroneId: 2,
+    nextBulletId: 0, nextItemId: 0, nextPlaneId: 0, nextDroneId: 0,
     kills: 0, phase: 'playing',
   }
   world.planes.push(makePlane(world, true, 0, playerName))
@@ -976,28 +976,6 @@ function renderHUD(
     ctx.fillText(`🤖 드론 ${aliveDrones}/${totalDrones}`, 20, ch - 76 - 16)
   }
 
-  // Active effects
-  const effects: { emoji: string; color: string; remaining: number; always?: boolean }[] = []
-  if (player.shieldActive) effects.push({ emoji: '🛡️', color: '#22d3ee', remaining: 999, always: true })
-  if (player.speedUntil > now) effects.push({ emoji: '⚡', color: '#fbbf24', remaining: player.speedUntil - now })
-  if (player.rapidFireUntil > now) effects.push({ emoji: '🔥', color: '#f97316', remaining: player.rapidFireUntil - now })
-  if (player.multiShotUntil > now) effects.push({ emoji: '💥', color: '#a855f7', remaining: player.multiShotUntil - now })
-  if (effects.length > 0) {
-    const boxW = effects.length * 52 + 8
-    ctx.fillStyle = 'rgba(0,0,0,0.62)'
-    ctx.beginPath(); ctx.roundRect(12, ch - 76 - 56, boxW, 48, 10); ctx.fill()
-    effects.forEach((eff, i) => {
-      const ex = 12 + 8 + i * 52, ey = ch - 76 - 56 + 4
-      ctx.fillStyle = eff.color + '33'
-      ctx.beginPath(); ctx.roundRect(ex, ey, 44, 40, 8); ctx.fill()
-      ctx.font = '18px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-      ctx.fillText(eff.emoji, ex + 22, ey + 16)
-      ctx.font = 'bold 10px system-ui'; ctx.fillStyle = '#d4d4d8'; ctx.textBaseline = 'alphabetic'
-      ctx.fillText(eff.always ? 'ON' : `${Math.ceil(eff.remaining)}s`, ex + 22, ey + 37)
-    })
-    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'
-  }
-
   // Storm timer
   if (world.stormPhase !== 'hold' || world.stormTimer < 12) {
     const label = world.stormPhase === 'shrink' ? strings.stormShrinking : world.stormPhase === 'warn' ? strings.stormWarning : strings.stormHold
@@ -1008,17 +986,37 @@ function renderHUD(
     ctx.fillText(label, cw / 2, 28)
     ctx.fillStyle = '#f4f4f5'; ctx.font = '11px system-ui'
     ctx.fillText(`${Math.ceil(world.stormTimer)}s`, cw / 2, 42)
+    ctx.textAlign = 'left'
   }
-
-  // Hint
-  ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(0,0,0,0.5)'
-  ctx.beginPath(); ctx.roundRect(cw - 222, 12, 210, 28, 6); ctx.fill()
-  ctx.fillStyle = '#71717a'; ctx.font = '10px system-ui'
-  ctx.fillText(strings.boostHint, cw - 20, 30)
-  ctx.textAlign = 'left'
 
   // Joystick
   const jbx = JOY_BASE_OFFSET, jby = ch - JOY_BASE_OFFSET
+
+  // Active effects — vertical stack to the left of joystick
+  const effects: { emoji: string; color: string; remaining: number; always?: boolean }[] = []
+  if (player.shieldActive) effects.push({ emoji: '🛡️', color: '#22d3ee', remaining: 999, always: true })
+  if (player.speedUntil > now) effects.push({ emoji: '⚡', color: '#fbbf24', remaining: player.speedUntil - now })
+  if (player.rapidFireUntil > now) effects.push({ emoji: '🔥', color: '#f97316', remaining: player.rapidFireUntil - now })
+  if (player.multiShotUntil > now) effects.push({ emoji: '💥', color: '#a855f7', remaining: player.multiShotUntil - now })
+  if (world.drones.filter(d => d.alive).length > 0) effects.push({ emoji: '🤖', color: '#84cc16', remaining: 999, always: true })
+  if (effects.length > 0) {
+    const itemW = 44, itemH = 48, gap = 4
+    // Position: to the left of the joystick, bottom-aligned with joystick center
+    const col_x = jbx - JOY_BASE_R - itemW - 6
+    const col_bottom = jby + JOY_BASE_R / 2
+    effects.forEach((eff, i) => {
+      const ey = col_bottom - (effects.length - i) * (itemH + gap)
+      ctx.fillStyle = 'rgba(0,0,0,0.62)'
+      ctx.beginPath(); ctx.roundRect(col_x, ey, itemW, itemH, 8); ctx.fill()
+      ctx.fillStyle = eff.color + '40'
+      ctx.beginPath(); ctx.roundRect(col_x + 2, ey + 2, itemW - 4, itemH - 4, 6); ctx.fill()
+      ctx.font = '18px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+      ctx.fillText(eff.emoji, col_x + itemW / 2, ey + 16)
+      ctx.font = 'bold 9px system-ui'; ctx.fillStyle = '#d4d4d8'; ctx.textBaseline = 'alphabetic'
+      ctx.fillText(eff.always ? 'ON' : `${Math.ceil(eff.remaining)}s`, col_x + itemW / 2, ey + itemH - 4)
+    })
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'
+  }
   // Base ring
   ctx.globalAlpha = joy.active ? 0.55 : 0.30
   ctx.fillStyle = '#0d1225'
@@ -1081,7 +1079,7 @@ export default function AirplaneGame({ onClose, strings }: Props) {
   const prevStormPhaseRef = useRef<StormPhase>('hold')
 
   const [display, setDisplay] = useState({ phase: 'playing' as World['phase'], hp: MAX_HP, kills: 0 })
-  const [muted, setMuted] = useState(false)
+  const [muted] = useState(false)
   const [isTouch, setIsTouch] = useState(false)
   const [mmPx, setMmPx] = useState(60)
 
@@ -1091,10 +1089,18 @@ export default function AirplaneGame({ onClose, strings }: Props) {
   }, [])
 
   const restart = useCallback(() => {
-    worldRef.current = initWorld(strings.playerName)
+    const newWorld = initWorld(strings.playerName)
+    worldRef.current = newWorld
     prevPhaseRef.current = 'playing'
     prevBoostingRef.current = false
     prevStormPhaseRef.current = 'hold'
+    // Reset camera to new player spawn position immediately
+    const player = newWorld.planes.find(p => p.isPlayer)
+    if (player) {
+      camRef.current.x = player.x
+      camRef.current.y = player.y
+      camRef.current.zoom = CAM_MAX_ZOOM
+    }
     setDisplay({ phase: 'playing', hp: MAX_HP, kills: 0 })
   }, [strings.playerName])
 
@@ -1494,24 +1500,6 @@ export default function AirplaneGame({ onClose, strings }: Props) {
         </div>
       )}
 
-      {/* Mute button */}
-      <button
-        onClick={() => setMuted(m => !m)}
-        className="absolute right-14 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-zinc-400 transition hover:bg-black/80 hover:text-white"
-        title={muted ? '소리 켜기' : '소리 끄기'}
-      >
-        {muted ? (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-            <line x1="23" y1="9" x2="17" y2="15" /><line x1="17" y1="9" x2="23" y2="15" />
-          </svg>
-        ) : (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-          </svg>
-        )}
-      </button>
 
       <button
         onClick={onClose}
