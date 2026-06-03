@@ -422,6 +422,41 @@ class SoundManager {
     })
   }
 
+  evolve(level: number) {
+    const ctx = this.getCtx(); if (!ctx) return
+    const now = ctx.currentTime
+    // Rising power-up chord: low rumble + ascending sweep + bell hit
+    const rumble = this.g(ctx, 0.45)
+    this.noise(ctx, rumble, 0.4)
+    rumble.gain.setValueAtTime(0.45, now); rumble.gain.exponentialRampToValueAtTime(0.001, now + 0.4)
+
+    // Ascending frequency sweep (sawtooth → sine)
+    const sweep = this.g(ctx, 0.28)
+    const o1 = this.osc(ctx, 'sawtooth', 120, sweep)
+    o1.frequency.exponentialRampToValueAtTime(800 + level * 400, now + 0.35)
+    sweep.gain.setValueAtTime(0.28, now); sweep.gain.exponentialRampToValueAtTime(0.001, now + 0.45)
+    o1.stop(now + 0.45)
+
+    // Bell-like hit at the end
+    const bell = this.g(ctx, 0.35)
+    const o2 = this.osc(ctx, 'sine', 880 + level * 220, bell)
+    o2.frequency.exponentialRampToValueAtTime((880 + level * 220) * 0.5, now + 0.5)
+    bell.gain.setValueAtTime(0, now + 0.28)
+    bell.gain.linearRampToValueAtTime(0.35, now + 0.32)
+    bell.gain.exponentialRampToValueAtTime(0.001, now + 0.9)
+    o2.stop(now + 0.9)
+
+    // High sparkle notes
+    const notes = [1318, 1568, 2093].slice(0, level + 1)
+    notes.forEach((f, i) => {
+      const t = now + 0.3 + i * 0.08
+      const g = this.g(ctx, 0.15)
+      const o = this.osc(ctx, 'triangle', f, g)
+      g.gain.setValueAtTime(0.15, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.22)
+      o.stop(t + 0.22)
+    })
+  }
+
   destroy() { this.ctx?.close(); this.ctx = null }
 }
 
@@ -798,75 +833,211 @@ function render(
     ctx.scale(1 / scale, 1 / scale)
     ctx.translate(plane.x * scale, plane.y * scale)
     ctx.rotate(plane.dir)
-    const R = PLANE_RADIUS
 
-    // engine boost glow
-    if (plane.boosting) {
-      const grad = ctx.createRadialGradient(-R * 1.3, 0, 0, -R * 1.3, 0, R * 3)
-      grad.addColorStop(0, plane.color + 'dd')
-      grad.addColorStop(1, 'transparent')
-      ctx.fillStyle = grad
-      ctx.beginPath(); ctx.ellipse(-R * 1.3, 0, R * 3, R * 0.65, 0, 0, 2 * Math.PI); ctx.fill()
+    const ev = plane.evolveLevel  // 0-3
+    const R = PLANE_RADIUS * (1 + ev * 0.32)  // grows per level: 22→29→36→43
+    const col = plane.color
+    const pulse = 0.5 + 0.5 * Math.sin(now * 4)
+
+    // ─── Level 3 outer energy ring ───────────────────────────────────────────
+    if (ev >= 3) {
+      const ringR = R * 2.4
+      const spinAngle = now * 2.2
+      ctx.save()
+      ctx.rotate(spinAngle)
+      for (let s = 0; s < 3; s++) {
+        ctx.rotate((Math.PI * 2) / 3)
+        const g = ctx.createLinearGradient(-ringR, 0, ringR, 0)
+        g.addColorStop(0, 'transparent')
+        g.addColorStop(0.5, '#fde68a' + 'cc')
+        g.addColorStop(1, 'transparent')
+        ctx.strokeStyle = g; ctx.lineWidth = 3
+        ctx.beginPath(); ctx.arc(0, 0, ringR, -0.5, 0.5); ctx.stroke()
+      }
+      ctx.restore()
     }
 
-    // fuselage
-    ctx.fillStyle = shadeColor(plane.color, 0.78)
-    ctx.beginPath()
-    ctx.moveTo(R * 1.65, 0)
-    ctx.lineTo(-R * 0.9, R * 0.38)
-    ctx.lineTo(-R * 1.25, 0)
-    ctx.lineTo(-R * 0.9, -R * 0.38)
-    ctx.closePath()
-    ctx.fill()
+    // ─── Level 2+ aura glow ───────────────────────────────────────────────────
+    if (ev >= 2) {
+      const auraColor = ev >= 3 ? '#fbbf24' : '#818cf8'
+      const aura = ctx.createRadialGradient(0, 0, R * 0.5, 0, 0, R * 2.5)
+      aura.addColorStop(0, auraColor + '55')
+      aura.addColorStop(1, 'transparent')
+      ctx.fillStyle = aura
+      ctx.beginPath(); ctx.arc(0, 0, R * 2.5, 0, 2 * Math.PI); ctx.fill()
+    }
 
-    // wings
-    ctx.fillStyle = plane.color
-    ctx.beginPath()
-    ctx.moveTo(R * 0.25, 0)
-    ctx.lineTo(-R * 0.3, R * 1.2)
-    ctx.lineTo(-R * 0.85, R * 0.52)
-    ctx.lineTo(-R * 0.18, 0)
-    ctx.closePath()
-    ctx.fill()
-    ctx.beginPath()
-    ctx.moveTo(R * 0.25, 0)
-    ctx.lineTo(-R * 0.3, -R * 1.2)
-    ctx.lineTo(-R * 0.85, -R * 0.52)
-    ctx.lineTo(-R * 0.18, 0)
-    ctx.closePath()
-    ctx.fill()
+    // ─── Engine boost / evolve afterburner glow ───────────────────────────────
+    if (plane.boosting || ev > 0) {
+      const glowLen = plane.boosting ? R * 3.5 : R * (1.8 + ev * 0.8)
+      const glowW = R * (0.5 + ev * 0.15)
+      const glowColor = ev >= 3 ? '#fde68a' : ev >= 2 ? '#c084fc' : col
+      if (ev >= 2) {
+        // Dual engine pods
+        for (const side of [-1, 1]) {
+          const grad = ctx.createLinearGradient(-R * 0.5, 0, -glowLen, 0)
+          grad.addColorStop(0, glowColor + 'ee')
+          grad.addColorStop(1, 'transparent')
+          ctx.fillStyle = grad
+          ctx.beginPath(); ctx.ellipse(-R * 0.8, side * R * 0.55, glowLen * 0.7, glowW * 0.4, 0, 0, 2 * Math.PI); ctx.fill()
+        }
+      }
+      const grad = ctx.createRadialGradient(-R * 1.0, 0, 0, -R * 1.0, 0, glowLen)
+      grad.addColorStop(0, glowColor + 'ee')
+      grad.addColorStop(1, 'transparent')
+      ctx.fillStyle = grad
+      ctx.beginPath(); ctx.ellipse(-R * 1.0, 0, glowLen, glowW, 0, 0, 2 * Math.PI); ctx.fill()
+    }
 
-    // tail fins
-    ctx.fillStyle = shadeColor(plane.color, 0.68)
-    ctx.beginPath()
-    ctx.moveTo(-R * 0.52, 0)
-    ctx.lineTo(-R * 1.12, R * 0.58)
-    ctx.lineTo(-R * 1.25, R * 0.2)
-    ctx.closePath()
-    ctx.fill()
-    ctx.beginPath()
-    ctx.moveTo(-R * 0.52, 0)
-    ctx.lineTo(-R * 1.12, -R * 0.58)
-    ctx.lineTo(-R * 1.25, -R * 0.2)
-    ctx.closePath()
-    ctx.fill()
+    // ─── Fuselage ─────────────────────────────────────────────────────────────
+    if (ev >= 2) {
+      // Sleek delta body
+      const bodyColor = ev >= 3 ? shadeColor('#f59e0b', 0.9) : shadeColor(col, 0.85)
+      ctx.fillStyle = bodyColor
+      ctx.beginPath()
+      ctx.moveTo(R * 2.0, 0)
+      ctx.lineTo(-R * 0.6, R * 0.32)
+      ctx.lineTo(-R * 1.4, 0)
+      ctx.lineTo(-R * 0.6, -R * 0.32)
+      ctx.closePath(); ctx.fill()
+    } else {
+      ctx.fillStyle = shadeColor(col, 0.78)
+      ctx.beginPath()
+      ctx.moveTo(R * 1.65, 0)
+      ctx.lineTo(-R * 0.9, R * 0.38)
+      ctx.lineTo(-R * 1.25, 0)
+      ctx.lineTo(-R * 0.9, -R * 0.38)
+      ctx.closePath(); ctx.fill()
+    }
 
-    // cockpit
-    ctx.fillStyle = plane.isPlayer ? 'rgba(165,180,252,0.88)' : 'rgba(190,205,225,0.68)'
-    ctx.beginPath(); ctx.ellipse(R * 0.55, 0, R * 0.42, R * 0.2, 0, 0, 2 * Math.PI); ctx.fill()
-    ctx.fillStyle = 'rgba(255,255,255,0.22)'
-    ctx.beginPath(); ctx.ellipse(R * 0.63, -R * 0.06, R * 0.22, R * 0.1, -0.3, 0, 2 * Math.PI); ctx.fill()
+    // ─── Wings ────────────────────────────────────────────────────────────────
+    if (ev >= 3) {
+      // Triple swept delta wings (gold/fire)
+      const wc = shadeColor('#f59e0b', 1.1)
+      ctx.fillStyle = wc
+      ctx.beginPath()
+      ctx.moveTo(R * 0.6, 0); ctx.lineTo(-R * 0.8, R * 1.9); ctx.lineTo(-R * 1.3, R * 0.7); ctx.lineTo(-R * 0.1, 0)
+      ctx.closePath(); ctx.fill()
+      ctx.beginPath()
+      ctx.moveTo(R * 0.6, 0); ctx.lineTo(-R * 0.8, -R * 1.9); ctx.lineTo(-R * 1.3, -R * 0.7); ctx.lineTo(-R * 0.1, 0)
+      ctx.closePath(); ctx.fill()
+      // Forward canards
+      ctx.fillStyle = shadeColor('#fde68a', 0.9)
+      ctx.beginPath()
+      ctx.moveTo(R * 1.2, 0); ctx.lineTo(R * 0.5, R * 0.85); ctx.lineTo(R * 0.2, 0)
+      ctx.closePath(); ctx.fill()
+      ctx.beginPath()
+      ctx.moveTo(R * 1.2, 0); ctx.lineTo(R * 0.5, -R * 0.85); ctx.lineTo(R * 0.2, 0)
+      ctx.closePath(); ctx.fill()
+    } else if (ev >= 2) {
+      // Swept delta wings (purple)
+      const wc = shadeColor(col, 1.0)
+      ctx.fillStyle = wc
+      ctx.beginPath()
+      ctx.moveTo(R * 0.4, 0); ctx.lineTo(-R * 0.5, R * 1.55); ctx.lineTo(-R * 1.0, R * 0.6); ctx.lineTo(-R * 0.15, 0)
+      ctx.closePath(); ctx.fill()
+      ctx.beginPath()
+      ctx.moveTo(R * 0.4, 0); ctx.lineTo(-R * 0.5, -R * 1.55); ctx.lineTo(-R * 1.0, -R * 0.6); ctx.lineTo(-R * 0.15, 0)
+      ctx.closePath(); ctx.fill()
+      // Wing accent lines
+      ctx.strokeStyle = '#c084fc'; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.7
+      ctx.beginPath(); ctx.moveTo(R * 0.3, R * 0.1); ctx.lineTo(-R * 0.45, R * 1.3); ctx.stroke()
+      ctx.beginPath(); ctx.moveTo(R * 0.3, -R * 0.1); ctx.lineTo(-R * 0.45, -R * 1.3); ctx.stroke()
+      ctx.globalAlpha = 1
+    } else if (ev >= 1) {
+      // Extended wings with glow tip
+      ctx.fillStyle = col
+      ctx.beginPath()
+      ctx.moveTo(R * 0.3, 0); ctx.lineTo(-R * 0.35, R * 1.38); ctx.lineTo(-R * 0.9, R * 0.56); ctx.lineTo(-R * 0.18, 0)
+      ctx.closePath(); ctx.fill()
+      ctx.beginPath()
+      ctx.moveTo(R * 0.3, 0); ctx.lineTo(-R * 0.35, -R * 1.38); ctx.lineTo(-R * 0.9, -R * 0.56); ctx.lineTo(-R * 0.18, 0)
+      ctx.closePath(); ctx.fill()
+      // Wing tip glow
+      ctx.fillStyle = '#a5f3fc'; ctx.globalAlpha = 0.6 + 0.4 * pulse
+      ctx.beginPath(); ctx.arc(-R * 0.35, R * 1.38, R * 0.18, 0, 2 * Math.PI); ctx.fill()
+      ctx.beginPath(); ctx.arc(-R * 0.35, -R * 1.38, R * 0.18, 0, 2 * Math.PI); ctx.fill()
+      ctx.globalAlpha = 1
+    } else {
+      ctx.fillStyle = col
+      ctx.beginPath()
+      ctx.moveTo(R * 0.25, 0); ctx.lineTo(-R * 0.3, R * 1.2); ctx.lineTo(-R * 0.85, R * 0.52); ctx.lineTo(-R * 0.18, 0)
+      ctx.closePath(); ctx.fill()
+      ctx.beginPath()
+      ctx.moveTo(R * 0.25, 0); ctx.lineTo(-R * 0.3, -R * 1.2); ctx.lineTo(-R * 0.85, -R * 0.52); ctx.lineTo(-R * 0.18, 0)
+      ctx.closePath(); ctx.fill()
+    }
 
-    // outline
-    ctx.strokeStyle = 'rgba(0,0,0,0.32)'
-    ctx.lineWidth = 1.5
-    ctx.beginPath()
-    ctx.moveTo(R * 1.65, 0)
-    ctx.lineTo(-R * 0.9, R * 0.38)
-    ctx.lineTo(-R * 1.25, 0)
-    ctx.lineTo(-R * 0.9, -R * 0.38)
-    ctx.closePath()
-    ctx.stroke()
+    // ─── Tail fins ────────────────────────────────────────────────────────────
+    const tailColor = ev >= 3 ? shadeColor('#f59e0b', 0.65) : shadeColor(col, 0.68)
+    ctx.fillStyle = tailColor
+    if (ev >= 2) {
+      // Dual tail fins per side
+      for (const side of [-1, 1]) {
+        ctx.beginPath()
+        ctx.moveTo(-R * 0.4, side * R * 0.1)
+        ctx.lineTo(-R * 1.2, side * R * 0.75)
+        ctx.lineTo(-R * 1.4, side * R * 0.28)
+        ctx.closePath(); ctx.fill()
+        ctx.beginPath()
+        ctx.moveTo(-R * 0.7, side * R * 0.05)
+        ctx.lineTo(-R * 1.35, side * R * 0.48)
+        ctx.lineTo(-R * 1.4, side * R * 0.18)
+        ctx.closePath(); ctx.fill()
+      }
+    } else {
+      ctx.beginPath()
+      ctx.moveTo(-R * 0.52, 0); ctx.lineTo(-R * 1.12, R * 0.58); ctx.lineTo(-R * 1.25, R * 0.2)
+      ctx.closePath(); ctx.fill()
+      ctx.beginPath()
+      ctx.moveTo(-R * 0.52, 0); ctx.lineTo(-R * 1.12, -R * 0.58); ctx.lineTo(-R * 1.25, -R * 0.2)
+      ctx.closePath(); ctx.fill()
+    }
+
+    // ─── Engine pods (Lv2+) ───────────────────────────────────────────────────
+    if (ev >= 2) {
+      const podColor = ev >= 3 ? shadeColor('#f59e0b', 0.7) : shadeColor(col, 0.6)
+      for (const side of [-1, 1]) {
+        ctx.fillStyle = podColor
+        ctx.beginPath(); ctx.ellipse(-R * 0.6, side * R * 0.55, R * 0.55, R * 0.18, 0, 0, 2 * Math.PI); ctx.fill()
+        // Nozzle glow
+        const podGlow = ev >= 3 ? '#fde68a' : '#c084fc'
+        ctx.fillStyle = podGlow; ctx.globalAlpha = 0.7 + 0.3 * pulse
+        ctx.beginPath(); ctx.arc(-R * 1.1, side * R * 0.55, R * 0.14, 0, 2 * Math.PI); ctx.fill()
+        ctx.globalAlpha = 1
+      }
+    }
+
+    // ─── Cockpit ─────────────────────────────────────────────────────────────
+    if (ev >= 3) {
+      ctx.fillStyle = 'rgba(253,230,138,0.92)'
+      ctx.beginPath(); ctx.ellipse(R * 0.7, 0, R * 0.5, R * 0.22, 0, 0, 2 * Math.PI); ctx.fill()
+      ctx.fillStyle = 'rgba(255,255,255,0.35)'
+      ctx.beginPath(); ctx.ellipse(R * 0.8, -R * 0.07, R * 0.25, R * 0.11, -0.3, 0, 2 * Math.PI); ctx.fill()
+    } else if (ev >= 1) {
+      ctx.fillStyle = 'rgba(165,250,252,0.92)'
+      ctx.beginPath(); ctx.ellipse(R * 0.6, 0, R * 0.44, R * 0.21, 0, 0, 2 * Math.PI); ctx.fill()
+      ctx.fillStyle = 'rgba(255,255,255,0.28)'
+      ctx.beginPath(); ctx.ellipse(R * 0.68, -R * 0.06, R * 0.24, R * 0.1, -0.3, 0, 2 * Math.PI); ctx.fill()
+    } else {
+      ctx.fillStyle = plane.isPlayer ? 'rgba(165,180,252,0.88)' : 'rgba(190,205,225,0.68)'
+      ctx.beginPath(); ctx.ellipse(R * 0.55, 0, R * 0.42, R * 0.2, 0, 0, 2 * Math.PI); ctx.fill()
+      ctx.fillStyle = 'rgba(255,255,255,0.22)'
+      ctx.beginPath(); ctx.ellipse(R * 0.63, -R * 0.06, R * 0.22, R * 0.1, -0.3, 0, 2 * Math.PI); ctx.fill()
+    }
+
+    // ─── Outline ─────────────────────────────────────────────────────────────
+    const outlineColor = ev >= 3 ? 'rgba(253,230,138,0.5)' : ev >= 2 ? 'rgba(192,132,252,0.45)' : 'rgba(0,0,0,0.32)'
+    ctx.strokeStyle = outlineColor; ctx.lineWidth = ev >= 2 ? 2 : 1.5
+    if (ev >= 2) {
+      ctx.beginPath()
+      ctx.moveTo(R * 2.0, 0); ctx.lineTo(-R * 0.6, R * 0.32); ctx.lineTo(-R * 1.4, 0); ctx.lineTo(-R * 0.6, -R * 0.32)
+      ctx.closePath(); ctx.stroke()
+    } else {
+      ctx.beginPath()
+      ctx.moveTo(R * 1.65, 0); ctx.lineTo(-R * 0.9, R * 0.38); ctx.lineTo(-R * 1.25, 0); ctx.lineTo(-R * 0.9, -R * 0.38)
+      ctx.closePath(); ctx.stroke()
+    }
 
     ctx.restore()
     ctx.shadowBlur = 0
@@ -1179,6 +1350,7 @@ export default function AirplaneGame({ onClose, strings }: Props) {
   const lastTimeRef = useRef(0)
   const frameRef = useRef(0)
   const camRef = useRef({ x: 0, y: 0, zoom: CAM_MAX_ZOOM })
+  const shakeRef = useRef({ intensity: 0, duration: 0 })
   const sfxRef = useRef<SoundManager>(new SoundManager())
   const prevBoostingRef = useRef(false)
   const prevPhaseRef = useRef<World['phase']>('playing')
@@ -1326,6 +1498,11 @@ export default function AirplaneGame({ onClose, strings }: Props) {
               if (plane.isPlayer) {
                 spawnPopup(world, plane.x, plane.y, item.kind)
                 sfx.pickup()
+                if (item.kind === 'evolve') {
+                  const lv = plane.evolveLevel  // already incremented by applyItem
+                  shakeRef.current = { intensity: 18 + lv * 10, duration: 0.55 + lv * 0.15 }
+                  sfx.evolve(lv)
+                }
               }
               world.items.splice(ii, 1)
             }
@@ -1470,13 +1647,31 @@ export default function AirplaneGame({ onClose, strings }: Props) {
           cam.x += (pl.x - cam.x) * 0.1
           cam.y += (pl.y - cam.y) * 0.1
           const alive = world.planes.filter(p => p.alive).length
-          const targetZoom = Math.max(CAM_MIN_ZOOM, Math.min(CAM_MAX_ZOOM, 1.6 - alive * 0.028))
+          const baseZoom = Math.max(CAM_MIN_ZOOM, Math.min(CAM_MAX_ZOOM, 1.6 - alive * 0.028))
+          // Zoom out more per evolve level: Lv1→−15%, Lv2→−30%, Lv3→−45%
+          const evolveZoomOut = pl.evolveLevel * 0.15
+          const targetZoom = Math.max(0.45, baseZoom - evolveZoomOut)
           cam.zoom += (targetZoom - cam.zoom) * 0.04
         }
       }
 
-      render(ctx, world, cw, ch, now, camRef.current)
-      renderHUD(ctx, world, cw, ch, now, camRef.current, strings, joystickRef.current)
+      // Screen shake
+      const shake = shakeRef.current
+      let renderCam = camRef.current
+      if (shake.duration > 0) {
+        shake.duration -= dt
+        const t = Math.max(0, shake.duration)
+        const amp = shake.intensity * (t / (0.55 + 0.15 * 3)) / camRef.current.zoom
+        renderCam = {
+          x: camRef.current.x + (Math.random() * 2 - 1) * amp,
+          y: camRef.current.y + (Math.random() * 2 - 1) * amp,
+          zoom: camRef.current.zoom,
+        }
+        if (shake.duration <= 0) shake.intensity = 0
+      }
+
+      render(ctx, world, cw, ch, now, renderCam)
+      renderHUD(ctx, world, cw, ch, now, renderCam, strings, joystickRef.current)
       rafRef.current = requestAnimationFrame(loop)
     }
 
