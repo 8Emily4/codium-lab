@@ -883,7 +883,7 @@ function renderHUD(
 
   // Minimap
   const mmSize = Math.min(cw, ch) * 0.14
-  const mmX = cw - mmSize - 16, mmY = ch - mmSize - 16
+  const mmX = cw - mmSize - 16, mmY = 16
   const mmScale = mmSize / (ARENA_RADIUS * 2)
   ctx.globalAlpha = 0.75
   ctx.fillStyle = '#0a0d1a'; ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 1.5
@@ -1338,7 +1338,7 @@ export default function AirplaneGame({ onClose, strings }: Props) {
 
       {/* Mobile controls */}
       {isTouch && display.phase === 'playing' && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-6 flex items-end justify-center px-6">
+        <div className="pointer-events-none absolute inset-x-0 bottom-6 flex items-end justify-end px-6">
           <button
             className="pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 border-white/20 bg-black/60 text-white active:bg-white/20"
             onTouchStart={e => { e.preventDefault(); boostRef.current = true; sfxRef.current.boost() }}
@@ -1353,7 +1353,7 @@ export default function AirplaneGame({ onClose, strings }: Props) {
       {/* Mobile aim hint */}
       {isTouch && display.phase === 'playing' && (
         <div className="pointer-events-none absolute left-1/2 top-14 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-[10px] text-zinc-400">
-          화면 터치 → 조준 방향 | BOOST → 가속
+          화면 터치 → 조준 방향 | 우하단 BOOST → 가속
         </div>
       )}
 
