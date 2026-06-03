@@ -939,7 +939,7 @@ function render(ctx: CanvasRenderingContext2D, w: World, cw: number, ch: number,
 function renderHUD(ctx: CanvasRenderingContext2D, w: World, cw: number, ch: number, now: number, cam: {x:number;y:number;zoom:number}) {
   const player=w.snakes[0]; if (!player||cw<10||ch<10) return
   // Minimap
-  const mm=Math.max(60,Math.min(cw,ch)*0.14), mmX=cw-mm-16, mmY=16, mmSc=mm/(ARENA_R*2)
+  const mm=Math.max(60,Math.min(cw,ch)*0.14), mmX=cw-mm-12, mmY=52, mmSc=mm/(ARENA_R*2)
   ctx.globalAlpha=0.75;ctx.fillStyle='#0d0d1a';ctx.strokeStyle='#6366f1';ctx.lineWidth=1.5
   ctx.beginPath();ctx.arc(mmX+mm/2,mmY+mm/2,mm/2,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.globalAlpha=1
   ctx.save();ctx.beginPath();ctx.arc(mmX+mm/2,mmY+mm/2,Math.max(1,mm/2-2),0,Math.PI*2);ctx.clip()
@@ -1090,13 +1090,14 @@ export default function SnakeGame({onClose}: Props) {
   useEffect(()=>{
     const prevTa=document.body.style.touchAction, prevOv=document.body.style.overflow
     document.body.style.touchAction='none'; document.body.style.overflow='hidden'
-    const block=(e:TouchEvent)=>e.preventDefault()
-    document.addEventListener('touchstart',block,{passive:false})
-    document.addEventListener('touchmove',block,{passive:false})
+    const blockPinch=(e:TouchEvent)=>{if(e.touches.length>1)e.preventDefault()}
+    const blockScroll=(e:TouchEvent)=>e.preventDefault()
+    document.addEventListener('touchstart',blockPinch,{passive:false})
+    document.addEventListener('touchmove',blockScroll,{passive:false})
     return()=>{
       document.body.style.touchAction=prevTa; document.body.style.overflow=prevOv
-      document.removeEventListener('touchstart',block)
-      document.removeEventListener('touchmove',block)
+      document.removeEventListener('touchstart',blockPinch)
+      document.removeEventListener('touchmove',blockScroll)
     }
   },[])
 
@@ -1194,7 +1195,7 @@ export default function SnakeGame({onClose}: Props) {
   return (
     <div className="relative h-full w-full overflow-hidden touch-none bg-[#07071a]">
       <canvas ref={canvasRef} className="h-full w-full cursor-none touch-none" />
-      <button onClick={onClose} className="absolute flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-zinc-400 transition hover:bg-black/80 hover:text-white" style={{top:mmPx+24,right:8}}>
+      <button onClick={onClose} className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-zinc-400 transition hover:bg-black/80 hover:text-white">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       {draft&&<PerkDraft draft={draft} onPick={pickPerk}/>}
