@@ -995,7 +995,7 @@ export default function DefenseGame({onClose}:Props){
         if(di>=0&&di!==dr.slot){
           const dst=gs.towers[di]
           if(!dst){gs.towers[di]=dr.tower;placed=true;gs.rangeSlot=di}
-          else{doMerge(gs,dr.slot,di,L);placed=true}
+          else{gs.towers[dr.slot]=dr.tower;doMerge(gs,dr.slot,di,L);placed=true}
         }
         if(!placed){gs.towers[dr.slot]=dr.tower;gs.rangeSlot=dr.slot}
         dr.tower=null;dr.slot=-1
