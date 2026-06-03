@@ -1,4 +1,4 @@
-.PHONY: help setup install up dev build build-dev start lint clean reinstall
+.PHONY: help setup install up dev build dev-build start lint clean reinstall
 
 help:
 	@echo "Available targets:"
@@ -7,7 +7,7 @@ help:
 	@echo "  up         - Start dev server (next dev)"
 	@echo "  dev        - Alias for up"
 	@echo "  build      - Production build (next build)"
-	@echo "  build-dev  - Build then start dev server"
+	@echo "  dev-build  - Build then start dev server"
 	@echo "  start      - Start production server (next start)"
 	@echo "  lint       - Run eslint"
 	@echo "  clean      - Remove .next build output"
@@ -26,7 +26,7 @@ dev: up
 build:
 	npm run build
 
-build-dev: build up
+dev-build: build up
 
 start:
 	npm run start

@@ -1,9 +1,11 @@
 "use client";
 
-import { company } from "@/lib/brand";
 import Reveal from "./Reveal";
+import type { Dictionary } from "@/app/[lang]/dictionaries";
 
-export default function FAQ() {
+export default function FAQ({ dict }: { dict: Dictionary }) {
+  const { faqSection } = dict;
+
   return (
     <section
       id="faq"
@@ -15,19 +17,19 @@ export default function FAQ() {
           <Reveal>
             <div className="lg:sticky lg:top-24">
               <p className="text-sm font-medium tracking-[0.2em] text-indigo-600 uppercase dark:text-indigo-400">
-                FAQ
+                {faqSection.eyebrow}
               </p>
               <h2 className="mt-2 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-5xl dark:text-zinc-50">
-                <span className="text-gradient">자주 묻는</span> 질문
+                <span className="text-gradient">{faqSection.titleHighlight}</span> {faqSection.title}
               </h2>
               <p className="mt-4 text-zinc-600 dark:text-zinc-300">
-                여기 없는 질문은 아래 문의 폼으로 보내주세요. 평일 기준 1–2영업일 안에 회신드립니다.
+                {faqSection.desc}
               </p>
               <a
                 href="#contact"
                 className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-indigo-600 underline-offset-4 hover:underline dark:text-indigo-400"
               >
-                바로 문의하기
+                {faqSection.ctaLabel}
                 <svg
                   width="14"
                   height="14"
@@ -47,7 +49,7 @@ export default function FAQ() {
 
           <Reveal delay={120} direction="up">
             <div className="divide-y divide-zinc-200/80 overflow-hidden rounded-2xl border border-zinc-200/80 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:divide-zinc-800/80 dark:border-zinc-800/80 dark:bg-zinc-900">
-              {company.faq.map((item) => (
+              {faqSection.items.map((item) => (
                 <details
                   key={item.q}
                   className="group [&_summary::-webkit-details-marker]:hidden"

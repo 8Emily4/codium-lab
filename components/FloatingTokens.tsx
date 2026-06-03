@@ -1,7 +1,6 @@
 "use client";
 
-const FLOATING_TOKENS: string[] = [
-  // 코디움랩 도메인
+const FLOATING_TOKENS_KO: string[] = [
   "Codium Lab",
   "코디움랩",
   "Adium",
@@ -22,8 +21,30 @@ const FLOATING_TOKENS: string[] = [
   "LLM 컨설팅",
   "AI 리터러시",
   "디지털 굿즈",
+]
 
-  // 코드 스타일
+const FLOATING_TOKENS_EN: string[] = [
+  "Codium Lab",
+  "Adium",
+  "Badium",
+  "// start from essence",
+  "// tools elevate people",
+  "// value that reaches daily life",
+  "automate(workflow)",
+  "consult(client)",
+  "design.literacy",
+  "studio.craft",
+  "research → ship",
+  "PoC → production",
+  "discover · design · build · transfer",
+  "workflow diagnosis",
+  "LLM consulting",
+  "AI literacy",
+  "digital goods",
+]
+
+const FLOATING_TOKENS_SHARED: string[] = [
+
   "const ctx = await load()",
   "export default Skill",
   "await llm.generate()",
@@ -71,6 +92,11 @@ const FLOATING_TOKENS: string[] = [
   "Inference",
 ];
 
+function getTokens(lang: string): string[] {
+  const locale = lang === 'en' ? FLOATING_TOKENS_EN : FLOATING_TOKENS_KO;
+  return [...locale, ...FLOATING_TOKENS_SHARED];
+}
+
 function tokenStyle(idx: number, token: string): string {
   const isModel =
     /claude|gpt|gemini|opus|sonnet|haiku|cursor|deepseek|qwen|llama/i.test(token);
@@ -99,18 +125,15 @@ export default function FloatingTokens({
   density = "normal",
   mask = "fade",
   className = "",
+  lang = "ko",
 }: {
   density?: "light" | "normal" | "dense";
-  /**
-   * - `none`: full bleed
-   * - `fade`: soft radial fade so center text stays readable
-   * - `right-half`: only show tokens in the right half (text-safe left)
-   */
   mask?: "none" | "fade" | "right-half";
   className?: string;
+  lang?: string;
 }) {
   const sliceMap = { light: 22, normal: 40, dense: 64 } as const;
-  const tokens = FLOATING_TOKENS.slice(0, sliceMap[density]);
+  const tokens = getTokens(lang).slice(0, sliceMap[density]);
 
   const maskStyle =
     mask === "fade"

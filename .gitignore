@@ -47,3 +47,9 @@ local.db
 local.db-journal
 local.db-wal
 local.db-shm
+
+# Claude Code local settings (personal overrides, not shared)
+.claude/settings.local.json
+
+# Temporary test scripts (Playwright etc.)
+test-*.mjs

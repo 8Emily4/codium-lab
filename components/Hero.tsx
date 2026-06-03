@@ -1,6 +1,7 @@
 import { company } from "@/lib/brand";
+import type { Dictionary } from "@/app/[lang]/dictionaries";
 
-export default function Hero() {
+export default function Hero({ lang, dict }: { lang: string; dict: Dictionary }) {
   return (
     <section
       id="top"
@@ -29,27 +30,27 @@ export default function Hero() {
         </div>
 
         <h1 className="mt-7 max-w-6xl text-[2.5rem] leading-[1.05] font-semibold tracking-tight text-balance text-zinc-900 sm:text-5xl lg:text-6xl dark:text-zinc-50">
-          기술의 본질을 연구하고{" "}
+          {dict.hero.titlePre}{" "}
           <span className="relative inline-block">
-            <span className="text-gradient">가치를 구현</span>
+            <span className="text-gradient">{dict.hero.titleHighlight}</span>
             <span
               aria-hidden
               className="anim-shimmer pointer-events-none absolute inset-x-0 bottom-1 h-3 rounded-full blur-md opacity-70"
             />
           </span>
-          하는 IT 솔루션 연구소
+          {dict.hero.titlePost}
         </h1>
 
         <p className="mt-7 max-w-2xl text-base leading-7 text-zinc-600 sm:text-lg sm:leading-8 dark:text-zinc-300">
-          {company.description}
+          {dict.company.description}
         </p>
 
         <div className="mt-10 flex flex-wrap items-center gap-3">
           <a
-            href="#contact"
+            href={`#contact`}
             className="group relative inline-flex h-12 items-center gap-2 overflow-hidden rounded-full bg-zinc-900 px-6 text-sm font-medium text-white shadow-[0_12px_30px_-12px_rgba(79,70,229,0.6)] transition hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
           >
-            <span className="relative z-10">컨설팅·협업 문의</span>
+            <span className="relative z-10">{dict.hero.ctaPrimary}</span>
             <svg
               width="16"
               height="16"
@@ -73,33 +74,33 @@ export default function Hero() {
             href="#services"
             className="inline-flex h-12 items-center rounded-full border border-zinc-300/80 bg-white/70 px-6 text-sm font-medium text-zinc-900 backdrop-blur transition hover:border-zinc-400 hover:bg-white dark:border-zinc-700/80 dark:bg-zinc-950/60 dark:text-zinc-100 dark:hover:border-zinc-500 dark:hover:bg-zinc-900"
           >
-            서비스 둘러보기
+            {dict.hero.ctaSecondary}
           </a>
         </div>
 
         <dl className="mt-16 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-zinc-200/70 pt-10 text-sm sm:grid-cols-4 dark:border-zinc-800/70">
           <div>
-            <dt className="text-zinc-500 dark:text-zinc-400">소재지</dt>
+            <dt className="text-zinc-500 dark:text-zinc-400">{dict.hero.locationLabel}</dt>
             <dd className="mt-1 font-medium text-zinc-900 dark:text-zinc-100">
-              {company.location}
+              {dict.company.location}
             </dd>
           </div>
           <div>
-            <dt className="text-zinc-500 dark:text-zinc-400">대표자</dt>
+            <dt className="text-zinc-500 dark:text-zinc-400">{dict.hero.ceoLabel}</dt>
             <dd className="mt-1 font-medium text-zinc-900 dark:text-zinc-100">
-              {company.ceo}
+              {dict.company.ceo}
             </dd>
           </div>
           <div>
-            <dt className="text-zinc-500 dark:text-zinc-400">R&amp;D 분야</dt>
+            <dt className="text-zinc-500 dark:text-zinc-400">{dict.hero.rdLabel}</dt>
             <dd className="mt-1 font-medium text-zinc-900 dark:text-zinc-100">
-              {company.rdFields.join(", ")}
+              {dict.company.rdFields}
             </dd>
           </div>
           <div>
-            <dt className="text-zinc-500 dark:text-zinc-400">운영 브랜드</dt>
+            <dt className="text-zinc-500 dark:text-zinc-400">{dict.hero.brandsLabel}</dt>
             <dd className="mt-1 font-medium text-zinc-900 dark:text-zinc-100">
-              에이디움 · 베이디움
+              {dict.hero.brandsValue}
             </dd>
           </div>
         </dl>

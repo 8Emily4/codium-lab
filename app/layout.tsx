@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { headers } from "next/headers";
 import { company } from "@/lib/brand";
+import PWARegister from "@/components/PWARegister";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -65,9 +67,13 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    // app/favicon.ico is picked up automatically by Next.
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
     apple: "/apple-touch-icon.png",
+  },
+  appleWebApp: {
+    capable: true,
+    title: company.nameKo,
+    statusBarStyle: 'black-translucent',
   },
 };
 
@@ -117,14 +123,17 @@ const jsonLdHtml = JSON.stringify([organizationJsonLd, websiteJsonLd]).replace(
   "\\u003c",
 );
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const h = await headers();
+  const lang = h.get("x-lang") ?? "ko";
+
   return (
     <html
-      lang="ko"
+      lang={lang}
       className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth antialiased`}
     >
       <body className="flex min-h-full flex-col bg-white text-zinc-900 dark:bg-black dark:text-zinc-100">
@@ -133,6 +142,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: jsonLdHtml }}
         />
         {children}
+        <PWARegister />
       </body>
     </html>
   );
