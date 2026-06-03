@@ -213,7 +213,7 @@ export default async function AiPage({ params }: { params: Promise<{ lang: strin
           {/* Pipeline diagram */}
           <div className="mt-12">
             <p className="mb-5 text-[10px] font-semibold tracking-[0.25em] text-zinc-500 uppercase">{ai.harnessDiagramLabel}</p>
-            <HarnessDiagram />
+            <HarnessDiagram stages={ai.harnessDiagramStages} />
           </div>
 
           {/* Capability cards */}

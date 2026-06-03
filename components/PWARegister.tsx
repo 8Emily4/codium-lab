@@ -1,38 +1,43 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
 }
 
-export default function PWARegister({ installLabel = "앱으로 설치하기" }: { installLabel?: string }) {
+const installLabels: Record<string, string> = {
+  ko: '앱으로 설치하기',
+  en: 'Install app',
+}
+
+export default function PWARegister() {
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null)
   const [installed, setInstalled] = useState(false)
+  const pathname = usePathname()
+  const lang = pathname?.split('/')[1] ?? 'ko'
+  const installLabel = installLabels[lang] ?? installLabels.ko
 
   useEffect(() => {
-    // Service Worker 등록
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('/sw.js', { scope: '/' })
         .catch((err) => console.warn('[SW] registration failed:', err))
     }
 
-    // 이미 설치됐는지 확인
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setInstalled(true)
       return
     }
 
-    // 설치 프롬프트 이벤트 저장
     const handler = (e: Event) => {
       e.preventDefault()
       setInstallEvent(e as BeforeInstallPromptEvent)
     }
     window.addEventListener('beforeinstallprompt', handler)
 
-    // 설치 완료 감지
     window.addEventListener('appinstalled', () => {
       setInstalled(true)
       setInstallEvent(null)
@@ -51,7 +56,6 @@ export default function PWARegister({ installLabel = "앱으로 설치하기" }:
     }
   }
 
-  // 설치 버튼 (beforeinstallprompt가 있을 때만 표시)
   if (!installEvent || installed) return null
 
   return (
