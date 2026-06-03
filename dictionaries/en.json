@@ -1,0 +1,931 @@
+{
+  "common": {
+    "readMore": "Learn more",
+    "inquiry": "Send inquiry",
+    "backToMain": "Back to main"
+  },
+  "company": {
+    "description": "Codium Lab researches tools that actually work at the boundary of LLMs and automation. We build solutions that don't stop at demos, and technology that elevates human work to the next level.",
+    "tagline": "A premium IT solutions lab that researches the essence of technology and delivers real value.",
+    "rdFields": "AI Automation Tools",
+    "location": "Gwangmyeong-si, Gyeonggi-do",
+    "ceo": "Nari Im",
+    "siteComingSoon": "Site coming soon",
+    "viewDetails": "Learn more"
+  },
+  "nav": {
+    "brands": "Brands",
+    "services": "Services",
+    "process": "Process",
+    "ai": "AI",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "game": "Game",
+    "login": "Log in",
+    "logout": "Log out",
+    "inquiry": "Inquire",
+    "menuOpen": "Open menu"
+  },
+  "hero": {
+    "titlePre": "Researching the essence of technology,",
+    "titleHighlight": "delivering real value",
+    "titlePost": "— a premium IT solutions lab",
+    "ctaPrimary": "Consulting & Collaboration",
+    "ctaSecondary": "Explore Services",
+    "locationLabel": "Location",
+    "ceoLabel": "CEO",
+    "rdLabel": "R&D Fields",
+    "brandsLabel": "Brands",
+    "brandsValue": "Adium · Badium"
+  },
+  "home": {
+    "exploreEyebrow": "Explore",
+    "exploreTitle": "Where would you",
+    "exploreTitleHighlight": "like to start?",
+    "exploreTitlePost": "",
+    "exploreDesc": "Six entry points — each one reveals how Codium Lab works and what it stands for.",
+    "readMore": "Learn more",
+    "gateways": [
+      {
+        "slug": "brands",
+        "eyebrow": "Brands",
+        "title": "Two distinct brands",
+        "description": "Adium · Badium — brands that bring education and design into everyday life."
+      },
+      {
+        "slug": "services",
+        "eyebrow": "Services",
+        "title": "Four ways to collaborate",
+        "description": "Consulting · Engineering · Education · Studio. Automation that reaches production."
+      },
+      {
+        "slug": "process",
+        "eyebrow": "Process",
+        "title": "Four-step process",
+        "description": "Discover → Design → Build → Transfer. Clear deliverables at every stage."
+      },
+      {
+        "slug": "ai",
+        "eyebrow": "AI",
+        "title": "Build with AI, embed in workflow",
+        "description": "Claude · Cursor · MCP · RAG — shaping how AI is adopted and operated."
+      },
+      {
+        "slug": "faq",
+        "eyebrow": "FAQ",
+        "title": "Frequently asked questions",
+        "description": "Collaboration · Security · Cost · Operations. The questions we hear most."
+      },
+      {
+        "slug": "contact",
+        "eyebrow": "Contact",
+        "title": "Collaboration inquiry",
+        "description": "Free initial diagnostic meeting. Reply within 1–2 business days."
+      }
+    ]
+  },
+  "servicesSection": {
+    "eyebrow": "Services",
+    "title": "From research to real work,",
+    "titleHighlight": "from work to tools",
+    "desc": "Automation that doesn't stop at a demo. Four ways Codium Lab can collaborate with you.",
+    "items": [
+      {
+        "tag": "Consulting",
+        "title": "AI Automation Consulting",
+        "summary": "Workflow diagnosis → automation design → production handoff",
+        "body": "We analyze the texture of repetitive work to find exactly where LLMs, RPA, and scripts fit best. We design automation that reaches production, not just proof-of-concept."
+      },
+      {
+        "tag": "Engineering",
+        "title": "Custom LLM Tool Development",
+        "summary": "A dedicated assistant tailored to your organization's data",
+        "body": "We design search, summarization, and generation tools based on your internal docs, manuals, and customer data, then deploy them in compliance with your security policies."
+      },
+      {
+        "tag": "Education",
+        "title": "AI Literacy Training",
+        "summary": "Practical training programs for teams and individuals",
+        "body": "Through the Adium brand, we deliver immediately applicable AI education — from executive workshops to hands-on practitioner sessions."
+      },
+      {
+        "tag": "Studio",
+        "title": "Digital Goods Collaboration",
+        "summary": "AI design brought into everyday objects",
+        "body": "The Badium brand transforms AI design into goods and content. Brand and campaign-scale collaboration available."
+      }
+    ]
+  },
+  "processSection": {
+    "eyebrow": "Process",
+    "title": "From discovery to handoff,",
+    "titleHighlight": "four clear stages",
+    "desc": "Divided into short, clear stages so it's always visible what gets decided when.",
+    "items": [
+      {
+        "step": "01",
+        "title": "Discover",
+        "body": "We start with on-site interviews and data flow observation. This is the stage where we redefine the problem."
+      },
+      {
+        "step": "02",
+        "title": "Design",
+        "body": "We place users, models, data, and operational cost on one canvas and sketch the simplest solution."
+      },
+      {
+        "step": "03",
+        "title": "Build",
+        "body": "Production-ready code, not prototypes. Monitoring and rollback scenarios are built in from the start."
+      },
+      {
+        "step": "04",
+        "title": "Transfer",
+        "body": "We hand over documentation, training, and management tools so the organization can operate independently. No dependencies left behind."
+      }
+    ]
+  },
+  "faqSection": {
+    "eyebrow": "FAQ",
+    "titleHighlight": "Frequently asked",
+    "title": "questions",
+    "desc": "For questions not listed here, use the contact form below. We reply within 1–2 business days.",
+    "ctaLabel": "Ask directly",
+    "items": [
+      {
+        "q": "What size companies do you collaborate with?",
+        "a": "From startups to mid-sized enterprises. That said, 'Is the problem well-defined?' and 'Can decision-makers be involved?' are more important variables for successful collaboration."
+      },
+      {
+        "q": "Is remote collaboration possible?",
+        "a": "Remote collaboration is our default. On-site workshops or interviews at our Gwangmyeong office are conducted offline only when necessary."
+      },
+      {
+        "q": "Should we start with education or consulting?",
+        "a": "If AI adoption is low in your organization, we recommend starting with Adium's literacy training. If you have a clear workflow to automate, consulting first. We'll decide together in a free diagnostic meeting."
+      },
+      {
+        "q": "Can you work in environments with strict security policies?",
+        "a": "Yes. We configure for closed internal networks, on-premise LLMs, and VPC isolation. We create a security review checklist together before collaboration begins."
+      },
+      {
+        "q": "Can we do a short PoC only?",
+        "a": "Absolutely. We typically propose a 2–4 week discovery + PoC package first. At this stage, we jointly judge whether this automation is truly needed."
+      }
+    ]
+  },
+  "footer": {
+    "exploreLabel": "Explore",
+    "contactLabel": "Contact",
+    "links": {
+      "brands": "Brands",
+      "services": "Services",
+      "process": "Process",
+      "ai": "AI",
+      "faq": "FAQ",
+      "contact": "Contact"
+    },
+    "ceoLabel": "CEO ·"
+  },
+  "brands": {
+    "metaTitle": "Brands",
+    "metaDesc": "Codium Lab's two brands — Adium (AI literacy education) and Badium (digital goods studio).",
+    "eyebrow": "Brands",
+    "title": "Two distinct brands",
+    "titleHighlight": "Education & Design",
+    "desc": "To bring Codium Lab's research into everyday life, we operate two sister brands. Adium elevates human learning; Badium elevates human aesthetics.",
+    "ctaBrandInquiry": "Brand collaboration inquiry",
+    "ctaServices": "View services",
+    "whyEyebrow": "Why two brands",
+    "whyTitle": "Why we split into",
+    "whyTitleHighlight": "two",
+    "whyTitlePost": "distinct paths",
+    "collabEyebrow": "Collaborate",
+    "collabTitle": "How to",
+    "collabTitleHighlight": "collaborate with our brands",
+    "collabCta": "Inquire about brand collaboration",
+    "subBrands": [
+      {
+        "slug": "adium",
+        "nameKo": "에이디움",
+        "nameEn": "Adium",
+        "tagline": "AI Literacy Education",
+        "description": "An AI literacy education brand where AI and learning meet to elevate everyday intelligence. From executive workshops to practitioner hands-ons and full school curricula.",
+        "highlights": [
+          "Separate executive & practitioner tracks",
+          "Organization-specific curriculum",
+          "Post-completion operational coaching"
+        ]
+      },
+      {
+        "slug": "badium",
+        "nameKo": "베이디움",
+        "nameEn": "Badium",
+        "tagline": "Digital Goods Studio",
+        "description": "A digital goods studio that bakes the sensibility of AI design into warm, everyday objects. Handles brand collaboration, campaign seasonal goods, and illustration licensing.",
+        "highlights": [
+          "AI illustration licensing",
+          "Campaign-scale goods production",
+          "Brand collaborations"
+        ]
+      }
+    ],
+    "whyTwo": [
+      {
+        "title": "Education and design are different paths",
+        "body": "There are two ways AI reaches people — head (knowledge & skills) and hands (sensibility & aesthetics). We don't keep both paths in a single organization."
+      },
+      {
+        "title": "Each brand has a clear audience",
+        "body": "Adium serves organizations and learners; Badium serves brand and campaign teams. Sharing one entry point blurs both audiences."
+      },
+      {
+        "title": "Codium Lab backs both",
+        "body": "Technology, LLM, and automation for both brands is owned by Codium Lab. The brands can focus purely on their respective audiences."
+      }
+    ],
+    "collab": [
+      {
+        "title": "Education + Design together",
+        "body": "An integrated package: elevate AI literacy internally while sending messages externally through campaigns and goods."
+      },
+      {
+        "title": "Brand-by-brand consulting",
+        "body": "Solo Adium education adoption or solo Badium design collaboration are both possible. Coordination with Codium Lab is included."
+      }
+    ]
+  },
+  "services": {
+    "metaTitle": "Services",
+    "metaDesc": "Codium Lab's four collaboration paths — consulting, engineering, education, studio.",
+    "eyebrow": "Services",
+    "title": "From research to real work,",
+    "titleHighlight": "from work to tools",
+    "desc": "Codium Lab's collaboration divides into four paths: consulting, engineering, education, and studio. We build automation that reaches production, not just demo.",
+    "ctaInquiry": "Collaboration inquiry",
+    "ctaProcess": "View process",
+    "detailEyebrow": "Detail",
+    "detailTitle": "Services",
+    "detailTitleHighlight": "in depth",
+    "deliverablesLabel": "Deliverables",
+    "timelineLabel": "Timeline",
+    "bestForLabel": "Best for",
+    "engagementEyebrow": "Engagement",
+    "engagementTitleHighlight": "Three models",
+    "engagementTitlePost": "to get started",
+    "engagementDesc": "Choose the collaboration model that fits your needs. All are decided together in a diagnostic meeting.",
+    "engagementCta": "Let's figure out the right model together",
+    "deepServices": [
+      {
+        "tag": "Consulting",
+        "title": "AI Automation Consulting",
+        "summary": "Workflow diagnosis → automation design → production handoff",
+        "body": "We analyze the texture of repetitive work to find exactly where LLMs, RPA, and scripts fit best. We design automation that reaches production, not just PoC.",
+        "deliverables": [
+          "Workflow diagnostic report",
+          "Automation priority matrix",
+          "Implementation & operational cost guide",
+          "Step-by-step roadmap"
+        ],
+        "timeline": "2–6 weeks (discovery & design)",
+        "idealFor": "Teams with clear repetitive work that need to set automation priorities"
+      },
+      {
+        "tag": "Engineering",
+        "title": "Custom LLM Tool Development",
+        "summary": "A dedicated assistant tailored to your organization's data",
+        "body": "We design search, summarization, and generation tools based on your internal docs, manuals, and customer data, then deploy them in compliance with your security policies.",
+        "deliverables": [
+          "Dedicated assistant (web/Slack/CLI)",
+          "RAG pipeline + embeddings",
+          "Prompt & model operations manual",
+          "Monitoring & rollback tools"
+        ],
+        "timeline": "6–12 weeks (design, build, handoff)",
+        "idealFor": "Organizations with scattered internal knowledge and security requirements"
+      },
+      {
+        "tag": "Education",
+        "title": "AI Literacy Training",
+        "summary": "Practical training programs for organizations and individuals",
+        "body": "Through the Adium brand, we deliver immediately applicable AI education — from executive workshops to practitioner hands-ons.",
+        "deliverables": [
+          "Separate executive & practitioner curriculum",
+          "Organization-specific case studies",
+          "30·60·90-day post-completion coaching",
+          "In-house trainer development (optional)"
+        ],
+        "timeline": "1–8 weeks (per workshop / annual track)",
+        "idealFor": "Organizations with low AI adoption or those needing post-adoption stabilization"
+      },
+      {
+        "tag": "Studio",
+        "title": "Digital Goods Collaboration",
+        "summary": "AI design brought into everyday objects",
+        "body": "The Badium brand transforms AI design into goods and content. Brand and campaign-scale collaboration available.",
+        "deliverables": [
+          "AI artwork package",
+          "Goods mockup & production coordination",
+          "Campaign licensing",
+          "Online & offline distribution guide"
+        ],
+        "timeline": "3–8 weeks (seasonal / campaign basis)",
+        "idealFor": "Teams needing fresh visual assets for brands or campaigns"
+      }
+    ],
+    "models": [
+      {
+        "name": "PoC Package",
+        "price": "Scoped estimate",
+        "bullets": [
+          "2–4 week discovery + prototype",
+          "Internal reporting & decision-making deliverables",
+          "Production adoption decision after PoC"
+        ]
+      },
+      {
+        "name": "Full Project",
+        "price": "Negotiated",
+        "bullets": [
+          "Design → build → production handoff",
+          "Pair work with your team, guaranteed handover",
+          "Operational tools, documentation & coaching included"
+        ]
+      },
+      {
+        "name": "Advisory",
+        "price": "Monthly",
+        "bullets": [
+          "2–4 regular meetings per month",
+          "Technical & organizational decision advisory",
+          "Emergency code reviews & architecture checks"
+        ]
+      }
+    ]
+  },
+  "process": {
+    "metaTitle": "Process",
+    "metaDesc": "Codium Lab's four-stage collaboration — Discover → Design → Build → Transfer.",
+    "eyebrow": "Process",
+    "title": "From discovery to handoff,",
+    "titleHighlight": "four stages",
+    "desc": "Collaboration in four short, clear stages. What gets decided when, and which deliverables move to the next stage — all agreed upon before we begin.",
+    "ctaStart": "Start collaborating",
+    "ctaServices": "View services",
+    "stagesEyebrow": "Stages",
+    "stagesTitleHighlight": "Each of the four stages",
+    "stagesTitlePost": "in depth",
+    "participantsLabel": "Participants",
+    "deliverablesLabel": "Deliverables",
+    "durationLabel": "Duration",
+    "agreementsEyebrow": "Working agreements",
+    "agreementsTitleHighlight": "Working agreements",
+    "agreementsDesc": "Operating principles we agree on before starting to keep collaboration smooth.",
+    "agreementsCta": "Explore collaboration potential together",
+    "steps": [
+      {
+        "step": "01",
+        "title": "Discover",
+        "summary": "Redefine the problem",
+        "body": "We start with on-site interviews and data flow observation. First, we determine whether there's really a place for AI.",
+        "participants": [
+          "Our consultants & engineers",
+          "Client decision-makers & practitioners"
+        ],
+        "deliverables": [
+          "Problem definition notes",
+          "User journey map",
+          "Data & system inventory"
+        ],
+        "duration": "1–2 weeks"
+      },
+      {
+        "step": "02",
+        "title": "Design",
+        "summary": "Sketch the simplest solution",
+        "body": "We place users, models, data, and operational cost on one canvas and sketch the simplest solution. Complexity is a cost.",
+        "participants": [
+          "Engineers",
+          "Designer",
+          "Client PM"
+        ],
+        "deliverables": [
+          "Solution architecture",
+          "Prompt & model strategy",
+          "Operational & security scenarios"
+        ],
+        "duration": "1–2 weeks"
+      },
+      {
+        "step": "03",
+        "title": "Build",
+        "summary": "Production-ready code only",
+        "body": "Production-ready code, not prototypes. Monitoring and rollback scenarios built in from the start.",
+        "participants": [
+          "Engineering team",
+          "Client developers (pair)"
+        ],
+        "deliverables": [
+          "Production-ready system",
+          "Test & CI pipeline",
+          "Monitoring & rollback tools"
+        ],
+        "duration": "4–8 weeks"
+      },
+      {
+        "step": "04",
+        "title": "Transfer",
+        "summary": "Leave no dependencies behind",
+        "body": "We hand over documentation, training, and management tools so the organization can operate independently. The goal is to leave no dependencies.",
+        "participants": [
+          "Our full team",
+          "Client operations team"
+        ],
+        "deliverables": [
+          "Operations manual",
+          "In-house trainer development (optional)",
+          "30·60·90-day coaching plan"
+        ],
+        "duration": "2–4 weeks + follow-up coaching"
+      }
+    ],
+    "agreements": [
+      {
+        "title": "Weekly review",
+        "body": "At a fixed time each week, we jointly summarize progress, decisions, and blockers."
+      },
+      {
+        "title": "Shared channel",
+        "body": "Work, decisions, and documentation are centralized in one Slack/Teams channel."
+      },
+      {
+        "title": "Decision log",
+        "body": "Major decisions are captured in short notes. Six months later, you can still see who decided what and why."
+      },
+      {
+        "title": "Clean handoff",
+        "body": "Designed so no additional work is needed after the transfer stage. Follow-up coaching is negotiated separately."
+      }
+    ]
+  },
+  "faq": {
+    "metaTitle": "FAQ",
+    "metaDesc": "Codium Lab collaboration FAQ — general, security, timeline, operations, handoff.",
+    "eyebrow": "FAQ",
+    "title": "Frequently asked",
+    "titleHighlight": "questions",
+    "desc": "Questions we frequently hear before collaboration begins. For questions not listed here, use the contact form — we reply within 1–2 business days.",
+    "ctaLabel": "Ask a question not listed here",
+    "categoriesLabel": "Categories",
+    "totalLabel": "Total",
+    "totalSuffix": "questions organized by category.",
+    "categories": [
+      {
+        "label": "General",
+        "items": [
+          {
+            "q": "What size companies do you work with?",
+            "a": "From startups to mid-sized enterprises. That said, 'Is the problem well-defined?' and 'Can decision-makers be involved?' are more important variables for successful collaboration."
+          },
+          {
+            "q": "Is remote collaboration possible?",
+            "a": "Remote is our default. On-site workshops or interviews at our Gwangmyeong office are conducted offline only when necessary."
+          },
+          {
+            "q": "Should we start with education or consulting?",
+            "a": "If AI adoption is low, start with Adium's literacy training. If you have a clear workflow to automate, consulting first. We'll decide together in a free diagnostic meeting."
+          }
+        ]
+      },
+      {
+        "label": "Security & Data",
+        "items": [
+          {
+            "q": "Can you work in strict security environments?",
+            "a": "Yes. We configure for closed internal networks, on-premise LLMs, and VPC isolation. We create a security review checklist together before collaboration begins."
+          },
+          {
+            "q": "Is customer data used for model training?",
+            "a": "No. Our core design principle is 'no training on customer data.' Model settings and data flows are documented from the start."
+          },
+          {
+            "q": "Can you integrate with existing systems?",
+            "a": "We can integrate with all standard tools: Slack, Jira, Notion, Confluence, GitHub, internal wikis. Internal systems proceed after API/DB schema agreement."
+          }
+        ]
+      },
+      {
+        "label": "Timeline & Cost",
+        "items": [
+          {
+            "q": "Can we run just a short PoC?",
+            "a": "Absolutely. We typically propose a 2–4 week discovery + PoC package first. At this stage, we jointly judge whether this automation is truly needed."
+          },
+          {
+            "q": "How is pricing determined?",
+            "a": "By scope, duration, and team size. Instead of a fixed price list, we negotiate based on agreed deliverables. The initial diagnostic meeting is free."
+          },
+          {
+            "q": "Can you accommodate urgent timelines?",
+            "a": "Depends on team availability. We review the schedule honestly in the diagnostic meeting and tell you clearly when something isn't feasible."
+          }
+        ]
+      },
+      {
+        "label": "Operations & Handoff",
+        "items": [
+          {
+            "q": "Can our team operate the system after implementation?",
+            "a": "Handoff is part of our scope. This includes an operations manual, coaching, and optional in-house trainer development — with no dependencies left behind."
+          },
+          {
+            "q": "Can we handle model or prompt changes ourselves?",
+            "a": "We hand over prompt versioning, testing, and monitoring systems. Model update impact assessment procedures are also documented."
+          }
+        ]
+      }
+    ]
+  },
+  "contact": {
+    "metaTitle": "Contact",
+    "metaDesc": "Codium Lab · Consulting & collaboration inquiries. Initial diagnostic meeting is free.",
+    "eyebrow": "Contact",
+    "title": "Consulting & collaboration",
+    "titleHighlight": "inquiry",
+    "desc": "B2B technology consulting, joint R&D, lecture & content collaboration — reach out in any form. The initial diagnostic meeting is free.",
+    "channelsEyebrow": "Channels",
+    "channelsTitle": "How to reach us",
+    "collabStartLabel": "Getting started",
+    "channels": [
+      {
+        "label": "Email",
+        "value": "narimagic@naver.com",
+        "href": "mailto:narimagic@naver.com",
+        "hint": "Fastest channel · Reply within 1–2 business days"
+      },
+      {
+        "label": "Location",
+        "value": "Gwangmyeong-si, Gyeonggi-do",
+        "hint": "Remote collaboration is default; Gwangmyeong workshops are offline only when needed"
+      },
+      {
+        "label": "Getting started",
+        "value": "30-min free diagnostic meeting",
+        "hint": "We review problem definition, priorities, and timing together"
+      }
+    ],
+    "steps": [
+      {
+        "step": "01",
+        "title": "Send an inquiry",
+        "body": "Describe the problem you want to solve, the outcome you expect, and your timing — freely."
+      },
+      {
+        "step": "02",
+        "title": "30-min diagnostic meeting",
+        "body": "Conducted remotely (Google Meet). A relaxed first conversation."
+      },
+      {
+        "step": "03",
+        "title": "Collaboration proposal",
+        "body": "We present scope, timeline, and cost within one week. You decide here whether to proceed."
+      }
+    ],
+    "form": {
+      "nameLabel": "Name",
+      "namePlaceholder": "John Doe",
+      "nameRequired": "Please enter your name.",
+      "nameMax": "Name must be 60 characters or fewer.",
+      "orgLabel": "Organization",
+      "orgPlaceholder": "Company / team (optional)",
+      "orgMax": "Organization must be 80 characters or fewer.",
+      "emailLabel": "Email",
+      "emailRequired": "Please enter your email.",
+      "emailInvalid": "Please enter a valid email address.",
+      "phoneLabel": "Phone",
+      "phonePlaceholder": "+1-000-000-0000 (optional)",
+      "phoneInvalid": "Phone number format is invalid.",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Describe the problem you'd like to solve, the result you expect, and your timeline.",
+      "messageMin": "Message must be at least 10 characters.",
+      "messageMax": "Message must be 2000 characters or fewer.",
+      "submitLabel": "Send inquiry",
+      "submittingLabel": "Sending…",
+      "successMsg": "Your inquiry has been received. We'll reply soon.",
+      "privacyNote": "Stored in a SQLite-compatible DB upon submission and not shared externally."
+    }
+  },
+  "ai": {
+    "metaTitle": "AI",
+    "metaDesc": "Codium Lab's AI approach: build with AI, embed it in workflow. Claude, Cursor, MCP, RAG-based organizational adoption.",
+    "heroEyebrow": "AI · A new way to build and operate",
+    "heroTitleA": "Build with ",
+    "heroTitleB": "AI",
+    "heroTitleC": " and embed it in ",
+    "heroTitleD": "workflow",
+    "heroDesc": "Codium Lab doesn't position AI as just a helpful tool. Code line by line, meeting by meeting, operation cycle by cycle — we follow the texture of human work and naturally weave AI into each step.",
+    "ctaInquiry": "AI adoption inquiry",
+    "ctaApproach": "View our approach",
+    "pillarsEyebrow": "Two Pillars",
+    "pillarsTitle": "We place AI in",
+    "pillarsTitleHighlight": "two places",
+    "pillarsTitlePost": "",
+    "pillarsDesc": "The place where things are built (development) and the place where work happens (workflow). Codium Lab's approach is to weave AI naturally into both.",
+    "stackEyebrow": "Stack",
+    "stackTitle": "The tools",
+    "stackTitleHighlight": "Codium Lab wields",
+    "stackDesc": "Not locked into any single vendor — we assemble the best tools for each situation.",
+    "patternsEyebrow": "Pattern",
+    "patternsTitleHighlight": "Four stages",
+    "patternsTitlePost": "of AI adoption",
+    "patternsDesc": "We don't just attach results. Discover → Prototype → Integrate → Operate, four stages, built together.",
+    "casesEyebrow": "Use cases",
+    "casesTitle": "Systems we",
+    "casesTitleHighlight": "build",
+    "casesTitlePost": "like these",
+    "casesDesc": "Adoptable scenarios — start small, reach production.",
+    "principlesEyebrow": "Principles",
+    "principlesTitle": "Principles we keep",
+    "principlesTitleHighlight": "when working with AI",
+    "closingEyebrow": "Let's build",
+    "closingTitle": "A place for AI in your team —",
+    "closingTitleHighlight": "let's find it together",
+    "closingDesc": "We'll check together in a free diagnostic meeting whether your team truly has a place where AI is needed.",
+    "closingCtaPrimary": "Apply for a free diagnostic meeting",
+    "closingCtaSecondary": "Back to main",
+    "pillars": [
+      {
+        "tag": "Build with AI",
+        "title": "We build with AI",
+        "summary": "Claude · Cursor · MCP — as fast as possible within model limits.",
+        "body": "We weave AI agents, code automation, and test generation into the everyday development cycle to shorten the time from PoC to production. Models are tools — decisions are made by people and domain.",
+        "items": [
+          "Standardized pair programming with Claude Code · Codex · Cursor",
+          "Multi-Model routing (Opus/Sonnet/Haiku) — cost vs. quality separation",
+          "Connecting internal APIs/docs/schemas to models via MCP servers",
+          "Spec → Code → Test pipeline automation"
+        ]
+      },
+      {
+        "tag": "Embed in Workflow",
+        "title": "We build systems that embed in workflow",
+        "summary": "AI at the center of workflow, in a place that elevates people.",
+        "body": "Slack · Jira · Notion · internal wikis — without interrupting the existing flow of work, we plant RAG, agents, and automation bots inside it. So AI tools become 'colleagues you work with,' not 'tools you use.'",
+        "items": [
+          "Internal document RAG assistant (meeting notes, manuals, product specs)",
+          "Auto analysis, summarization & triage bots for Jira/Linear/Slack",
+          "Custom LLM tools based on customer support & CS data",
+          "Observability AI combined with operational log & issue dashboards"
+        ]
+      }
+    ],
+    "stack": [
+      {
+        "label": "Models",
+        "items": [
+          "Claude Opus 4.7",
+          "Sonnet 4.6",
+          "Haiku 4.5",
+          "GPT-4o · 5",
+          "Gemini Pro"
+        ]
+      },
+      {
+        "label": "Agent · Tooling",
+        "items": [
+          "Claude Code",
+          "Cursor",
+          "Codex",
+          "MCP Server",
+          "Agent SDK"
+        ]
+      },
+      {
+        "label": "Retrieval · Data",
+        "items": [
+          "Vector DB (pgvector, Qdrant)",
+          "Embedding pipeline",
+          "RAG evaluation",
+          "Schema sync"
+        ]
+      },
+      {
+        "label": "Ops · Integration",
+        "items": [
+          "Slack / Jira / Notion",
+          "GitHub Actions",
+          "On-prem · VPC",
+          "Observability"
+        ]
+      }
+    ],
+    "patterns": [
+      {
+        "step": "01",
+        "title": "Discovery",
+        "body": "We interview and observe the team's actual workflow. We first judge whether there's really a place for AI, and whether it should go there."
+      },
+      {
+        "step": "02",
+        "title": "Prototype",
+        "body": "We build a small slice assuming production in 1–2 weeks and validate it with real-use data. A live version, not a demo."
+      },
+      {
+        "step": "03",
+        "title": "Integrate",
+        "body": "We design AI tools to go inside existing tools (Slack, Jira, internal systems), so users don't need to open a separate screen."
+      },
+      {
+        "step": "04",
+        "title": "Operate",
+        "body": "Prompts, models, and data all change over time. We hand over monitoring, rollback, and retraining cycles to the operations team."
+      }
+    ],
+    "cases": [
+      {
+        "tag": "Engineering",
+        "title": "Spec → Code → Verify Automation",
+        "body": "When a Jira issue comes in, multiple models generate specs, the best one is adopted, and a pipeline runs automatically through code → test → verification.",
+        "meta": "Claude Code · MCP · Multi-Model"
+      },
+      {
+        "tag": "Knowledge",
+        "title": "Internal Wiki RAG Assistant",
+        "body": "Embed scattered meeting notes, manuals, and CS logs, then ask questions in natural language from Slack. Sources are always verified with original links.",
+        "meta": "Vector DB · Slack Bot · Security isolation"
+      },
+      {
+        "tag": "Operations",
+        "title": "Issue Triage Bot",
+        "body": "Issues posted to CS and operations channels are automatically classified, summarized, and tagged, then routed to the right person. Less volume for humans to read; decisions stay with people.",
+        "meta": "Agent · Classification · Routing"
+      }
+    ],
+    "principles": [
+      {
+        "title": "Human-in-the-loop",
+        "body": "AI is never given a seat where it decides alone. A human always reviews last and presses last."
+      },
+      {
+        "title": "Secure by default",
+        "body": "Designed to meet security requirements: internal networks, VPC, on-premise LLMs. Data flow is defined first."
+      },
+      {
+        "title": "Operable, not magical",
+        "body": "We take responsibility for the cost of changing prompts, models, and tools. Production-ready systems, not magic demos."
+      }
+    ]
+  },
+  "game": {
+    "metaTitle": "Game Hub | Codium Lab",
+    "metaDesc": "Play web games made by Codium Lab directly in your browser. Snake Grow Battle — a battle royale snake game.",
+    "hubBadge": "Game Hub",
+    "hubHeading": "Take a break",
+    "hubDesc": "Play games made by Codium Lab directly in your browser.",
+    "playButton": "Play",
+    "comingSoonLabel": "Coming soon",
+    "feedbackText": "Have a game idea or feedback?",
+    "contactLink": "Let us know",
+    "notAvailableBadge": "Soon",
+    "playersLabel": "Players",
+    "difficultyLabel": "Difficulty",
+    "controlsLabel": "Controls",
+    "downloadLabel": "Download",
+    "snake": {
+      "subtitle": "Battle Royale Snake",
+      "description": "Control a snake with your mouse, eat food to grow. Hit another snake's body and it's game over. Be the last snake standing in the shrinking storm zone.",
+      "tags": [
+        "Battle Royale",
+        "Arcade",
+        "Multiplayer"
+      ],
+      "controls": [
+        "Mouse move → steer direction",
+        "Space / Hold click → boost (costs tail)",
+        "ESC → quit game"
+      ],
+      "players": "1P (12 AI snakes)",
+      "difficulty": "Normal",
+      "playerName": "You",
+      "gameOver": "💀 Game Over",
+      "win": "🏆 Winner!",
+      "finalLength": "Final length:",
+      "kills": "Kills:",
+      "retry": "Try again",
+      "playAgain": "Play again",
+      "exit": "Exit",
+      "hudLength": "Length",
+      "hudKills": "Kills",
+      "hudRank": "Rank",
+      "hudRankSuffix": "",
+      "hudAliveSuffix": " left",
+      "stormShrinking": "Storm shrinking",
+      "stormWarning": "Storm warning",
+      "stormHold": "Storm hold",
+      "boostHint": "Space/Click → Boost"
+    },
+    "airplane": {
+      "subtitle": "Battle Royale Air Combat",
+      "description": "Control a fighter jet with your mouse and shoot down enemies. Bullets fire automatically — reduce enemy HP to zero to destroy them. Be the last ace in the shrinking storm zone.",
+      "tags": [
+        "Battle Royale",
+        "Shooter",
+        "Arcade"
+      ],
+      "controls": [
+        "Mouse move → aim (fighter auto-rotates toward mouse)",
+        "Space / Hold click → boost (costs HP)",
+        "Items auto-collected: 🛡️Shield ⚡Speed 🔥Rapid 💥Spread ❤️Repair",
+        "ESC → quit game"
+      ],
+      "players": "1P (12 AI planes)",
+      "difficulty": "Normal",
+      "playerName": "You",
+      "gameOver": "💀 Shot Down",
+      "win": "🏆 Ace!",
+      "kills": "Kills:",
+      "retry": "Sortie again",
+      "playAgain": "Sortie again",
+      "exit": "Exit",
+      "hudKills": "Kills",
+      "hudRank": "Rank",
+      "hudRankSuffix": "",
+      "hudAliveSuffix": " left",
+      "stormShrinking": "Storm shrinking",
+      "stormWarning": "Storm warning",
+      "stormHold": "Storm hold",
+      "boostHint": "Mouse → aim | Space/Click → Boost"
+    },
+    "bubble": {
+      "subtitle": "Bubble Shooter",
+      "description": "Connect 3 or more same-color bubbles to pop them. Use special bubbles (⭐row clear, 💣bomb, 🌈rainbow) to trigger FEVER mode. Clear all bubbles in 80 shots to win!",
+      "tags": [
+        "Puzzle",
+        "Arcade",
+        "Casual"
+      ],
+      "controls": [
+        "Mouse move → aim",
+        "Click → shoot",
+        "New row every 8 shots",
+        "ESC → quit"
+      ],
+      "players": "1P",
+      "difficulty": "Easy",
+      "clear": "🎉 Clear!",
+      "gameOver": "💥 Game Over",
+      "score": "Score",
+      "retry": "🔄 Play Again",
+      "exit": "Exit",
+      "hudShotsLeft": "Shots:",
+      "next": "NEXT",
+      "aimHint": "Mouse → aim | Click → shoot",
+      "levelLabel": "Level"
+    },
+    "comingSoonGames": [
+      {
+        "title": "Pixel Dungeon",
+        "emoji": "⚔️",
+        "desc": "Roguelite dungeon crawler"
+      },
+      {
+        "title": "Tower Rush",
+        "emoji": "🏰",
+        "desc": "Real-time tower defense"
+      }
+    ],
+    "defense": {
+      "subtitle": "Tower Defense",
+      "description": "Summon and merge snake towers to defend the island. Use gacha to summon C~MAX tier towers, drag same-tier towers to merge them. Survive 100 waves to win!",
+      "tags": [
+        "Tower Defense",
+        "Strategy",
+        "Gacha"
+      ],
+      "controls": [
+        "Drag tower → Move / Merge",
+        "Summon button → Gacha roll",
+        "⚡ Skip → Start wave now",
+        "Upgrade → Global boost",
+        "ESC → Exit"
+      ],
+      "players": "1 player",
+      "difficulty": "Normal"
+    }
+  },
+  "login": {
+    "metaTitle": "Log in",
+    "heading": "Sign in to",
+    "subheading": "Get started with a quick login",
+    "errorMsg": "An error occurred during login.",
+    "naverLabel": "Continue with Naver · Coming soon",
+    "googleLabel": "Continue with Google · Coming soon",
+    "metaLabel": "Continue with Meta · Coming soon",
+    "termsPrefix": "By logging in, you agree to our ",
+    "termsLink": "Terms of Service",
+    "termsSuffix": ".",
+    "loginLoadingTitle": "Signing in…"
+  },
+  "auth": {
+    "backToMain": "Back to main"
+  }
+}

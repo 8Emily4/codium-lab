@@ -1,5 +1,5 @@
-import { company } from "@/lib/brand";
 import Reveal from "./Reveal";
+import type { Dictionary } from "@/app/[lang]/dictionaries";
 
 const icons: Record<string, React.ReactElement> = {
   Consulting: (
@@ -14,7 +14,9 @@ const icons: Record<string, React.ReactElement> = {
   ),
 };
 
-export default function Services() {
+export default function Services({ dict }: { dict: Dictionary }) {
+  const { servicesSection } = dict;
+
   return (
     <section
       id="services"
@@ -25,20 +27,20 @@ export default function Services() {
         <Reveal>
           <div className="flex flex-col gap-3">
             <p className="text-sm font-medium tracking-[0.2em] text-indigo-600 uppercase dark:text-indigo-400">
-              Services
+              {servicesSection.eyebrow}
             </p>
             <h2 className="max-w-3xl text-3xl font-semibold tracking-tight text-zinc-900 sm:text-5xl dark:text-zinc-50">
-              연구가 일이 되도록,{" "}
-              <span className="text-gradient">일이 도구가 되도록</span>
+              {servicesSection.title}{" "}
+              <span className="text-gradient">{servicesSection.titleHighlight}</span>
             </h2>
             <p className="max-w-2xl text-zinc-600 dark:text-zinc-300">
-              데모로 끝나지 않는 자동화. 코디움랩이 드릴 수 있는 네 가지 결의 협업.
+              {servicesSection.desc}
             </p>
           </div>
         </Reveal>
 
         <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          {company.services.map((svc, i) => (
+          {servicesSection.items.map((svc, i) => (
             <Reveal
               key={svc.title}
               delay={i * 100}

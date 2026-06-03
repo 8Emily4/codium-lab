@@ -1,0 +1,931 @@
+{
+  "common": {
+    "readMore": "더 보기",
+    "inquiry": "문의 보내기",
+    "backToMain": "메인으로"
+  },
+  "company": {
+    "description": "코디움랩은 LLM과 자동화의 경계에서 실제로 동작하는 도구를 연구합니다. 데모로 끝나지 않는 솔루션, 사람의 일을 한 단계 위로 올려놓는 기술을 만듭니다.",
+    "tagline": "기술의 본질을 연구하고 가치를 구현하는 프리미엄 IT 솔루션 연구소",
+    "rdFields": "AI 자동화 도구",
+    "location": "경기도 광명시",
+    "ceo": "임나리",
+    "siteComingSoon": "사이트 준비 중",
+    "viewDetails": "자세히 보기"
+  },
+  "nav": {
+    "brands": "브랜드",
+    "services": "서비스",
+    "process": "프로세스",
+    "ai": "AI",
+    "faq": "FAQ",
+    "contact": "문의",
+    "game": "게임",
+    "login": "로그인",
+    "logout": "로그아웃",
+    "inquiry": "문의 보내기",
+    "menuOpen": "메뉴 열기"
+  },
+  "hero": {
+    "titlePre": "기술의 본질을 연구하고",
+    "titleHighlight": "가치를 구현",
+    "titlePost": "하는 IT 솔루션 연구소",
+    "ctaPrimary": "컨설팅·협업 문의",
+    "ctaSecondary": "서비스 둘러보기",
+    "locationLabel": "소재지",
+    "ceoLabel": "대표자",
+    "rdLabel": "R&D 분야",
+    "brandsLabel": "운영 브랜드",
+    "brandsValue": "에이디움 · 베이디움"
+  },
+  "home": {
+    "exploreEyebrow": "Explore",
+    "exploreTitle": "무엇을",
+    "exploreTitleHighlight": "먼저",
+    "exploreTitlePost": "보고 싶으세요?",
+    "exploreDesc": "여섯 가지 입구 — 어디로 들어와도 코디움랩이 어떤 결로 일하는지 보입니다.",
+    "readMore": "더 보기",
+    "gateways": [
+      {
+        "slug": "brands",
+        "eyebrow": "Brands",
+        "title": "두 결의 브랜드",
+        "description": "에이디움 · 베이디움 — 교육과 디자인의 결로 일상에 닿는 브랜드들."
+      },
+      {
+        "slug": "services",
+        "eyebrow": "Services",
+        "title": "네 가지 결의 협업",
+        "description": "컨설팅 · 엔지니어링 · 교육 · 스튜디오. 운영까지 가는 자동화."
+      },
+      {
+        "slug": "process",
+        "eyebrow": "Process",
+        "title": "네 단계로 일합니다",
+        "description": "발견 → 설계 → 구현 → 이관. 어느 시점에 무엇이 결정되는지 함께."
+      },
+      {
+        "slug": "ai",
+        "eyebrow": "AI",
+        "title": "AI로 개발하고, 업무에 녹입니다",
+        "description": "Claude · Cursor · MCP · RAG — 도입과 운영의 결을 함께 만듭니다."
+      },
+      {
+        "slug": "faq",
+        "eyebrow": "FAQ",
+        "title": "자주 묻는 질문",
+        "description": "협업 일반 · 보안 · 비용 · 운영. 자주 듣는 질문을 모았습니다."
+      },
+      {
+        "slug": "contact",
+        "eyebrow": "Contact",
+        "title": "협업 문의",
+        "description": "초기 진단 미팅은 무료. 평일 기준 1–2영업일 안에 회신드립니다."
+      }
+    ]
+  },
+  "servicesSection": {
+    "eyebrow": "Services",
+    "title": "연구가 일이 되도록,",
+    "titleHighlight": "일이 도구가 되도록",
+    "desc": "데모로 끝나지 않는 자동화. 코디움랩이 드릴 수 있는 네 가지 결의 협업.",
+    "items": [
+      {
+        "tag": "Consulting",
+        "title": "AI 자동화 컨설팅",
+        "summary": "워크플로 진단 → 자동화 설계 → 운영 이관까지",
+        "body": "반복 업무의 결을 분석해 LLM·RPA·스크립트가 제일 잘 맞는 위치를 찾아냅니다. PoC가 아니라 운영까지 가는 자동화를 설계합니다."
+      },
+      {
+        "tag": "Engineering",
+        "title": "맞춤형 LLM 도구 개발",
+        "summary": "조직의 데이터에 맞춘 전용 어시스턴트",
+        "body": "사내 문서·매뉴얼·고객 응대 데이터를 기반으로 한 검색·요약·생성 도구를 설계하고, 보안 정책에 맞춰 배포합니다."
+      },
+      {
+        "tag": "Education",
+        "title": "AI 리터러시 교육",
+        "summary": "조직과 개인을 위한 실전 교육 프로그램",
+        "body": "에이디움 브랜드를 통해 실무에 바로 적용 가능한 AI 활용 교육을 제공합니다. 임원진 워크샵부터 실무자 핸즈온까지."
+      },
+      {
+        "tag": "Studio",
+        "title": "디지털 굿즈 협업",
+        "summary": "AI 디자인을 일상의 물건으로",
+        "body": "베이디움 브랜드가 AI 디자인을 굿즈·콘텐츠로 전환합니다. 브랜드·캠페인 단위 협업이 가능합니다."
+      }
+    ]
+  },
+  "processSection": {
+    "eyebrow": "Process",
+    "title": "발견에서 이관까지,",
+    "titleHighlight": "네 단계로 일합니다",
+    "desc": "짧고 분명한 단계로 나누어, 어느 시점에 무엇이 결정되는지 함께 보이게 합니다.",
+    "items": [
+      {
+        "step": "01",
+        "title": "발견",
+        "body": "현장 인터뷰와 데이터 흐름 관찰부터 시작합니다. 문제를 다시 정의하는 단계입니다."
+      },
+      {
+        "step": "02",
+        "title": "설계",
+        "body": "사용자, 모델, 데이터, 운영 비용을 한 그림 위에 올려 놓고 가장 단순한 해결을 그립니다."
+      },
+      {
+        "step": "03",
+        "title": "구현",
+        "body": "프로토타입이 아닌 운영 가능한 코드. 모니터링과 롤백 시나리오까지 함께 만듭니다."
+      },
+      {
+        "step": "04",
+        "title": "이관",
+        "body": "조직이 스스로 운영할 수 있도록 문서·교육·관리 도구를 같이 넘깁니다. 의존성을 남기지 않습니다."
+      }
+    ]
+  },
+  "faqSection": {
+    "eyebrow": "FAQ",
+    "titleHighlight": "자주 묻는",
+    "title": "질문",
+    "desc": "여기 없는 질문은 아래 문의 폼으로 보내주세요. 평일 기준 1–2영업일 안에 회신드립니다.",
+    "ctaLabel": "바로 문의하기",
+    "items": [
+      {
+        "q": "어떤 규모의 회사와 협업하시나요?",
+        "a": "스타트업부터 중견기업까지 모두 가능합니다. 다만 '문제 정의가 분명한가, 의사결정자가 참여 가능한가'가 협업 성공의 더 중요한 변수라고 봅니다."
+      },
+      {
+        "q": "PoC만 짧게 진행할 수도 있나요?",
+        "a": "가능합니다. 보통 2–4주 단위의 디스커버리 + PoC 패키지를 먼저 제안드립니다. 이 단계에서 '이 자동화가 정말 필요한지'를 함께 판단합니다."
+      },
+      {
+        "q": "보안·데이터 정책이 까다로운 환경도 가능한가요?",
+        "a": "네. 사내 폐쇄망, 온프레미스 LLM, VPC 격리 등 환경에 맞춰 구성합니다. 협업 전에 보안 검토 체크리스트를 함께 작성합니다."
+      },
+      {
+        "q": "교육과 컨설팅 중 무엇부터 시작하면 좋을까요?",
+        "a": "조직의 AI 활용도가 낮다면 에이디움의 리터러시 교육을, 자동화할 워크플로가 명확하다면 컨설팅을 먼저 권합니다. 무료 진단 미팅에서 함께 정해드립니다."
+      },
+      {
+        "q": "원격 협업도 가능한가요?",
+        "a": "기본이 원격 협업입니다. 광명 본사에서의 워크샵·인터뷰는 필요한 단계에 한해 오프라인으로 진행합니다."
+      }
+    ]
+  },
+  "footer": {
+    "exploreLabel": "Explore",
+    "contactLabel": "Contact",
+    "links": {
+      "brands": "브랜드",
+      "services": "서비스",
+      "process": "프로세스",
+      "ai": "AI",
+      "faq": "FAQ",
+      "contact": "문의"
+    },
+    "ceoLabel": "대표 ·"
+  },
+  "brands": {
+    "metaTitle": "브랜드",
+    "metaDesc": "코디움랩이 운영하는 두 결의 브랜드 — 에이디움(AI 리터러시 교육)과 베이디움(디지털 굿즈 스튜디오).",
+    "eyebrow": "Brands",
+    "title": "두 결의 브랜드",
+    "titleHighlight": "교육과 디자인",
+    "desc": "코디움랩의 연구가 일상에 닿을 수 있도록, 두 개의 자매 브랜드를 운영합니다. 에이디움은 사람의 학습을, 베이디움은 사람의 미감을 끌어올리는 결을 가집니다.",
+    "ctaBrandInquiry": "브랜드 협업 문의",
+    "ctaServices": "서비스 보기",
+    "whyEyebrow": "Why two brands",
+    "whyTitle": "왜",
+    "whyTitleHighlight": "두 결",
+    "whyTitlePost": "로 나누었나",
+    "collabEyebrow": "Collaborate",
+    "collabTitle": "브랜드와의",
+    "collabTitleHighlight": "협업 방식",
+    "collabCta": "브랜드 협업 문의하기",
+    "subBrands": [
+      {
+        "slug": "adium",
+        "nameKo": "에이디움",
+        "nameEn": "Adium",
+        "tagline": "AI 리터러시 교육",
+        "description": "AI와 배움이 만나 일상의 지능을 높이는 인공지능 리터러시 교육 브랜드. 임원 워크샵부터 실무자 핸즈온, 학교 단위 정규 과정까지 포괄합니다.",
+        "highlights": [
+          "임원·실무자 트랙 분리",
+          "조직 전용 커리큘럼",
+          "수료 후 운영 코칭"
+        ]
+      },
+      {
+        "slug": "badium",
+        "nameKo": "베이디움",
+        "nameEn": "Badium",
+        "tagline": "디지털 굿즈 스튜디오",
+        "description": "AI 디자인의 감성을 따뜻한 일상으로 구워내는 디지털 굿즈 스튜디오. 브랜드 협업, 캠페인 시즌 굿즈, 일러스트 라이선싱까지 다룹니다.",
+        "highlights": [
+          "AI 일러스트 라이선싱",
+          "캠페인 단위 굿즈 제작",
+          "브랜드 콜라보"
+        ]
+      }
+    ],
+    "whyTwo": [
+      {
+        "title": "교육과 디자인은 다른 결",
+        "body": "AI를 사람에게 옮기는 결은 두 가지로 나뉩니다. 머리(지식·역량)와 손끝(감각·미감). 한 조직 안에 두 결을 동시에 두지 않습니다."
+      },
+      {
+        "title": "각자의 사용자가 분명",
+        "body": "에이디움은 조직과 학습자에게, 베이디움은 브랜드와 캠페인 팀에게. 한 입구를 공유하면 두 사용자가 모두 흐려집니다."
+      },
+      {
+        "title": "코디움랩이 뒤를 받칩니다",
+        "body": "두 브랜드의 기술·LLM·자동화는 코디움랩 본진이 책임집니다. 브랜드는 사용자 결에 집중할 수 있습니다."
+      }
+    ],
+    "collab": [
+      {
+        "title": "교육 + 디자인 동시 도입",
+        "body": "조직의 AI 리터러시를 끌어올리면서, 캠페인·굿즈로 외부에 메시지를 내보내는 통합 패키지가 가능합니다."
+      },
+      {
+        "title": "브랜드별 컨설팅",
+        "body": "에이디움 단독 교육 도입, 베이디움 단독 디자인·굿즈 협업도 가능합니다. 코디움랩 본진과의 조율은 모두 포함됩니다."
+      }
+    ]
+  },
+  "services": {
+    "metaTitle": "서비스",
+    "metaDesc": "코디움랩의 네 결의 협업 — 컨설팅, 엔지니어링, 교육, 스튜디오.",
+    "eyebrow": "Services",
+    "title": "연구가 일이 되도록,",
+    "titleHighlight": "일이 도구가 되도록",
+    "desc": "코디움랩의 협업은 컨설팅·엔지니어링·교육·스튜디오 네 결로 갈라집니다. PoC로 끝나는 데모가 아니라, 운영까지 가는 자동화를 함께 만듭니다.",
+    "ctaInquiry": "협업 문의",
+    "ctaProcess": "프로세스 보기",
+    "detailEyebrow": "Detail",
+    "detailTitle": "서비스",
+    "detailTitleHighlight": "한 줄 깊이",
+    "deliverablesLabel": "산출물",
+    "timelineLabel": "일정",
+    "bestForLabel": "Best for",
+    "engagementEyebrow": "Engagement",
+    "engagementTitleHighlight": "세 가지 모델",
+    "engagementTitlePost": "로 시작합니다",
+    "engagementDesc": "필요한 결에 맞춰 협업 모델을 고를 수 있습니다. 모두 진단 미팅에서 함께 결정합니다.",
+    "engagementCta": "어떤 모델이 맞을지 함께 정해보기",
+    "deepServices": [
+      {
+        "tag": "Consulting",
+        "title": "AI 자동화 컨설팅",
+        "summary": "워크플로 진단 → 자동화 설계 → 운영 이관까지",
+        "body": "반복 업무의 결을 분석하고, LLM·RPA·스크립트가 가장 잘 맞는 위치를 찾습니다. PoC가 아니라 운영까지 가는 자동화를 설계합니다.",
+        "deliverables": [
+          "워크플로 진단 리포트",
+          "자동화 우선순위 매트릭스",
+          "구현·운영 비용 가이드",
+          "단계별 로드맵"
+        ],
+        "timeline": "2–6주 (디스커버리·설계)",
+        "idealFor": "사내 반복 업무가 명확하고, 자동화 우선순위를 정해야 하는 팀"
+      },
+      {
+        "tag": "Engineering",
+        "title": "맞춤형 LLM 도구 개발",
+        "summary": "조직 데이터에 맞춘 전용 어시스턴트",
+        "body": "사내 문서·매뉴얼·고객 응대 데이터를 기반으로 한 검색·요약·생성 도구를 설계하고, 보안 정책에 맞춰 배포합니다.",
+        "deliverables": [
+          "전용 어시스턴트(웹/Slack/CLI)",
+          "RAG 파이프라인 + 임베딩",
+          "Prompt·모델 운영 매뉴얼",
+          "모니터링·롤백 도구"
+        ],
+        "timeline": "6–12주 (설계·구현·이관)",
+        "idealFor": "내부 지식이 흩어져 있고, 보안 요구가 있는 조직"
+      },
+      {
+        "tag": "Education",
+        "title": "AI 리터러시 교육",
+        "summary": "조직·개인을 위한 실전 교육 프로그램",
+        "body": "에이디움 브랜드를 통해 실무에 바로 적용 가능한 AI 활용 교육을 제공합니다. 임원진 워크샵부터 실무자 핸즈온까지.",
+        "deliverables": [
+          "임원·실무자 분리 커리큘럼",
+          "조직 전용 케이스 스터디",
+          "수료 후 30·60·90일 운영 코칭",
+          "사내 강사 양성(선택)"
+        ],
+        "timeline": "1–8주 (워크샵 단위/연간 트랙)",
+        "idealFor": "AI 활용도가 낮거나, 도입 후 정착이 필요한 조직"
+      },
+      {
+        "tag": "Studio",
+        "title": "디지털 굿즈 협업",
+        "summary": "AI 디자인을 일상의 물건으로",
+        "body": "베이디움 브랜드가 AI 디자인을 굿즈·콘텐츠로 전환합니다. 브랜드·캠페인 단위 협업이 가능합니다.",
+        "deliverables": [
+          "AI 아트워크 패키지",
+          "굿즈 시안·제작 진행",
+          "캠페인용 라이선싱",
+          "온·오프 배포 가이드"
+        ],
+        "timeline": "3–8주 (시즌·캠페인 단위)",
+        "idealFor": "브랜드·캠페인에 신선한 시각 자산이 필요한 팀"
+      }
+    ],
+    "models": [
+      {
+        "name": "PoC 패키지",
+        "price": "스코프별 견적",
+        "bullets": [
+          "2–4주 단위 디스커버리 + 프로토타입",
+          "내부 보고·의사결정용 산출물",
+          "PoC 종료 후 운영 도입 여부 판단"
+        ]
+      },
+      {
+        "name": "풀 프로젝트",
+        "price": "협의",
+        "bullets": [
+          "설계 → 구현 → 운영 이관까지",
+          "사내 팀과 페어 작업, 인수인계 보장",
+          "운영 도구·문서·코칭 포함"
+        ]
+      },
+      {
+        "name": "어드바이저리",
+        "price": "월 단위",
+        "bullets": [
+          "월 2–4회 정례 미팅",
+          "기술·조직 의사결정 사이드 자문",
+          "긴급 코드 리뷰·아키텍처 점검"
+        ]
+      }
+    ]
+  },
+  "process": {
+    "metaTitle": "프로세스",
+    "metaDesc": "코디움랩의 네 단계 협업 — 발견 → 설계 → 구현 → 이관.",
+    "eyebrow": "Process",
+    "title": "발견에서 이관까지,",
+    "titleHighlight": "네 단계로 일합니다",
+    "desc": "짧고 분명한 네 단계로 협업합니다. 어느 시점에 무엇이 결정되는지, 어느 산출물이 다음 단계로 넘어가는지를 시작 전에 함께 약속합니다.",
+    "ctaStart": "협업 시작하기",
+    "ctaServices": "서비스 보기",
+    "stagesEyebrow": "Stages",
+    "stagesTitleHighlight": "네 단계",
+    "stagesTitlePost": "각각의 깊이",
+    "participantsLabel": "참여자",
+    "deliverablesLabel": "산출물",
+    "durationLabel": "기간",
+    "agreementsEyebrow": "Working agreements",
+    "agreementsTitleHighlight": "협업 약속",
+    "agreementsDesc": "협업이 매끄럽도록 시작 전에 함께 약속하는 운영 원칙입니다.",
+    "agreementsCta": "협업 가능성 함께 검토하기",
+    "steps": [
+      {
+        "step": "01",
+        "title": "발견",
+        "summary": "문제를 다시 정의합니다",
+        "body": "현장 인터뷰와 데이터 흐름 관찰부터 시작합니다. 'AI가 들어갈 자리'가 정말 있는지 먼저 판단합니다.",
+        "participants": [
+          "우리 측 컨설턴트·엔지니어",
+          "고객 측 의사결정자·실무자"
+        ],
+        "deliverables": [
+          "문제 정의 노트",
+          "사용자 여정 맵",
+          "데이터·시스템 인벤토리"
+        ],
+        "duration": "1–2주"
+      },
+      {
+        "step": "02",
+        "title": "설계",
+        "summary": "단순한 해결을 그립니다",
+        "body": "사용자·모델·데이터·운영 비용을 한 그림 위에 올려놓고, 가장 단순한 해를 그립니다. 복잡함은 비용입니다.",
+        "participants": [
+          "엔지니어",
+          "디자이너",
+          "고객 측 PM"
+        ],
+        "deliverables": [
+          "솔루션 아키텍처",
+          "프롬프트·모델 전략",
+          "운영·보안 시나리오"
+        ],
+        "duration": "1–2주"
+      },
+      {
+        "step": "03",
+        "title": "구현",
+        "summary": "운영 가능한 코드만",
+        "body": "프로토타입이 아닌 운영 가능한 코드. 모니터링과 롤백 시나리오까지 함께 만듭니다.",
+        "participants": [
+          "엔지니어 팀",
+          "고객 측 개발자(페어)"
+        ],
+        "deliverables": [
+          "운영 가능한 시스템",
+          "테스트·CI 파이프라인",
+          "모니터링·롤백 도구"
+        ],
+        "duration": "4–8주"
+      },
+      {
+        "step": "04",
+        "title": "이관",
+        "summary": "의존성을 남기지 않습니다",
+        "body": "조직이 스스로 운영할 수 있도록 문서·교육·관리 도구를 같이 넘깁니다. 의존성을 남기지 않는 것이 목표입니다.",
+        "participants": [
+          "우리 팀 전원",
+          "고객 측 운영팀"
+        ],
+        "deliverables": [
+          "운영 매뉴얼",
+          "사내 강사 양성(선택)",
+          "30·60·90일 코칭 플랜"
+        ],
+        "duration": "2–4주 + 후속 코칭"
+      }
+    ],
+    "agreements": [
+      {
+        "title": "주 1회 리뷰",
+        "body": "매주 정해진 시간에 진척·결정사항·블로커를 함께 정리합니다."
+      },
+      {
+        "title": "공유 채널 운영",
+        "body": "Slack/Teams 등 한 채널에서 작업·결정·문서를 일원화합니다."
+      },
+      {
+        "title": "결정 기록",
+        "body": "큰 결정은 짧은 노트로 남깁니다. 누가 왜 그렇게 정했는지 6개월 뒤에도 보입니다."
+      },
+      {
+        "title": "재계약 없는 종료",
+        "body": "이관 단계 이후 추가 작업이 필요 없도록 설계합니다. 후속 코칭만 별도 협의."
+      }
+    ]
+  },
+  "faq": {
+    "metaTitle": "FAQ",
+    "metaDesc": "코디움랩 협업 자주 묻는 질문 — 협업 일반·보안·일정·운영·이관.",
+    "eyebrow": "FAQ",
+    "title": "자주 묻는",
+    "titleHighlight": "질문",
+    "desc": "협업을 시작하기 전 자주 듣는 질문들을 모았습니다. 여기 없는 질문은 문의 폼으로 보내주세요 — 평일 기준 1–2영업일 안에 회신드립니다.",
+    "ctaLabel": "여기 없는 질문 보내기",
+    "categoriesLabel": "Categories",
+    "totalLabel": "전체",
+    "totalSuffix": "개 질문 · 카테고리별로 정리되어 있습니다.",
+    "categories": [
+      {
+        "label": "협업 일반",
+        "items": [
+          {
+            "q": "어떤 규모의 회사와 협업하시나요?",
+            "a": "스타트업부터 중견기업까지 모두 가능합니다. 다만 '문제 정의가 분명한가, 의사결정자가 참여 가능한가'가 협업 성공의 더 중요한 변수라고 봅니다."
+          },
+          {
+            "q": "원격 협업도 가능한가요?",
+            "a": "기본이 원격 협업입니다. 광명 본사에서의 워크샵·인터뷰는 필요한 단계에 한해 오프라인으로 진행합니다."
+          },
+          {
+            "q": "교육과 컨설팅 중 무엇부터 시작하면 좋을까요?",
+            "a": "조직의 AI 활용도가 낮다면 에이디움의 리터러시 교육을, 자동화할 워크플로가 명확하다면 컨설팅을 먼저 권합니다. 무료 진단 미팅에서 함께 정해드립니다."
+          }
+        ]
+      },
+      {
+        "label": "보안 · 데이터",
+        "items": [
+          {
+            "q": "보안·데이터 정책이 까다로운 환경도 가능한가요?",
+            "a": "네. 사내 폐쇄망, 온프레미스 LLM, VPC 격리 등 환경에 맞춰 구성합니다. 협업 전에 보안 검토 체크리스트를 함께 작성합니다."
+          },
+          {
+            "q": "고객사 데이터는 학습에 사용되나요?",
+            "a": "사용하지 않습니다. 기본 설계 원칙이 'no training on customer data' 이며, 모델 측 설정·데이터 흐름 모두 시작 시 문서화합니다."
+          },
+          {
+            "q": "이미 도입된 시스템과 연동되나요?",
+            "a": "Slack/Jira/Notion/Confluence/GitHub/사내 위키 등 표준 도구와 모두 연동 가능합니다. 사내 시스템은 API/DB 스키마 합의 후 진행합니다."
+          }
+        ]
+      },
+      {
+        "label": "일정 · 비용",
+        "items": [
+          {
+            "q": "PoC만 짧게 진행할 수도 있나요?",
+            "a": "가능합니다. 보통 2–4주 단위의 디스커버리 + PoC 패키지를 먼저 제안드립니다. 이 단계에서 '이 자동화가 정말 필요한지'를 함께 판단합니다."
+          },
+          {
+            "q": "비용은 어떻게 책정되나요?",
+            "a": "스코프·기간·참여 인원으로 정합니다. 정형화된 단가표 대신, 합의된 산출물 기준으로 협의합니다. 초기 진단 미팅은 무료입니다."
+          },
+          {
+            "q": "긴급 도입도 가능한가요?",
+            "a": "팀 가용성에 따라 다릅니다. 진단 미팅에서 솔직하게 일정을 검토하고, 안 되는 일정은 안 된다고 말씀드립니다."
+          }
+        ]
+      },
+      {
+        "label": "운영 · 이관",
+        "items": [
+          {
+            "q": "도입 후 우리 팀이 운영할 수 있을까요?",
+            "a": "이관까지가 협업 범위입니다. 운영 매뉴얼·코칭·사내 강사 양성(선택)까지 포함하며, 의존성을 남기지 않는 게 목표입니다."
+          },
+          {
+            "q": "모델·프롬프트가 바뀌면 우리가 대응할 수 있나요?",
+            "a": "프롬프트 버전 관리·테스트·모니터링 체계까지 함께 넘깁니다. 모델 업데이트 시 영향 평가 절차도 매뉴얼화합니다."
+          }
+        ]
+      }
+    ]
+  },
+  "contact": {
+    "metaTitle": "문의",
+    "metaDesc": "코디움랩 · 컨설팅·협업 문의. 초기 진단 미팅은 무료입니다.",
+    "eyebrow": "Contact",
+    "title": "컨설팅 · 협업",
+    "titleHighlight": "문의",
+    "desc": "B2B 기술 컨설팅, 공동 R&D, 강의·콘텐츠 협업 등 어떤 형태든 편하게 문의 주세요. 초기 진단 미팅은 무료입니다.",
+    "channelsEyebrow": "Channels",
+    "channelsTitle": "어떻게 닿을 수 있나",
+    "collabStartLabel": "협업 시작",
+    "channels": [
+      {
+        "label": "Email",
+        "value": "narimagic@naver.com",
+        "href": "mailto:narimagic@naver.com",
+        "hint": "가장 빠른 채널 · 평일 기준 1–2영업일 내 회신"
+      },
+      {
+        "label": "본거지",
+        "value": "경기도 광명시",
+        "hint": "원격 협업 기본, 광명 워크샵은 필요한 단계에 한해 오프라인"
+      },
+      {
+        "label": "협업 시작",
+        "value": "30분 무료 진단 미팅",
+        "hint": "문제 정의·우선순위·시점을 함께 점검합니다"
+      }
+    ],
+    "steps": [
+      {
+        "step": "01",
+        "title": "문의 폼 전송",
+        "body": "해결하고 싶은 문제, 기대하는 결과, 시점을 자유롭게 적어 주세요."
+      },
+      {
+        "step": "02",
+        "title": "30분 진단 미팅",
+        "body": "원격(Google Meet)으로 진행합니다. 부담 없는 첫 대화입니다."
+      },
+      {
+        "step": "03",
+        "title": "협업 제안",
+        "body": "스코프·일정·비용을 1주 안에 정리해 제안드립니다. 여기서 진행 여부 결정."
+      }
+    ],
+    "form": {
+      "nameLabel": "이름",
+      "namePlaceholder": "홍길동",
+      "nameRequired": "이름을 입력해 주세요.",
+      "nameMax": "이름은 60자 이하로 입력해 주세요.",
+      "orgLabel": "소속",
+      "orgPlaceholder": "회사·팀 (선택)",
+      "orgMax": "소속은 80자 이하로 입력해 주세요.",
+      "emailLabel": "이메일",
+      "emailRequired": "이메일을 입력해 주세요.",
+      "emailInvalid": "올바른 이메일 형식이 아닙니다.",
+      "phoneLabel": "연락처",
+      "phonePlaceholder": "010-0000-0000 (선택)",
+      "phoneInvalid": "전화번호 형식이 올바르지 않습니다.",
+      "messageLabel": "문의 내용",
+      "messagePlaceholder": "해결하고 싶은 문제, 기대하는 결과, 시점 등을 편하게 알려 주세요.",
+      "messageMin": "문의 내용은 최소 10자 이상 입력해 주세요.",
+      "messageMax": "문의 내용은 2000자 이하로 입력해 주세요.",
+      "submitLabel": "문의 보내기",
+      "submittingLabel": "전송 중…",
+      "successMsg": "문의가 접수되었습니다. 곧 회신드리겠습니다.",
+      "privacyNote": "접수 즉시 SQLite 호환 DB에 적재되며, 외부로 공유되지 않습니다."
+    }
+  },
+  "ai": {
+    "metaTitle": "AI",
+    "metaDesc": "코디움랩의 AI 접근: AI로 개발하고, 업무에 녹이는 시스템을 만듭니다. Claude·Cursor·MCP·RAG 기반 사내 도입.",
+    "heroEyebrow": "AI · 개발과 운영의 새로운 결",
+    "heroTitleA": "AI로 ",
+    "heroTitleB": "개발",
+    "heroTitleC": "하고, ",
+    "heroTitleD": "업무에 녹입니다",
+    "heroDesc": "코디움랩은 AI를 '도와주는 도구'로 두지 않습니다. 코드 한 줄, 회의 한 페이지, 운영 한 사이클 — 사람이 하던 일의 결을 그대로 따라가며, AI를 그 자리에 자연스럽게 끼워 넣습니다.",
+    "ctaInquiry": "AI 도입 문의",
+    "ctaApproach": "접근 방식 보기",
+    "pillarsEyebrow": "Two Pillars",
+    "pillarsTitle": "AI를",
+    "pillarsTitleHighlight": "두 곳",
+    "pillarsTitlePost": "에 둡니다",
+    "pillarsDesc": "만드는 자리(개발)와 일하는 자리(업무). 두 곳 모두에 AI를 자연스럽게 끼워 넣는 것이 코디움랩의 접근입니다.",
+    "stackEyebrow": "Stack",
+    "stackTitle": "코디움랩이",
+    "stackTitleHighlight": "손에 쥔 도구",
+    "stackDesc": "특정 벤더에 묶이지 않고, 그때그때 가장 좋은 결을 가진 도구를 조립합니다.",
+    "patternsEyebrow": "Pattern",
+    "patternsTitleHighlight": "AI 도입",
+    "patternsTitlePost": "의 네 단계",
+    "patternsDesc": "결과만 가져다 붙이지 않습니다. 발견 → 시도 → 통합 → 운영, 네 단계로 함께 만듭니다.",
+    "casesEyebrow": "Use cases",
+    "casesTitle": "이런 결의",
+    "casesTitleHighlight": "시스템",
+    "casesTitlePost": "을 만듭니다",
+    "casesDesc": "도입 가능한 시나리오 — 작게 시작해 운영까지 가져갑니다.",
+    "principlesEyebrow": "Principles",
+    "principlesTitle": "AI를 다룰 때",
+    "principlesTitleHighlight": "지키는 결",
+    "closingEyebrow": "Let's build",
+    "closingTitle": "AI가 들어갈 자리,",
+    "closingTitleHighlight": "함께 찾아보겠습니다",
+    "closingDesc": "지금 팀에 정말 AI가 필요한 자리가 있는지, 무료 진단 미팅으로 함께 확인합니다.",
+    "closingCtaPrimary": "무료 진단 미팅 신청",
+    "closingCtaSecondary": "메인으로",
+    "pillars": [
+      {
+        "tag": "Build with AI",
+        "title": "AI로 개발합니다",
+        "summary": "Claude · Cursor · MCP — 모델 한계 안에서 가장 빠르게.",
+        "body": "AI 에이전트·코드 자동화·테스트 생성을 일상 개발 사이클에 끼워 넣어, PoC가 운영까지 가는 시간을 줄입니다. 모델은 도구일 뿐, 의사결정의 기준은 사람과 도메인에 둡니다.",
+        "items": [
+          "Claude Code · Codex · Cursor 기반 페어 프로그래밍 표준화",
+          "Multi-Model 라우팅(Opus/Sonnet/Haiku) — 비용·품질 분리",
+          "MCP 서버로 사내 API/문서/스키마 모델에 연결",
+          "Spec → Code → Test 파이프라인 자동화"
+        ]
+      },
+      {
+        "tag": "Embed in Workflow",
+        "title": "업무에 녹이는 시스템을 만듭니다",
+        "summary": "AI를 워크플로 가운데 두고, 사람을 끌어올리는 자리에.",
+        "body": "Slack·Jira·노션·사내 위키 — 이미 흘러가는 업무의 결을 끊지 않고, RAG·에이전트·자동화 봇을 그 안에 심습니다. AI 도구가 '쓰는 사람'이 아니라 '같이 일하는 동료'로 자리잡도록.",
+        "items": [
+          "사내 문서 RAG 어시스턴트 (회의록·메뉴얼·제품 스펙)",
+          "Jira/Linear/Slack에 붙는 자동 분석·요약·트리아지 봇",
+          "고객 응대 · CS 데이터 기반 전용 LLM 도구",
+          "운영 로그·이슈 대시보드와 결합된 옵저버빌리티 AI"
+        ]
+      }
+    ],
+    "stack": [
+      {
+        "label": "Models",
+        "items": [
+          "Claude Opus 4.7",
+          "Sonnet 4.6",
+          "Haiku 4.5",
+          "GPT-4o · 5",
+          "Gemini Pro"
+        ]
+      },
+      {
+        "label": "Agent · Tooling",
+        "items": [
+          "Claude Code",
+          "Cursor",
+          "Codex",
+          "MCP Server",
+          "Agent SDK"
+        ]
+      },
+      {
+        "label": "Retrieval · Data",
+        "items": [
+          "Vector DB (pgvector, Qdrant)",
+          "Embedding 파이프라인",
+          "RAG 평가",
+          "스키마 동기화"
+        ]
+      },
+      {
+        "label": "Ops · Integration",
+        "items": [
+          "Slack / Jira / Notion",
+          "GitHub Actions",
+          "On-prem · VPC",
+          "Observability"
+        ]
+      }
+    ],
+    "patterns": [
+      {
+        "step": "01",
+        "title": "Discovery",
+        "body": "팀의 실제 흐름을 인터뷰·관찰합니다. 'AI가 들어갈 자리'가 정말 있는지, 들어가도 되는지를 먼저 판단합니다."
+      },
+      {
+        "step": "02",
+        "title": "Prototype",
+        "body": "운영을 가정한 작은 슬라이스를 1–2주 안에 만들고, 실사용 데이터로 검증합니다. 데모가 아니라 살아있는 버전입니다."
+      },
+      {
+        "step": "03",
+        "title": "Integrate",
+        "body": "AI 도구가 기존 도구(Slack·Jira·사내 시스템) 안으로 들어가도록, 사용자가 별도 화면을 켜지 않도록 설계합니다."
+      },
+      {
+        "step": "04",
+        "title": "Operate",
+        "body": "프롬프트·모델·데이터 모두 바뀌는 자원. 모니터링·롤백·재학습 사이클을 운영 팀에 이관합니다."
+      }
+    ],
+    "cases": [
+      {
+        "tag": "Engineering",
+        "title": "Spec → Code → Verify 자동화",
+        "body": "Jira 이슈가 들어오면 다중 모델이 사양을 생성하고, 가장 좋은 안을 채택해 코드 → 테스트 → 검증까지 자동으로 이어지는 파이프라인.",
+        "meta": "Claude Code · MCP · Multi-Model"
+      },
+      {
+        "tag": "Knowledge",
+        "title": "사내 위키 RAG 어시스턴트",
+        "body": "흩어진 회의록·매뉴얼·CS 응대 로그를 임베딩하고, Slack에서 자연어로 묻고 답할 수 있게. 출처는 항상 원문 링크로 검증.",
+        "meta": "Vector DB · Slack Bot · 보안 격리"
+      },
+      {
+        "tag": "Operations",
+        "title": "이슈 트리아지 봇",
+        "body": "CS·운영 채널에 올라오는 이슈를 자동으로 분류·요약·태깅하고, 적합한 담당자에게 라우팅. 사람이 보는 양은 줄이고, 결정은 사람이.",
+        "meta": "Agent · 분류 · 라우팅"
+      }
+    ],
+    "principles": [
+      {
+        "title": "Human-in-the-loop",
+        "body": "AI가 단독으로 결정하는 자리는 두지 않습니다. 항상 사람이 마지막에 보고, 마지막에 누릅니다."
+      },
+      {
+        "title": "Secure by default",
+        "body": "사내망·VPC·온프레미스 LLM 등 보안 요건에 맞춰 설계합니다. 데이터가 어디로 흘러갈지 먼저 정의합니다."
+      },
+      {
+        "title": "Operable, not magical",
+        "body": "프롬프트·모델·도구의 변경 비용까지 함께 책임집니다. '마법 같은 데모'가 아니라 운영 가능한 시스템."
+      }
+    ]
+  },
+  "game": {
+    "metaTitle": "게임 허브 | 코디움랩",
+    "metaDesc": "코디움랩이 만든 웹 게임을 브라우저에서 바로 즐기세요. Snake Grow Battle — 배틀로얄 스네이크 게임.",
+    "hubBadge": "게임 허브",
+    "hubHeading": "잠깐 쉬어가세요",
+    "hubDesc": "코디움랩이 직접 만든 게임들을 브라우저에서 바로 즐기세요.",
+    "playButton": "플레이",
+    "comingSoonLabel": "곧 출시",
+    "feedbackText": "게임 아이디어나 피드백이 있으신가요?",
+    "contactLink": "문의 주세요",
+    "notAvailableBadge": "준비 중",
+    "playersLabel": "플레이어",
+    "difficultyLabel": "난이도",
+    "controlsLabel": "조작 방법",
+    "downloadLabel": "앱 다운로드",
+    "snake": {
+      "subtitle": "배틀로얄 스네이크",
+      "description": "마우스로 뱀을 조종해 먹이를 먹고 몸집을 키우세요. 다른 뱀의 몸통에 부딪히면 게임 오버. 점점 좁아지는 폭풍 구역에서 최후의 1마리가 되어야 합니다.",
+      "tags": [
+        "배틀로얄",
+        "아케이드",
+        "멀티플레이"
+      ],
+      "controls": [
+        "마우스 이동 → 방향 조종",
+        "Space / 클릭 유지 → 부스트 (꼬리 소모)",
+        "ESC → 게임 종료"
+      ],
+      "players": "1인 (AI 12마리)",
+      "difficulty": "보통",
+      "playerName": "나",
+      "gameOver": "💀 게임 오버",
+      "win": "🏆 우승!",
+      "finalLength": "최종 길이:",
+      "kills": "처치:",
+      "retry": "다시 도전",
+      "playAgain": "다시 플레이",
+      "exit": "나가기",
+      "hudLength": "길이",
+      "hudKills": "처치",
+      "hudRank": "순위",
+      "hudRankSuffix": "위",
+      "hudAliveSuffix": "명",
+      "stormShrinking": "폭풍 수축 중",
+      "stormWarning": "폭풍 경고",
+      "stormHold": "폭풍 대기",
+      "boostHint": "Space/클릭 → 부스트"
+    },
+    "airplane": {
+      "subtitle": "배틀로얄 공중전",
+      "description": "마우스로 전투기를 조종해 적기를 격추하세요. 총알이 자동 발사되며 적의 체력을 0으로 만들면 처치. 점점 좁아지는 폭풍 구역에서 마지막 에이스가 되어야 합니다.",
+      "tags": [
+        "배틀로얄",
+        "슈터",
+        "아케이드"
+      ],
+      "controls": [
+        "마우스 이동 → 조준 (기체가 마우스 방향으로 자동 회전)",
+        "Space / 클릭 유지 → 부스트 (HP 소모)",
+        "아이템 자동 획득: 🛡️방어막 ⚡속도 🔥연사 💥산탄 ❤️수리",
+        "ESC → 게임 종료"
+      ],
+      "players": "1인 (AI 12기)",
+      "difficulty": "보통",
+      "playerName": "나",
+      "gameOver": "💀 격추됨",
+      "win": "🏆 에이스!",
+      "kills": "처치:",
+      "retry": "다시 출격",
+      "playAgain": "다시 출격",
+      "exit": "나가기",
+      "hudKills": "처치",
+      "hudRank": "순위",
+      "hudRankSuffix": "위",
+      "hudAliveSuffix": "기",
+      "stormShrinking": "폭풍 수축 중",
+      "stormWarning": "폭풍 경고",
+      "stormHold": "폭풍 대기",
+      "boostHint": "마우스 이동 → 조준 | Space/클릭 → 부스트"
+    },
+    "bubble": {
+      "subtitle": "방울쏘기",
+      "description": "같은 색 방울 3개 이상 연결하면 터집니다. 특수 방울(⭐행 클리어, 💣폭탄, 🌈무지개)을 활용해 FEVER를 발동하세요. 80발 안에 모든 방울을 없애면 클리어!",
+      "tags": [
+        "퍼즐",
+        "아케이드",
+        "캐주얼"
+      ],
+      "controls": [
+        "마우스 이동 → 조준",
+        "클릭 → 발사",
+        "8발마다 새 줄 추가",
+        "ESC → 종료"
+      ],
+      "players": "1인",
+      "difficulty": "쉬움",
+      "clear": "🎉 클리어!",
+      "gameOver": "💥 게임 오버",
+      "score": "점수",
+      "retry": "🔄 다시 하기",
+      "exit": "나가기",
+      "hudShotsLeft": "남은 발:",
+      "next": "다음",
+      "aimHint": "마우스 이동 → 조준 | 클릭 → 발사",
+      "levelLabel": "레벨"
+    },
+    "comingSoonGames": [
+      {
+        "title": "Pixel Dungeon",
+        "emoji": "⚔️",
+        "desc": "로그라이트 던전 탐험"
+      },
+      {
+        "title": "Tower Rush",
+        "emoji": "🏰",
+        "desc": "실시간 타워 디펜스"
+      }
+    ],
+    "defense": {
+      "subtitle": "타워 디펜스",
+      "description": "뱀 타워를 소환하고 합성해 섬을 지키세요. 가챠로 C~MAX 8등급 타워를 소환하고, 같은 등급 드래그 합성으로 강화하세요. 100웨이브를 버티면 승리!",
+      "tags": [
+        "타워디펜스",
+        "전략",
+        "가챠"
+      ],
+      "controls": [
+        "타워 드래그 → 이동/합성",
+        "소환 버튼 → 가챠 소환",
+        "⚡ 즉시 → 웨이브 즉시 시작",
+        "업그레이드 → 전체 강화",
+        "ESC → 나가기"
+      ],
+      "players": "1인",
+      "difficulty": "보통"
+    }
+  },
+  "login": {
+    "metaTitle": "로그인",
+    "heading": "에 로그인",
+    "subheading": "간편 로그인으로 시작하세요",
+    "errorMsg": "로그인 중 오류가 발생했습니다.",
+    "naverLabel": "네이버로 시작 · 준비 중",
+    "googleLabel": "Google로 시작 · 준비 중",
+    "metaLabel": "Meta로 시작 · 준비 중",
+    "termsPrefix": "로그인하면 ",
+    "termsLink": "이용약관",
+    "termsSuffix": "에 동의하게 됩니다.",
+    "loginLoadingTitle": "로그인 중…"
+  },
+  "auth": {
+    "backToMain": "메인으로"
+  }
+}

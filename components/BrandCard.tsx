@@ -3,7 +3,19 @@
 import { useRef, useState } from "react";
 import type { SubBrand } from "@/lib/brand";
 
-export default function BrandCard({ brand, index }: { brand: SubBrand; index: number }) {
+export default function BrandCard({
+  brand,
+  index,
+  lang = "ko",
+  viewDetailsLabel = "자세히 보기",
+  comingSoonLabel = "사이트 준비 중",
+}: {
+  brand: SubBrand;
+  index: number;
+  lang?: string;
+  viewDetailsLabel?: string;
+  comingSoonLabel?: string;
+}) {
   const ref = useRef<HTMLElement | null>(null);
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
 
@@ -46,7 +58,7 @@ export default function BrandCard({ brand, index }: { brand: SubBrand; index: nu
               0{index + 1} · {brand.nameEn}
             </p>
             <h3 className="mt-1.5 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-50">
-              {brand.nameKo}
+              {lang === "en" ? brand.nameEn : brand.nameKo}
             </h3>
           </div>
           <span
@@ -85,7 +97,7 @@ export default function BrandCard({ brand, index }: { brand: SubBrand; index: nu
               className="group/cta inline-flex items-center gap-2 text-sm font-medium text-zinc-900 transition dark:text-zinc-100"
             >
               <span className="underline-offset-4 group-hover/cta:underline">
-                자세히 보기
+                {viewDetailsLabel}
               </span>
               <svg
                 width="14"
@@ -105,7 +117,7 @@ export default function BrandCard({ brand, index }: { brand: SubBrand; index: nu
           ) : (
             <span className="inline-flex items-center gap-2 text-sm text-zinc-400 dark:text-zinc-500">
               <span className="anim-pulse-soft inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
-              사이트 준비 중
+              {comingSoonLabel}
             </span>
           )}
         </div>
