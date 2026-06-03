@@ -1221,18 +1221,19 @@ export default function SnakeGame({onClose}: Props) {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       {draft&&<PerkDraft draft={draft} onPick={pickPerk}/>}
-      {isTouch&&(
-        <div className="pointer-events-none absolute inset-x-0 bottom-6 flex items-end justify-end px-6">
-          <button
-            className="pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 border-white/20 bg-black/60 text-white active:bg-white/20"
-            onTouchStart={e=>{e.preventDefault();boostButtonRef.current=true;getSfxCtx()?.resume()}}
-            onTouchEnd={e=>{e.preventDefault();boostButtonRef.current=false}}
-            onTouchCancel={e=>{e.preventDefault();boostButtonRef.current=false}}
-          >
-            <span className="text-2xl leading-none">🚀</span>
-            <span className="text-[11px] font-bold">BOOST</span>
-          </button>
-        </div>
+      {display.phase==='playing'&&(
+        <button
+          className="absolute bottom-10 right-6 z-20 flex h-[76px] w-[76px] select-none flex-col items-center justify-center gap-1 rounded-full border-2 border-orange-400/50 bg-black/75 text-white shadow-xl shadow-orange-500/30 active:scale-95 active:bg-orange-500/30 active:border-orange-400 transition-all"
+          style={{touchAction:'none'}}
+          onMouseDown={e=>{e.preventDefault();boostButtonRef.current=true;getSfxCtx()?.resume()}}
+          onMouseUp={e=>{e.preventDefault();boostButtonRef.current=false}}
+          onTouchStart={e=>{e.preventDefault();e.stopPropagation();boostButtonRef.current=true;getSfxCtx()?.resume()}}
+          onTouchEnd={e=>{e.preventDefault();e.stopPropagation();boostButtonRef.current=false}}
+          onTouchCancel={e=>{e.preventDefault();e.stopPropagation();boostButtonRef.current=false}}
+        >
+          <span className="text-2xl leading-none">🔥</span>
+          <span className="text-[10px] font-bold tracking-widest text-orange-300">BOOST</span>
+        </button>
       )}
       {display.phase==='dead'&&(
         <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm">
