@@ -1049,6 +1049,8 @@ function PerkDraft({draft,onPick}:{draft:PerkId[];onPick:(p:PerkId)=>void}) {
   )
 }
 
+const JMAX = 55
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface Props { onClose: ()=>void; strings?: any }
@@ -1063,9 +1065,11 @@ export default function SnakeGame({onClose}: Props) {
   const lastTRef=useRef(0)
   const frameRef=useRef(0)
   const camRef=useRef({x:0,y:0,zoom:CAM_MAX})
+  const joystickDirRef=useRef<{active:boolean;angle:number}>({active:false,angle:0})
   const [display,setDisplay]=useState({phase:'playing' as GamePhase,score:0,kills:0})
   const [draft,setDraft]=useState<PerkId[]|null>(null)
   const [isTouch,setIsTouch]=useState(false)
+  const [joyVis,setJoyVis]=useState<{active:boolean;baseX:number;baseY:number;thumbX:number;thumbY:number}>({active:false,baseX:0,baseY:0,thumbX:0,thumbY:0})
 
   const worldToScreen=useCallback((cx:number,cy:number,cw:number,ch:number)=>{
     const cam=camRef.current; return {x:(cx-cw/2)/cam.zoom+cam.x,y:(cy-ch/2)/cam.zoom+cam.y}
@@ -1075,6 +1079,31 @@ export default function SnakeGame({onClose}: Props) {
 
   const restart=useCallback(()=>{worldRef.current=initWorld();setDisplay({phase:'playing',score:0,kills:0});setDraft(null)},[])
   const pickPerk=useCallback((p:PerkId)=>{worldRef.current.perks.push(p);worldRef.current.draft=null;setDraft(null)},[])
+
+  const handleJoyStart=useCallback((e:React.TouchEvent)=>{
+    e.preventDefault(); getSfxCtx()?.resume()
+    const t=e.touches[0]
+    setJoyVis({active:true,baseX:t.clientX,baseY:t.clientY,thumbX:t.clientX,thumbY:t.clientY})
+    joystickDirRef.current={active:false,angle:0}; boostRef.current=false
+  },[])
+  const handleJoyMove=useCallback((e:React.TouchEvent)=>{
+    e.preventDefault()
+    const t=e.touches[0]
+    setJoyVis(prev=>{
+      if(!prev.active) return prev
+      const dx=t.clientX-prev.baseX, dy=t.clientY-prev.baseY
+      const d=Math.sqrt(dx*dx+dy*dy), angle=Math.atan2(dy,dx)
+      joystickDirRef.current={active:true,angle}
+      boostRef.current=d>JMAX*0.6
+      const cd=Math.min(d,JMAX)
+      return {...prev,thumbX:prev.baseX+Math.cos(angle)*cd,thumbY:prev.baseY+Math.sin(angle)*cd}
+    })
+  },[])
+  const handleJoyEnd=useCallback((e:React.TouchEvent)=>{
+    e.preventDefault()
+    setJoyVis(prev=>({...prev,active:false}))
+    joystickDirRef.current={active:false,angle:0}; boostRef.current=false
+  },[])
 
   useEffect(()=>{
     const canvas=canvasRef.current; if (!canvas) return
@@ -1089,7 +1118,10 @@ export default function SnakeGame({onClose}: Props) {
 
       if (w.phase==='playing'&&!w.draft) {
         const player=w.snakes[0]; let inputDir=player.dir
-        if (player.alive){const mw=worldToScreen(mouseRef.current.cx,mouseRef.current.cy,cw,ch);const dx=mw.x-player.segs[0].x,dy=mw.y-player.segs[0].y;if(Math.abs(dx)>5||Math.abs(dy)>5) inputDir=Math.atan2(dy,dx)}
+        if (player.alive){
+          if(joystickDirRef.current.active){inputDir=joystickDirRef.current.angle}
+          else{const mw=worldToScreen(mouseRef.current.cx,mouseRef.current.cy,cw,ch);const dx=mw.x-player.segs[0].x,dy=mw.y-player.segs[0].y;if(Math.abs(dx)>5||Math.abs(dy)>5) inputDir=Math.atan2(dy,dx)}
+        }
         const inputUlt=ultRef.current; ultRef.current=false
         if (useItemRef.current&&player.heldItems.length>0){applyItem(player,player.heldItems.shift()!,now);useItemRef.current=false}
         tick(w,dt,inputDir,boostRef.current,inputUlt)
@@ -1115,8 +1147,7 @@ export default function SnakeGame({onClose}: Props) {
     const canvas=canvasRef.current; if (!canvas) return
     const onMove=(e:MouseEvent)=>{const r=canvas.getBoundingClientRect();mouseRef.current={cx:e.clientX-r.left,cy:e.clientY-r.top}}
     const onTouchMove=(e:TouchEvent)=>{e.preventDefault();const r=canvas.getBoundingClientRect(),t=e.touches[0];mouseRef.current={cx:t.clientX-r.left,cy:t.clientY-r.top}}
-    const onTouchStart=(e:TouchEvent)=>{e.preventDefault();const r=canvas.getBoundingClientRect(),t=e.touches[0];mouseRef.current={cx:t.clientX-r.left,cy:t.clientY-r.top};boostRef.current=true;getSfxCtx()?.resume()}
-    const onTouchEnd=()=>{boostRef.current=false}
+    const onTouchStart=(e:TouchEvent)=>{e.preventDefault();const r=canvas.getBoundingClientRect(),t=e.touches[0];mouseRef.current={cx:t.clientX-r.left,cy:t.clientY-r.top}}
     const onDown=()=>{boostRef.current=true;getSfxCtx()?.resume()}
     const onUp=()=>{boostRef.current=false}
     const onKey=(e:KeyboardEvent)=>{
@@ -1126,12 +1157,12 @@ export default function SnakeGame({onClose}: Props) {
       if (e.key==='Escape') onClose()
     }
     canvas.addEventListener('mousemove',onMove); canvas.addEventListener('touchmove',onTouchMove,{passive:false})
-    canvas.addEventListener('touchstart',onTouchStart,{passive:false}); canvas.addEventListener('touchend',onTouchEnd)
+    canvas.addEventListener('touchstart',onTouchStart,{passive:false})
     canvas.addEventListener('mousedown',onDown); canvas.addEventListener('mouseup',onUp)
     window.addEventListener('keydown',onKey); window.addEventListener('keyup',onKey)
     return ()=>{
       canvas.removeEventListener('mousemove',onMove); canvas.removeEventListener('touchmove',onTouchMove)
-      canvas.removeEventListener('touchstart',onTouchStart); canvas.removeEventListener('touchend',onTouchEnd)
+      canvas.removeEventListener('touchstart',onTouchStart)
       canvas.removeEventListener('mousedown',onDown); canvas.removeEventListener('mouseup',onUp)
       window.removeEventListener('keydown',onKey); window.removeEventListener('keyup',onKey)
     }
@@ -1145,15 +1176,35 @@ export default function SnakeGame({onClose}: Props) {
       </button>
       {draft&&<PerkDraft draft={draft} onPick={pickPerk}/>}
       {isTouch&&(
-        <div className="pointer-events-none absolute inset-x-0 bottom-6 flex items-end justify-end px-6">
-          <button
-            className="pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 border-indigo-500/60 bg-black/60 text-indigo-300 active:bg-indigo-900/60"
-            onTouchStart={e=>{e.preventDefault();ultRef.current=true;getSfxCtx()?.resume()}}
-          >
-            <span className="text-2xl leading-none">⚡</span>
-            <span className="text-[11px] font-bold">DASH</span>
-          </button>
-        </div>
+        <>
+          {/* Left joystick zone */}
+          <div
+            className="pointer-events-auto absolute bottom-0 left-0 top-0 w-1/2"
+            onTouchStart={handleJoyStart}
+            onTouchMove={handleJoyMove}
+            onTouchEnd={handleJoyEnd}
+            onTouchCancel={handleJoyEnd}
+          />
+          {/* Joystick visual */}
+          {joyVis.active&&(
+            <div className="pointer-events-none absolute inset-0" style={{zIndex:20}}>
+              <div className="absolute rounded-full border-2 border-white/25 bg-white/5"
+                style={{width:JMAX*2,height:JMAX*2,left:joyVis.baseX-JMAX,top:joyVis.baseY-JMAX}}/>
+              <div className="absolute rounded-full bg-white/35 border border-white/20"
+                style={{width:JMAX*0.8,height:JMAX*0.8,left:joyVis.thumbX-JMAX*0.4,top:joyVis.thumbY-JMAX*0.4}}/>
+            </div>
+          )}
+          {/* Right DASH button */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-6 flex items-end justify-end px-6">
+            <button
+              className="pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 border-indigo-500/60 bg-black/60 text-indigo-300 active:bg-indigo-900/60"
+              onTouchStart={e=>{e.preventDefault();ultRef.current=true;getSfxCtx()?.resume()}}
+            >
+              <span className="text-2xl leading-none">⚡</span>
+              <span className="text-[11px] font-bold">DASH</span>
+            </button>
+          </div>
+        </>
       )}
       {display.phase==='dead'&&(
         <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm">
