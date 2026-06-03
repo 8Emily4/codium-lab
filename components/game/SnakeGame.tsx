@@ -1160,7 +1160,7 @@ export default function SnakeGame({onClose}: Props) {
     }
     const stopJoystick=()=>{
       joystickRef.current.active=false;joystickRef.current.knobDx=0;joystickRef.current.knobDy=0
-      joystickRef.current.magnitude=0;boostRef.current=false;joystickTouchIdRef.current=null
+      joystickRef.current.magnitude=0;joystickTouchIdRef.current=null
     }
     const onTouchStart=(e:TouchEvent)=>{
       e.preventDefault()
@@ -1176,7 +1176,7 @@ export default function SnakeGame({onClose}: Props) {
       const r=canvas.getBoundingClientRect()
       for(let i=0;i<e.changedTouches.length;i++){
         const t=e.changedTouches[i], cx=t.clientX-r.left, cy=t.clientY-r.top
-        if(t.identifier===joystickTouchIdRef.current){updateJoystick(cx,cy);boostRef.current=joystickRef.current.magnitude>0.65}
+        if(t.identifier===joystickTouchIdRef.current){updateJoystick(cx,cy)}
         else mouseRef.current={cx,cy}
       }
     }
@@ -1186,7 +1186,7 @@ export default function SnakeGame({onClose}: Props) {
     const onMove=(e:MouseEvent)=>{
       const r=canvas.getBoundingClientRect(), cx=e.clientX-r.left, cy=e.clientY-r.top
       mouseRef.current={cx,cy}
-      if(joystickRef.current.active){updateJoystick(cx,cy);boostRef.current=joystickRef.current.magnitude>0.65}
+      if(joystickRef.current.active){updateJoystick(cx,cy)}
     }
     const onDown=(e:MouseEvent)=>{
       const r=canvas.getBoundingClientRect()
