@@ -1083,6 +1083,7 @@ export default function AirplaneGame({ onClose, strings }: Props) {
   const [display, setDisplay] = useState({ phase: 'playing' as World['phase'], hp: MAX_HP, kills: 0 })
   const [muted, setMuted] = useState(false)
   const [isTouch, setIsTouch] = useState(false)
+  const [mmPx, setMmPx] = useState(60)
 
   const worldToScreen = useCallback((cx: number, cy: number, cw: number, ch: number) => {
     const cam = camRef.current
@@ -1443,8 +1444,32 @@ export default function AirplaneGame({ onClose, strings }: Props) {
     }
   }, [onClose])
 
+  useEffect(() => {
+    const calc = () => setMmPx(Math.max(60, Math.min(window.innerWidth, window.innerHeight) * 0.14))
+    calc(); window.addEventListener('resize', calc); return () => window.removeEventListener('resize', calc)
+  }, [])
+
+  useEffect(() => {
+    window.history.pushState(null, '', window.location.href)
+    const onPop = () => onClose()
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [onClose])
+  useEffect(() => {
+    const prevTa = document.body.style.touchAction, prevOv = document.body.style.overflow
+    document.body.style.touchAction = 'none'; document.body.style.overflow = 'hidden'
+    const block = (e: TouchEvent) => e.preventDefault()
+    document.addEventListener('touchstart', block, { passive: false })
+    document.addEventListener('touchmove', block, { passive: false })
+    return () => {
+      document.body.style.touchAction = prevTa; document.body.style.overflow = prevOv
+      document.removeEventListener('touchstart', block)
+      document.removeEventListener('touchmove', block)
+    }
+  }, [])
+
   return (
-    <div className="relative h-full w-full bg-[#07091a] touch-none select-none">
+    <div className="relative h-full w-full overflow-hidden touch-none select-none bg-[#07091a]">
       <canvas ref={canvasRef} className="h-full w-full cursor-crosshair" style={{ touchAction: 'none' }} />
 
       {/* Mobile controls */}
@@ -1471,7 +1496,8 @@ export default function AirplaneGame({ onClose, strings }: Props) {
       {/* Mute button */}
       <button
         onClick={() => setMuted(m => !m)}
-        className="absolute right-16 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-zinc-400 transition hover:bg-black/80 hover:text-white"
+        className="absolute flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-zinc-400 transition hover:bg-black/80 hover:text-white"
+        style={{ top: mmPx + 24, right: 48 }}
         title={muted ? '소리 켜기' : '소리 끄기'}
       >
         {muted ? (
@@ -1489,7 +1515,8 @@ export default function AirplaneGame({ onClose, strings }: Props) {
 
       <button
         onClick={onClose}
-        className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-zinc-400 transition hover:bg-black/80 hover:text-white"
+        className="absolute flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-zinc-400 transition hover:bg-black/80 hover:text-white"
+        style={{ top: mmPx + 24, right: 8 }}
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
