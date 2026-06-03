@@ -263,44 +263,35 @@ export default function GameHub({ dict, lang }: { dict: GameDict; lang: string }
 
   return (
     <>
-      <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mb-12 text-center">
-          <span className="inline-block rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300">
-            {dict.hubBadge}
-          </span>
-          <h1 className="mt-4 text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl dark:text-zinc-50">
-            {dict.hubHeading}
-          </h1>
-          <p className="mt-4 text-lg text-zinc-500 dark:text-zinc-400">
-            {dict.hubDesc}
+      <section className="relative border-b border-zinc-200/70 bg-zinc-50 dark:border-zinc-800/70 dark:bg-zinc-950">
+        <div className="bg-dots absolute inset-0 opacity-50" aria-hidden />
+        <div className="relative mx-auto max-w-6xl px-6 py-24 sm:py-28">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {GAMES.map((game) => (
+              <GameCard key={game.id} game={game} dict={dict} onPlay={() => setActiveGame(game.id)} />
+            ))}
+          </div>
+
+          {dict.comingSoonGames.length > 0 && (
+            <div className="mt-16">
+              <h2 className="mb-6 text-sm font-semibold uppercase tracking-widest text-zinc-400">
+                {dict.comingSoonLabel}
+              </h2>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {dict.comingSoonGames.map((g) => (
+                  <ComingSoonCard key={g.title} title={g.title} emoji={g.emoji} desc={g.desc} gradient={g.title === 'Pixel Dungeon' ? 'from-amber-600 to-orange-700' : 'from-emerald-600 to-teal-700'} comingSoonLabel="Coming Soon" />
+                ))}
+              </div>
+            </div>
+          )}
+
+          <p className="mt-16 text-center text-sm text-zinc-400">
+            {dict.feedbackText}{' '}
+            <a href={`/${lang}/contact`} className="font-medium text-indigo-500 underline-offset-4 hover:underline">
+              {dict.contactLink}
+            </a>
           </p>
         </div>
-
-        <div className="grid gap-8 lg:grid-cols-1">
-          {GAMES.map((game) => (
-            <GameCard key={game.id} game={game} dict={dict} onPlay={() => setActiveGame(game.id)} />
-          ))}
-        </div>
-
-        {dict.comingSoonGames.length > 0 && (
-          <div className="mt-12">
-            <h2 className="mb-4 text-sm font-semibold uppercase tracking-widest text-zinc-400">
-              {dict.comingSoonLabel}
-            </h2>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {dict.comingSoonGames.map((g) => (
-                <ComingSoonCard key={g.title} title={g.title} emoji={g.emoji} desc={g.desc} gradient={g.title === 'Pixel Dungeon' ? 'from-amber-600 to-orange-700' : 'from-emerald-600 to-teal-700'} comingSoonLabel="Coming Soon" />
-              ))}
-            </div>
-          </div>
-        )}
-
-        <p className="mt-16 text-center text-sm text-zinc-400">
-          {dict.feedbackText}{' '}
-          <a href={`/${lang}/contact`} className="font-medium text-indigo-500 underline-offset-4 hover:underline">
-            {dict.contactLink}
-          </a>
-        </p>
       </section>
 
       {activeGame && (

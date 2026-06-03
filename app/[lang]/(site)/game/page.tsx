@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import GameHub from "@/components/game/GameHub";
+import PageHeader from "@/components/PageHeader";
 import { getDictionary, hasLocale } from "../../dictionaries";
 import { notFound } from "next/navigation";
 
@@ -17,5 +18,14 @@ export default async function GamePage({ params }: { params: Promise<{ lang: str
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const dict = await getDictionary(lang);
-  return <GameHub dict={dict.game} lang={lang} />;
+  return (
+    <>
+      <PageHeader
+        eyebrow={dict.game.hubBadge}
+        title={dict.game.hubHeading}
+        description={dict.game.hubDesc}
+      />
+      <GameHub dict={dict.game} lang={lang} />
+    </>
+  );
 }
