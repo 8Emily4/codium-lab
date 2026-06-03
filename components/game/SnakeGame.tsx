@@ -971,15 +971,8 @@ function renderHUD(ctx: CanvasRenderingContext2D, w: World, cw: number, ch: numb
     ctx.textAlign='left'; yOff+=56
   }
 
-  const ultY=ch-170-108-yOff, ultBarW=180, ultFrac=w.ultCharge/ULT_MAX
-  ctx.fillStyle='rgba(0,0,0,0.62)';ctx.beginPath();ctx.roundRect(12,ultY,ultBarW,32,8);ctx.fill()
-  ctx.fillStyle=(ultFrac>=1?'#a78bfa':'#6366f1')+'33';ctx.beginPath();ctx.roundRect(14,ultY+2,(ultBarW-4)*ultFrac,28,6);ctx.fill()
-  if (ultFrac>=1){const pu=0.5+0.5*Math.sin(now*6);ctx.fillStyle=`rgba(167,139,250,${0.3+pu*0.3})`;ctx.beginPath();ctx.roundRect(14,ultY+2,ultBarW-4,28,6);ctx.fill()}
-  ctx.font='bold 10px system-ui';ctx.fillStyle=ultFrac>=1?'#c4b5fd':'#818cf8';ctx.textAlign='left'
-  ctx.fillText(`DASH ${ultFrac>=1?'READY!':Math.floor(ultFrac*100)+'%'}`,22,ultY+20); yOff+=40
-
   if (player.heldItems.length>0){
-    const itmY=ch-170-108-yOff, itmX=12
+    const itmY=ch-170-68-yOff, itmX=12
     ctx.fillStyle='rgba(0,0,0,0.62)';ctx.beginPath();ctx.roundRect(itmX,itmY,player.heldItems.length*46+8,38,8);ctx.fill()
     player.heldItems.forEach((kind,i)=>{const ix=itmX+8+i*46,iy=itmY+4;ctx.fillStyle=ITEM_COL[kind]+'44';ctx.beginPath();ctx.roundRect(ix,iy,38,30,6);ctx.fill();ctx.font='16px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(ITEM_EMOJI[kind],ix+19,iy+15);ctx.textBaseline='alphabetic'})
     ctx.textAlign='left';ctx.font='bold 9px system-ui';ctx.fillStyle='#71717a';ctx.fillText('Q → 아이템 사용',itmX+4,itmY-4)
@@ -1078,7 +1071,7 @@ export default function SnakeGame({onClose}: Props) {
   const camRef=useRef({x:0,y:0,zoom:CAM_MAX})
   const joystickRef=useRef<JoyState>({active:false,angle:0,magnitude:0,knobDx:0,knobDy:0})
   const joystickTouchIdRef=useRef<number|null>(null)
-  const [display,setDisplay]=useState({phase:'playing' as GamePhase,score:0,kills:0,ult:0})
+  const [display,setDisplay]=useState({phase:'playing' as GamePhase,score:0,kills:0})
   const [draft,setDraft]=useState<PerkId[]|null>(null)
   const [isTouch,setIsTouch]=useState(false)
 
@@ -1107,7 +1100,7 @@ export default function SnakeGame({onClose}: Props) {
     }
   },[])
 
-  const restart=useCallback(()=>{worldRef.current=initWorld();setDisplay({phase:'playing',score:0,kills:0,ult:0});setDraft(null)},[])
+  const restart=useCallback(()=>{worldRef.current=initWorld();setDisplay({phase:'playing',score:0,kills:0});setDraft(null)},[])
   const pickPerk=useCallback((p:PerkId)=>{worldRef.current.perks.push(p);worldRef.current.draft=null;setDraft(null)},[])
 
 
@@ -1136,7 +1129,7 @@ export default function SnakeGame({onClose}: Props) {
         if (w.draft) setDraft(w.draft)
       }
 
-      if (frameRef.current%20===0||w.phase!=='playing') setDisplay({phase:w.phase,score:Math.floor(w.score||w.snakes[0]?.len||0),kills:w.pKills,ult:Math.floor(w.ultCharge)})
+      if (frameRef.current%20===0||w.phase!=='playing') setDisplay({phase:w.phase,score:Math.floor(w.score||w.snakes[0]?.len||0),kills:w.pKills})
 
       const p=w.snakes[0],cam=camRef.current
       if (p?.alive){cam.x+=(p.segs[0].x-cam.x)*0.12;cam.y+=(p.segs[0].y-cam.y)*0.12;cam.zoom+=(zoomForLen(p.peakLen)-cam.zoom)*0.03}
@@ -1229,14 +1222,7 @@ export default function SnakeGame({onClose}: Props) {
       </button>
       {draft&&<PerkDraft draft={draft} onPick={pickPerk}/>}
       {isTouch&&(
-        <div className="pointer-events-none absolute inset-x-0 bottom-6 flex items-end justify-end gap-3 px-6">
-          <button
-            className={`pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 transition-colors ${display.ult>=100?'border-purple-400 bg-purple-900/60 text-purple-100':'border-zinc-600/40 bg-black/60 text-zinc-500'}`}
-            onTouchStart={e=>{e.preventDefault();ultRef.current=true;getSfxCtx()?.resume()}}
-          >
-            <span className="text-2xl leading-none">⚡</span>
-            <span className="text-[11px] font-bold">{display.ult>=100?'READY!':display.ult+'%'}</span>
-          </button>
+        <div className="pointer-events-none absolute inset-x-0 bottom-6 flex items-end justify-end px-6">
           <button
             className="pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 border-white/20 bg-black/60 text-white active:bg-white/20"
             onTouchStart={e=>{e.preventDefault();boostButtonRef.current=true;getSfxCtx()?.resume()}}
