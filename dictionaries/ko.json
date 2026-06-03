@@ -621,8 +621,8 @@
     "pillarsDesc": "만드는 자리(개발)와 일하는 자리(업무). 두 곳 모두에 AI를 자연스럽게 끼워 넣는 것이 코디움랩의 접근입니다.",
     "stackEyebrow": "Stack",
     "stackTitle": "코디움랩이",
-    "stackTitleHighlight": "손에 쥔 도구",
-    "stackDesc": "특정 벤더에 묶이지 않고, 그때그때 가장 좋은 결을 가진 도구를 조립합니다.",
+    "stackTitleHighlight": "활용할 수 있는 기술",
+    "stackDesc": "특정 벤더에 묶이지 않습니다. 목적에 맞게 가장 좋은 도구를 조합합니다.",
     "patternsEyebrow": "Pattern",
     "patternsTitleHighlight": "AI 도입",
     "patternsTitlePost": "의 네 단계",
@@ -700,11 +700,11 @@
       {
         "label": "Models",
         "items": [
-          "Claude Opus 4.7",
-          "Sonnet 4.6",
-          "Haiku 4.5",
-          "GPT-4o · 5",
-          "Gemini Pro"
+          "Claude (Anthropic)",
+          "GPT (OpenAI)",
+          "Gemini (Google)",
+          "오픈소스 LLM",
+          "목적별 모델 선택"
         ]
       },
       {

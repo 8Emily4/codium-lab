@@ -620,9 +620,9 @@
     "pillarsTitlePost": "",
     "pillarsDesc": "The place where things are built (development) and the place where work happens (workflow). Codium Lab's approach is to weave AI naturally into both.",
     "stackEyebrow": "Stack",
-    "stackTitle": "The tools",
-    "stackTitleHighlight": "Codium Lab wields",
-    "stackDesc": "Not locked into any single vendor — we assemble the best tools for each situation.",
+    "stackTitle": "Technologies",
+    "stackTitleHighlight": "Codium Lab can leverage",
+    "stackDesc": "Not locked into any single vendor — we combine the right tools for each purpose.",
     "patternsEyebrow": "Pattern",
     "patternsTitleHighlight": "Four stages",
     "patternsTitlePost": "of AI adoption",
@@ -700,11 +700,11 @@
       {
         "label": "Models",
         "items": [
-          "Claude Opus 4.7",
-          "Sonnet 4.6",
-          "Haiku 4.5",
-          "GPT-4o · 5",
-          "Gemini Pro"
+          "Claude (Anthropic)",
+          "GPT (OpenAI)",
+          "Gemini (Google)",
+          "Open-source LLMs",
+          "Model selection by purpose"
         ]
       },
       {
