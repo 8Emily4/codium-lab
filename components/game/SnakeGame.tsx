@@ -939,7 +939,7 @@ function render(ctx: CanvasRenderingContext2D, w: World, cw: number, ch: number,
 function renderHUD(ctx: CanvasRenderingContext2D, w: World, cw: number, ch: number, now: number, cam: {x:number;y:number;zoom:number}) {
   const player=w.snakes[0]; if (!player||cw<10||ch<10) return
   // Minimap
-  const mm=Math.max(60,Math.min(cw,ch)*0.14), mmX=cw-mm-16, mmY=ch-mm-16, mmSc=mm/(ARENA_R*2)
+  const mm=Math.max(60,Math.min(cw,ch)*0.14), mmX=cw-mm-16, mmY=16, mmSc=mm/(ARENA_R*2)
   ctx.globalAlpha=0.75;ctx.fillStyle='#0d0d1a';ctx.strokeStyle='#6366f1';ctx.lineWidth=1.5
   ctx.beginPath();ctx.arc(mmX+mm/2,mmY+mm/2,mm/2,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.globalAlpha=1
   ctx.save();ctx.beginPath();ctx.arc(mmX+mm/2,mmY+mm/2,Math.max(1,mm/2-2),0,Math.PI*2);ctx.clip()
@@ -986,7 +986,7 @@ function renderHUD(ctx: CanvasRenderingContext2D, w: World, cw: number, ch: numb
   ctx.fillStyle=(ultFrac>=1?'#a78bfa':'#6366f1')+'33';ctx.beginPath();ctx.roundRect(14,ultY+2,(ultBarW-4)*ultFrac,28,6);ctx.fill()
   if (ultFrac>=1){const p=0.5+0.5*Math.sin(now*6);ctx.fillStyle=`rgba(167,139,250,${0.3+p*0.3})`;ctx.beginPath();ctx.roundRect(14,ultY+2,ultBarW-4,28,6);ctx.fill()}
   ctx.font='bold 10px system-ui';ctx.fillStyle=ultFrac>=1?'#c4b5fd':'#818cf8';ctx.textAlign='left'
-  ctx.fillText(`E/Z → DASH ${ultFrac>=1?'READY!':Math.floor(ultFrac*100)+'%'}`,22,ultY+20); yOff+=40
+  ctx.fillText(`DASH ${ultFrac>=1?'READY!':Math.floor(ultFrac*100)+'%'}`,22,ultY+20); yOff+=40
 
   // Held items
   if (player.heldItems.length>0){
@@ -999,7 +999,8 @@ function renderHUD(ctx: CanvasRenderingContext2D, w: World, cw: number, ch: numb
   // Perks
   if (w.perks.length>0){
     ctx.textAlign='right'
-    w.perks.forEach((p,i)=>{ctx.font='11px system-ui';ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(cw-94,12+i*20,90,18);ctx.fillStyle='#a1a1aa';ctx.fillText(`${PERKS[p].emoji} ${PERKS[p].title}`,cw-4,12+i*20+13)})
+    const perksY=mmY+mm+10
+    w.perks.forEach((p,i)=>{ctx.font='11px system-ui';ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(cw-94,perksY+i*20,90,18);ctx.fillStyle='#a1a1aa';ctx.fillText(`${PERKS[p].emoji} ${PERKS[p].title}`,cw-4,perksY+i*20+13)})
     ctx.textAlign='left'
   }
 
@@ -1020,9 +1021,6 @@ function renderHUD(ctx: CanvasRenderingContext2D, w: World, cw: number, ch: numb
     ctx.font='11px system-ui';ctx.fillStyle='rgba(255,255,255,0.8)';ctx.fillText('마커로 이동하세요!',cw/2,96);ctx.textAlign='left'
   }
 
-  // Hint
-  ctx.textAlign='right';ctx.fillStyle='rgba(0,0,0,0.5)';ctx.beginPath();ctx.roundRect(cw-170,12,158,28,6);ctx.fill()
-  ctx.fillStyle='#71717a';ctx.font='10px system-ui';ctx.fillText('Space/클릭→부스트  E/Z→궁극기',cw-14,30);ctx.textAlign='left'
   void cam
 }
 
@@ -1116,7 +1114,9 @@ export default function SnakeGame({onClose}: Props) {
   useEffect(()=>{
     const canvas=canvasRef.current; if (!canvas) return
     const onMove=(e:MouseEvent)=>{const r=canvas.getBoundingClientRect();mouseRef.current={cx:e.clientX-r.left,cy:e.clientY-r.top}}
-    const onTouch=(e:TouchEvent)=>{e.preventDefault();const r=canvas.getBoundingClientRect(),t=e.touches[0];mouseRef.current={cx:t.clientX-r.left,cy:t.clientY-r.top}}
+    const onTouchMove=(e:TouchEvent)=>{e.preventDefault();const r=canvas.getBoundingClientRect(),t=e.touches[0];mouseRef.current={cx:t.clientX-r.left,cy:t.clientY-r.top}}
+    const onTouchStart=(e:TouchEvent)=>{e.preventDefault();const r=canvas.getBoundingClientRect(),t=e.touches[0];mouseRef.current={cx:t.clientX-r.left,cy:t.clientY-r.top};boostRef.current=true;getSfxCtx()?.resume()}
+    const onTouchEnd=()=>{boostRef.current=false}
     const onDown=()=>{boostRef.current=true;getSfxCtx()?.resume()}
     const onUp=()=>{boostRef.current=false}
     const onKey=(e:KeyboardEvent)=>{
@@ -1125,13 +1125,15 @@ export default function SnakeGame({onClose}: Props) {
       if (e.code==='KeyQ'&&e.type==='keydown') useItemRef.current=true
       if (e.key==='Escape') onClose()
     }
-    canvas.addEventListener('mousemove',onMove); canvas.addEventListener('touchmove',onTouch,{passive:false})
-    canvas.addEventListener('touchstart',onTouch,{passive:false}); canvas.addEventListener('mousedown',onDown)
-    canvas.addEventListener('mouseup',onUp); window.addEventListener('keydown',onKey); window.addEventListener('keyup',onKey)
+    canvas.addEventListener('mousemove',onMove); canvas.addEventListener('touchmove',onTouchMove,{passive:false})
+    canvas.addEventListener('touchstart',onTouchStart,{passive:false}); canvas.addEventListener('touchend',onTouchEnd)
+    canvas.addEventListener('mousedown',onDown); canvas.addEventListener('mouseup',onUp)
+    window.addEventListener('keydown',onKey); window.addEventListener('keyup',onKey)
     return ()=>{
-      canvas.removeEventListener('mousemove',onMove); canvas.removeEventListener('touchmove',onTouch)
-      canvas.removeEventListener('touchstart',onTouch); canvas.removeEventListener('mousedown',onDown)
-      canvas.removeEventListener('mouseup',onUp); window.removeEventListener('keydown',onKey); window.removeEventListener('keyup',onKey)
+      canvas.removeEventListener('mousemove',onMove); canvas.removeEventListener('touchmove',onTouchMove)
+      canvas.removeEventListener('touchstart',onTouchStart); canvas.removeEventListener('touchend',onTouchEnd)
+      canvas.removeEventListener('mousedown',onDown); canvas.removeEventListener('mouseup',onUp)
+      window.removeEventListener('keydown',onKey); window.removeEventListener('keyup',onKey)
     }
   },[onClose])
 
@@ -1143,15 +1145,7 @@ export default function SnakeGame({onClose}: Props) {
       </button>
       {draft&&<PerkDraft draft={draft} onPick={pickPerk}/>}
       {isTouch&&(
-        <div className="pointer-events-none absolute inset-x-0 bottom-6 flex items-end justify-between px-6">
-          <button
-            className="pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 border-white/20 bg-black/60 text-white active:bg-white/20"
-            onTouchStart={e=>{e.preventDefault();boostRef.current=true;getSfxCtx()?.resume()}}
-            onTouchEnd={e=>{e.preventDefault();boostRef.current=false}}
-          >
-            <span className="text-2xl leading-none">🚀</span>
-            <span className="text-[11px] font-bold">BOOST</span>
-          </button>
+        <div className="pointer-events-none absolute inset-x-0 bottom-6 flex items-end justify-end px-6">
           <button
             className="pointer-events-auto flex h-20 w-20 select-none flex-col items-center justify-center gap-1 rounded-full border-2 border-indigo-500/60 bg-black/60 text-indigo-300 active:bg-indigo-900/60"
             onTouchStart={e=>{e.preventDefault();ultRef.current=true;getSfxCtx()?.resume()}}
