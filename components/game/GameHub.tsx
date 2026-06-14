@@ -81,7 +81,7 @@ const APP_PROMOS: AppPromo[] = [
     ],
     stores: [
       { label: 'App Store', icon: STORE_ICONS.appStore, url: '#', available: false },
-      { label: 'Google Play', icon: STORE_ICONS.googlePlay, url: '#', available: false },
+      { label: 'Google Play', icon: STORE_ICONS.googlePlay, url: 'https://play.google.com/store/apps/details?id=com.snakegrow.battle', available: true },
     ],
   },
 ]
@@ -181,6 +181,8 @@ function AppPromoCard({ app, dict }: { app: AppPromo; dict: GameDict }) {
                   <a
                     key={store.label}
                     href={store.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/20"
                   >
                     {store.icon}
