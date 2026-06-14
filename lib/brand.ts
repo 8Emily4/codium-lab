@@ -3,7 +3,7 @@ export const company = {
   nameEn: "Codium Lab",
   foundedYear: 2026,
   location: "경기도 광명시",
-  ceo: "임나리",
+  ceo: "에밀리(리리쌤)",
   rdFields: ["AI 자동화 도구"],
   tagline: "기술의 본질을 연구하고 가치를 구현하는 프리미엄 IT 솔루션 연구소",
   description:
