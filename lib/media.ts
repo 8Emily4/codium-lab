@@ -370,20 +370,37 @@ export async function resolveYouTubeChannel(
   };
 }
 
-/** Fetch a channel's recent uploads from its public Atom feed (cached 10 min). */
+/**
+ * Recent uploads for a channel via its **uploads-playlist** Atom feed
+ * (`playlist_id=UU…`). This is a single, simple path: one request, clean XML.
+ * We use the uploads playlist rather than the channel feed because the channel
+ * feed (`channel_id=…`) returns intermittent 500s for some channels.
+ * On any failure we log a warning and return empty — easy to diagnose.
+ * Cached upstream for 10 minutes.
+ */
 export async function fetchChannelVideos(
   channelId: string,
   limit = 12,
 ): Promise<{ title: string; videos: ChannelVideo[] }> {
+  // A channel's uploads playlist id is its channel id with "UC" → "UU".
+  const playlistId = channelId.startsWith("UC")
+    ? `UU${channelId.slice(2)}`
+    : channelId;
+  const feedUrl = `https://www.youtube.com/feeds/videos.xml?playlist_id=${playlistId}`;
+
   let xml = "";
   try {
-    const res = await fetch(
-      `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`,
-      { headers: { "User-Agent": YT_UA }, next: { revalidate: 600 } },
-    );
-    if (!res.ok) return { title: "", videos: [] };
+    const res = await fetch(feedUrl, {
+      headers: { "User-Agent": YT_UA },
+      next: { revalidate: 600 },
+    });
+    if (!res.ok) {
+      console.warn(`[media] YouTube feed ${res.status} for ${channelId} (${feedUrl})`);
+      return { title: "", videos: [] };
+    }
     xml = await res.text();
-  } catch {
+  } catch (e) {
+    console.warn(`[media] YouTube feed fetch failed for ${channelId}:`, e);
     return { title: "", videos: [] };
   }
 
