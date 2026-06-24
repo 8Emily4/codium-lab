@@ -11,6 +11,8 @@ import {
   type MediaType,
 } from "@/lib/media";
 import { Card, EmptyState, WorkHeader, formatDateTime } from "@/components/work/ui";
+import ChannelForm from "./ChannelForm";
+import MediaForm from "./MediaForm";
 import {
   createChannelAction,
   createMediaAction,
@@ -43,6 +45,7 @@ type Strings = {
   shown: string;
   hidden: string;
   featured: string;
+  required: string;
   f: {
     type: string;
     typeYoutube: string;
@@ -98,6 +101,7 @@ const T: Record<"ko" | "en", Strings> = {
     shown: "노출 중",
     hidden: "숨김",
     featured: "추천",
+    required: "필수 입력입니다",
     f: {
       type: "종류",
       typeYoutube: "YouTube 영상",
@@ -151,6 +155,7 @@ const T: Record<"ko" | "en", Strings> = {
     shown: "Published",
     hidden: "Hidden",
     featured: "Featured",
+    required: "This field is required",
     f: {
       type: "Type",
       typeYoutube: "YouTube video",
@@ -316,16 +321,14 @@ export default async function WorkContentAdmin({
           <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">{t.ch.desc}</p>
         </div>
 
-        <form action={createChannelAction} className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          <input type="hidden" name="lang" value={lang} />
-          <div className="flex-1">
-            <label className={LABEL}>{t.ch.inputLabel}</label>
-            <input name="channel" required placeholder={t.ch.inputPh} className={INPUT} />
-          </div>
-          <button type="submit" className="inline-flex h-[42px] shrink-0 items-center justify-center rounded-xl bg-zinc-900 px-5 text-sm font-semibold text-white transition hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
-            {t.ch.add}
-          </button>
-        </form>
+        <ChannelForm
+          action={createChannelAction}
+          lang={lang}
+          inputLabel={t.ch.inputLabel}
+          inputPh={t.ch.inputPh}
+          add={t.ch.add}
+          requiredMsg={t.required}
+        />
 
         {channels.length > 0 && (
           <ul className="mt-5 space-y-2">
@@ -401,15 +404,7 @@ export default async function WorkContentAdmin({
           </span>
           {t.newTitle}
         </h2>
-        <form action={createMediaAction} className="space-y-4">
-          <input type="hidden" name="lang" value={lang} />
-          <MediaFields t={t} />
-          <div className="pt-1">
-            <button type="submit" className="inline-flex items-center rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
-              {t.create}
-            </button>
-          </div>
-        </form>
+        <MediaForm action={createMediaAction} lang={lang} f={t.f} create={t.create} requiredMsg={t.required} />
       </Card>
 
       {/* List */}

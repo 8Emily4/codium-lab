@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { company } from "@/lib/brand";
 import { getSessionWithRole } from "@/lib/users";
 import { hasLocale } from "../../../dictionaries";
+import AdminLoginForm from "./AdminLoginForm";
 
 export const metadata: Metadata = {
   title: "관리자 로그인",
@@ -79,43 +80,11 @@ export default async function AdminLoginPage({
             </p>
           )}
 
-          <form action="/api/auth/admin/login" method="POST" className="mt-8 space-y-4">
-            <input type="hidden" name="lang" value={lang} />
-            <input type="hidden" name="returnTo" value={returnTo} />
-            <div>
-              <label htmlFor="email" className="mb-1.5 block text-xs font-semibold text-zinc-600 dark:text-zinc-300">
-                {t.email}
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                autoComplete="username"
-                autoFocus
-                className="w-full rounded-xl border border-zinc-300 bg-white/80 px-3.5 py-2.5 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-700 dark:bg-zinc-900/70 dark:text-zinc-50"
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="mb-1.5 block text-xs font-semibold text-zinc-600 dark:text-zinc-300">
-                {t.password}
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                autoComplete="current-password"
-                className="w-full rounded-xl border border-zinc-300 bg-white/80 px-3.5 py-2.5 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-700 dark:bg-zinc-900/70 dark:text-zinc-50"
-              />
-            </div>
-            <button
-              type="submit"
-              className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-zinc-900 text-sm font-semibold text-white transition hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
-            >
-              {t.submit}
-            </button>
-          </form>
+          <AdminLoginForm
+            lang={lang}
+            returnTo={returnTo}
+            t={{ email: t.email, password: t.password, submit: t.submit }}
+          />
 
           <p className="mt-6 text-center">
             <Link

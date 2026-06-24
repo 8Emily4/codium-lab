@@ -24,6 +24,8 @@ import {
   revokeGrantAction,
   updateMaterialAction,
 } from "./actions";
+import MaterialForm from "./MaterialForm";
+import GrantForm from "./GrantForm";
 
 const T = {
   ko: {
@@ -63,6 +65,7 @@ const T = {
     statusDraft: "초안",
     statusPublished: "공개",
     statusArchived: "보관",
+    required: "필수 입력입니다",
   },
   en: {
     eyebrow: "Manage",
@@ -101,13 +104,9 @@ const T = {
     statusDraft: "Draft",
     statusPublished: "Published",
     statusArchived: "Archived",
+    required: "This field is required",
   },
 } as const;
-
-const inputCls =
-  "w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100";
-const labelCls =
-  "mb-1.5 block text-xs font-medium text-zinc-500 dark:text-zinc-400";
 
 export default async function MaterialsAdminPage({
   params,
@@ -200,10 +199,10 @@ export default async function MaterialsAdminPage({
         {/* Editor */}
         <section className="min-w-0">
           {isNew ? (
-            <MaterialForm lang={lang} t={t} mode="create" />
+            <MaterialCard lang={lang} t={t} mode="create" />
           ) : editing ? (
             <div className="space-y-6">
-              <MaterialForm
+              <MaterialCard
                 lang={lang}
                 t={t}
                 mode="edit"
@@ -226,7 +225,7 @@ export default async function MaterialsAdminPage({
   );
 }
 
-function MaterialForm({
+function MaterialCard({
   lang,
   t,
   mode,
@@ -240,107 +239,37 @@ function MaterialForm({
   const base = `/${lang}/work`;
   return (
     <Card className="p-5 sm:p-6">
-      <form
+      <MaterialForm
         action={mode === "create" ? createMaterialAction : updateMaterialAction}
-        className="space-y-4"
-      >
-        <input type="hidden" name="lang" value={lang} />
-        {material && <input type="hidden" name="id" value={material.id} />}
+        lang={lang}
+        t={t}
+        mode={mode}
+        material={
+          material
+            ? {
+                id: material.id,
+                title: material.title,
+                summary: material.summary,
+                category: material.category,
+                tags: material.tags,
+                status: material.status,
+                access: material.access,
+                body: material.body,
+              }
+            : undefined
+        }
+      />
 
-        <div>
-          <label className={labelCls}>{t.fTitle}</label>
-          <input
-            name="title"
-            required
-            defaultValue={material?.title ?? ""}
-            className={inputCls}
-            placeholder={t.fTitle}
-          />
-        </div>
-
-        <div>
-          <label className={labelCls}>{t.fSummary}</label>
-          <input
-            name="summary"
-            defaultValue={material?.summary ?? ""}
-            className={inputCls}
-          />
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelCls}>{t.fCategory}</label>
-            <input
-              name="category"
-              defaultValue={material?.category ?? ""}
-              className={inputCls}
-            />
-          </div>
-          <div>
-            <label className={labelCls}>{t.fTags}</label>
-            <input
-              name="tags"
-              defaultValue={material?.tags.join(", ") ?? ""}
-              className={inputCls}
-              placeholder="React, Next.js"
-            />
-          </div>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelCls}>{t.fStatus}</label>
-            <select
-              name="status"
-              defaultValue={material?.status ?? "draft"}
-              className={inputCls}
-            >
-              <option value="draft">{t.statusDraft}</option>
-              <option value="published">{t.statusPublished}</option>
-              <option value="archived">{t.statusArchived}</option>
-            </select>
-          </div>
-          <div>
-            <label className={labelCls}>{t.fAccess}</label>
-            <select
-              name="access"
-              defaultValue={material?.access ?? "restricted"}
-              className={inputCls}
-            >
-              <option value="restricted">{t.accessRestricted}</option>
-              <option value="public">{t.accessPublic}</option>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label className={labelCls}>{t.fBody}</label>
-          <textarea
-            name="body"
-            defaultValue={material?.body ?? ""}
-            rows={16}
-            className={`${inputCls} resize-y font-mono text-[13px] leading-6`}
-            placeholder={"# 제목\n\n내용을 마크다운으로 작성하세요."}
-          />
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2 pt-1">
-          <button
-            type="submit"
-            className="inline-flex h-10 items-center rounded-xl bg-indigo-600 px-5 text-sm font-semibold text-white transition hover:bg-indigo-500"
+      {material && (
+        <div className="flex flex-wrap items-center gap-2 pt-3">
+          <Link
+            href={`${base}/materials?id=${material.id}`}
+            className="inline-flex h-10 items-center rounded-xl border border-zinc-200 px-4 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
           >
-            {mode === "create" ? t.create : t.save}
-          </button>
-          {material && (
-            <Link
-              href={`${base}/materials?id=${material.id}`}
-              className="inline-flex h-10 items-center rounded-xl border border-zinc-200 px-4 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
-            >
-              {t.preview}
-            </Link>
-          )}
+            {t.preview}
+          </Link>
         </div>
-      </form>
+      )}
 
       {material && (
         <form
@@ -393,46 +322,13 @@ function GrantsPanel({
       <p className="mt-1 text-xs text-zinc-400">{t.grantsDesc}</p>
 
       {/* Add grant */}
-      <form
+      <GrantForm
         action={grantAction}
-        className="mt-4 grid gap-3 rounded-xl bg-zinc-50 p-4 sm:grid-cols-[1fr_auto_auto_auto] sm:items-end dark:bg-zinc-900/60"
-      >
-        <input type="hidden" name="lang" value={lang} />
-        <input type="hidden" name="materialId" value={material.id} />
-        <div>
-          <label className={labelCls}>{t.grantUser}</label>
-          <select name="userId" required className={inputCls}>
-            {users.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.name ?? u.id}
-                {u.email ? ` · ${u.email}` : ""}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className={labelCls}>{t.grantStart}</label>
-          <input
-            type="datetime-local"
-            name="startsAt"
-            className={`${inputCls} sm:w-auto`}
-          />
-        </div>
-        <div>
-          <label className={labelCls}>{t.grantEnd}</label>
-          <input
-            type="datetime-local"
-            name="endsAt"
-            className={`${inputCls} sm:w-auto`}
-          />
-        </div>
-        <button
-          type="submit"
-          className="inline-flex h-10 items-center justify-center rounded-xl bg-zinc-900 px-4 text-sm font-semibold text-white transition hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
-          {t.grantBtn}
-        </button>
-      </form>
+        lang={lang}
+        t={t}
+        materialId={material.id}
+        users={users}
+      />
 
       {/* Current grants */}
       <div className="mt-4">

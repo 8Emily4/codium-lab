@@ -12,6 +12,7 @@ import {
   togglePostFlagAction,
   updatePostAction,
 } from "./actions";
+import PostCreateForm from "./PostCreateForm";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,7 @@ type Strings = {
   shown: string;
   hidden: string;
   featured: string;
+  required: string;
   f: {
     title: string;
     titlePh: string;
@@ -89,6 +91,7 @@ const T: Record<"ko" | "en", Strings> = {
     shown: "공개",
     hidden: "비공개",
     featured: "추천",
+    required: "필수 입력입니다",
     f: {
       title: "제목 *",
       titlePh: "글 제목",
@@ -135,6 +138,7 @@ const T: Record<"ko" | "en", Strings> = {
     shown: "Published",
     hidden: "Draft",
     featured: "Featured",
+    required: "This field is required",
     f: {
       title: "Title *",
       titlePh: "Post title",
@@ -326,15 +330,13 @@ export default async function WorkBlogAdmin({
           </span>
           {t.newTitle}
         </h2>
-        <form action={createPostAction} className="space-y-4">
-          <input type="hidden" name="lang" value={lang} />
-          <PostFields t={t} />
-          <div className="pt-1">
-            <button type="submit" className="inline-flex items-center rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
-              {t.create}
-            </button>
-          </div>
-        </form>
+        <PostCreateForm
+          action={createPostAction}
+          lang={lang}
+          f={t.f}
+          create={t.create}
+          required={t.required}
+        />
       </Card>
 
       {/* List */}
