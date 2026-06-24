@@ -851,6 +851,8 @@
     "featuredLabel": "Featured",
     "watchLabel": "Watch",
     "openLabel": "Open",
+    "viewChannel": "View channel",
+    "more": "More content",
     "empty": "Great content is on the way."
   },
   "game": {

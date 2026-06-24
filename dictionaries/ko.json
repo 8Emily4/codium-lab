@@ -851,6 +851,8 @@
     "featuredLabel": "추천",
     "watchLabel": "재생하기",
     "openLabel": "보러가기",
+    "viewChannel": "채널 보기",
+    "more": "추가 콘텐츠",
     "empty": "곧 멋진 콘텐츠로 찾아올게요."
   },
   "game": {
