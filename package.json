@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "whoami": "node --env-file-if-exists=.env.local scripts/whoami.mjs",
-    "material:register": "node --env-file-if-exists=.env.local scripts/register-material.mjs"
+    "whoami": "node --env-file-if-exists=.env scripts/whoami.mjs",
+    "material:register": "node --env-file-if-exists=.env scripts/register-material.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
