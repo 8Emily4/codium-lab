@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { company } from "@/lib/brand";
+import { getTotalVisitors } from "@/lib/analytics";
 import Logo from "./Logo";
 import type { Dictionary } from "@/app/[lang]/dictionaries";
 
@@ -12,13 +13,20 @@ const navLinks = [
   { key: "contact" as const, href: "contact" },
 ];
 
-export default function Footer({
+export default async function Footer({
   lang,
   dict,
 }: {
   lang: string;
   dict: Dictionary;
 }) {
+  const visitors = await getTotalVisitors();
+  const visitorLine =
+    visitors > 0
+      ? lang === "en"
+        ? `${visitors.toLocaleString("en-US")} visitors so far`
+        : `지금까지 ${visitors.toLocaleString("ko-KR")}명이 방문했어요`
+      : null;
   return (
     <footer className="relative overflow-hidden bg-zinc-950 text-zinc-100">
       {/* Top gradient line */}
@@ -119,9 +127,29 @@ export default function Footer({
               : `${company.nameKo} (${company.nameEn})`}
             . All rights reserved.
           </p>
-          <p className="font-mono text-xs text-zinc-700">
-            since {company.foundedYear}
-          </p>
+          <div className="flex items-center gap-3">
+            {visitorLine && (
+              <p className="inline-flex items-center gap-1.5 font-mono text-xs text-zinc-500">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-3.5 w-3.5 text-zinc-600"
+                  aria-hidden="true"
+                >
+                  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                {visitorLine}
+              </p>
+            )}
+            <p className="font-mono text-xs text-zinc-700">
+              since {company.foundedYear}
+            </p>
+          </div>
         </div>
       </div>
     </footer>

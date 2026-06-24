@@ -1,6 +1,11 @@
 @import "tailwindcss";
 
+/* 사용자 토글(class 기반) 다크모드. <html> 의 .dark 클래스로 제어 —
+   system 선택 시에는 ThemeProvider 스크립트가 OS 설정을 읽어 .dark 를 토글한다. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
+  color-scheme: light;
   --background: #fafaf9;
   --foreground: #0a0a0b;
   --surface: #ffffff;
@@ -24,17 +29,16 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #050507;
-    --foreground: #f4f4f5;
-    --surface: #0c0c10;
-    --surface-soft: #111114;
-    --border: #1f1f24;
-    --accent: #818cf8;
-    --accent-strong: #a5b4fc;
-    --accent-soft: #1e1b4b;
-  }
+.dark {
+  color-scheme: dark;
+  --background: #050507;
+  --foreground: #f4f4f5;
+  --surface: #0c0c10;
+  --surface-soft: #111114;
+  --border: #1f1f24;
+  --accent: #818cf8;
+  --accent-strong: #a5b4fc;
+  --accent-soft: #1e1b4b;
 }
 
 html {

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { company } from "@/lib/brand";
 import { getSession } from "@/lib/auth";
+import { isBlogNavVisible } from "@/lib/settings";
 import NavLinks from "./NavLinks";
 import SessionMenu from "./auth/SessionMenu";
 import Logo from "./Logo";
@@ -13,7 +14,10 @@ export default async function Nav({
   lang: string;
   dict: Dictionary;
 }) {
-  const session = await getSession();
+  const [session, blogNavVisible] = await Promise.all([
+    getSession(),
+    isBlogNavVisible(),
+  ]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-200/60 bg-white/70 backdrop-blur-xl dark:border-zinc-800/60 dark:bg-black/60">
@@ -26,7 +30,12 @@ export default async function Nav({
           <span className="whitespace-nowrap">{lang === "en" ? company.nameEn : company.nameKo}</span>
         </Link>
 
-        <NavLinks session={session} lang={lang} dict={dict} />
+        <NavLinks
+          session={session}
+          lang={lang}
+          dict={dict}
+          blogNavVisible={blogNavVisible}
+        />
       </div>
     </header>
   );

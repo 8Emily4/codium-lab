@@ -22,9 +22,19 @@ export default function PWARegister() {
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/sw.js', { scope: '/' })
-        .catch((err) => console.warn('[SW] registration failed:', err))
+      if (process.env.NODE_ENV === 'production') {
+        navigator.serviceWorker
+          .register('/sw.js', { scope: '/' })
+          .catch((err) => console.warn('[SW] registration failed:', err))
+      } else {
+        // Dev: a previously-registered SW serves stale /_next/static chunks
+        // cache-first, breaking the layout after each hot reload. Tear it down.
+        navigator.serviceWorker
+          .getRegistrations()
+          .then((regs) => regs.forEach((r) => r.unregister()))
+          .catch(() => {})
+        caches?.keys().then((keys) => keys.forEach((k) => caches.delete(k))).catch(() => {})
+      }
     }
 
     if (window.matchMedia('(display-mode: standalone)').matches) {

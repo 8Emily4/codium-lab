@@ -1,5 +1,6 @@
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import AnalyticsTracker from "@/components/AnalyticsTracker";
 import { getDictionary, hasLocale } from "../dictionaries";
 import { notFound } from "next/navigation";
 
@@ -19,6 +20,7 @@ export default async function SiteLayout({
       <Nav lang={lang} dict={dict} />
       <main className="flex-1">{children}</main>
       <Footer lang={lang} dict={dict} />
+      <AnalyticsTracker lang={lang} />
     </>
   );
 }

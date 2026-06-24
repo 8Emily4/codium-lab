@@ -86,7 +86,8 @@ const APP_PROMOS: AppPromo[] = [
   },
 ]
 
-function buildGames(dict: GameDict): GameMeta[] {
+function buildGames(dict: GameDict, lang: string): GameMeta[] {
+  const isEn = lang === 'en'
   return [
     {
       id: 'snake',
@@ -132,13 +133,13 @@ function buildGames(dict: GameDict): GameMeta[] {
       title: 'Island Defense',
       subtitle: (dict as any).defense?.subtitle ?? 'Tower Defense',
       description: (dict as any).defense?.description ?? 'Summon and merge snake towers to defend the island.',
-      tags: (dict as any).defense?.tags ?? ['타워디펜스', '전략', '가챠'],
-      controls: (dict as any).defense?.controls ?? ['드래그 → 이동/합성', '소환 버튼 → 가챠 소환', 'ESC → 나가기'],
+      tags: (dict as any).defense?.tags ?? (isEn ? ['Tower Defense', 'Strategy', 'Gacha'] : ['타워디펜스', '전략', '가챠']),
+      controls: (dict as any).defense?.controls ?? (isEn ? ['Drag → move/merge', 'Summon button → gacha summon', 'ESC → exit'] : ['드래그 → 이동/합성', '소환 버튼 → 가챠 소환', 'ESC → 나가기']),
       gradient: 'from-emerald-600 via-teal-600 to-cyan-700',
       accentColor: '#10b981',
       emoji: '🏰',
-      players: (dict as any).defense?.players ?? '1인',
-      difficulty: (dict as any).defense?.difficulty ?? '보통',
+      players: (dict as any).defense?.players ?? (isEn ? '1 player' : '1인'),
+      difficulty: (dict as any).defense?.difficulty ?? (isEn ? 'Normal' : '보통'),
     },
   ]
 }
@@ -152,7 +153,7 @@ function StatBadge({ label, value }: { label: string; value: string }) {
   )
 }
 
-function AppPromoCard({ app, dict }: { app: AppPromo; dict: GameDict }) {
+function AppPromoCard({ app, dict, lang }: { app: AppPromo; dict: GameDict; lang: string }) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const galleryImages = app.screenshots.map((src, i) => ({
     src,
@@ -230,7 +231,7 @@ function AppPromoCard({ app, dict }: { app: AppPromo; dict: GameDict }) {
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
                   </svg>
-                  <span className="text-[9px] font-medium">전체</span>
+                  <span className="text-[9px] font-medium">{lang === 'en' ? 'All' : '전체'}</span>
                 </button>
               </div>
             </div>
@@ -352,7 +353,7 @@ function GameModal({ gameId, dict, onClose }: { gameId: GameId; dict: GameDict; 
 
 export default function GameHub({ dict, lang }: { dict: GameDict; lang: string }) {
   const [activeGame, setActiveGame] = useState<GameId | null>(null)
-  const GAMES = buildGames(dict)
+  const GAMES = buildGames(dict, lang)
 
   return (
     <>
@@ -363,7 +364,7 @@ export default function GameHub({ dict, lang }: { dict: GameDict; lang: string }
           {APP_PROMOS.length > 0 && (
             <div className="mb-12 space-y-4">
               {APP_PROMOS.map((app) => (
-                <AppPromoCard key={app.bundleId} app={app} dict={dict} />
+                <AppPromoCard key={app.bundleId} app={app} dict={dict} lang={lang} />
               ))}
               <p className="text-center text-xs text-zinc-500">
                 {dict.appBannerWebNote}

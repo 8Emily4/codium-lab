@@ -1,25 +1,39 @@
 import { cookies } from "next/headers";
-import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { randomBytes } from "node:crypto";
+import { SignJWT, jwtVerify } from "jose";
+
+export type Role = "user" | "admin" | "superAdmin";
 
 export type SessionUser = {
   id: string;
-  provider: "kakao" | "naver" | "google" | "meta";
+  // "local" = email/password super-admin login (no social provider).
+  provider: "kakao" | "naver" | "google" | "meta" | "local";
   name: string;
   email?: string;
   avatar?: string;
+  role?: Role;
   issuedAt: number;
 };
 
 const COOKIE_NAME = "codium_session";
 const STATE_COOKIE = "codium_oauth_state";
-const MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+const ALG = "HS256";
 
-function getSecret(): string {
-  const s = process.env.AUTH_SECRET;
+/** Access-token lifetime in minutes (default 7 days). Aligns with code-pulse. */
+function getExpireMinutes(): number {
+  const v = Number(process.env.JWT_ACCESS_EXPIRE_MINUTES);
+  return Number.isFinite(v) && v > 0 ? v : 60 * 24 * 7;
+}
+
+/** HS256 signing key. Prefers JWT_SECRET_KEY, falls back to AUTH_SECRET. */
+function getSecretKey(): Uint8Array {
+  const s = process.env.JWT_SECRET_KEY || process.env.AUTH_SECRET;
   if (!s || s.length < 32) {
-    throw new Error("AUTH_SECRET is missing or too short (need 32+ chars).");
+    throw new Error(
+      "JWT_SECRET_KEY is missing or too short (need 32+ chars). Generate with `openssl rand -base64 48`.",
+    );
   }
-  return s;
+  return new TextEncoder().encode(s);
 }
 
 function b64url(input: Buffer | string): string {
@@ -30,32 +44,42 @@ function b64url(input: Buffer | string): string {
     .replace(/\//g, "_");
 }
 
-function b64urlDecode(input: string): Buffer {
-  const pad = input.length % 4 === 0 ? "" : "=".repeat(4 - (input.length % 4));
-  return Buffer.from(input.replace(/-/g, "+").replace(/_/g, "/") + pad, "base64");
+/** Sign the session as a standard JWT (sub + custom claims, HS256). */
+export async function encodeSession(user: SessionUser): Promise<string> {
+  return await new SignJWT({
+    type: "access",
+    provider: user.provider,
+    name: user.name,
+    email: user.email,
+    avatar: user.avatar,
+    role: user.role,
+  })
+    .setProtectedHeader({ alg: ALG, typ: "JWT" })
+    .setSubject(user.id)
+    .setIssuedAt()
+    .setExpirationTime(`${getExpireMinutes()}m`)
+    .sign(getSecretKey());
 }
 
-function sign(payload: string, secret: string): string {
-  return b64url(createHmac("sha256", secret).update(payload).digest());
-}
-
-export function encodeSession(user: SessionUser): string {
-  const payload = b64url(JSON.stringify(user));
-  const sig = sign(payload, getSecret());
-  return `${payload}.${sig}`;
-}
-
-export function decodeSession(token: string | undefined): SessionUser | null {
+/** Verify + decode the JWT back into a SessionUser, or null if invalid/expired. */
+export async function decodeSession(
+  token: string | undefined,
+): Promise<SessionUser | null> {
   if (!token) return null;
-  const [payload, sig] = token.split(".");
-  if (!payload || !sig) return null;
-  const expected = sign(payload, getSecret());
-  const a = Buffer.from(sig);
-  const b = Buffer.from(expected);
-  if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
   try {
-    const user = JSON.parse(b64urlDecode(payload).toString()) as SessionUser;
-    return user;
+    const { payload } = await jwtVerify(token, getSecretKey(), {
+      algorithms: [ALG],
+    });
+    if (!payload.sub) return null;
+    return {
+      id: String(payload.sub),
+      provider: (payload.provider as SessionUser["provider"]) ?? "kakao",
+      name: String(payload.name ?? ""),
+      email: (payload.email as string | undefined) ?? undefined,
+      avatar: (payload.avatar as string | undefined) ?? undefined,
+      role: payload.role as Role | undefined,
+      issuedAt: typeof payload.iat === "number" ? payload.iat * 1000 : Date.now(),
+    };
   } catch {
     return null;
   }
@@ -68,12 +92,13 @@ export async function getSession(): Promise<SessionUser | null> {
 
 export async function setSession(user: SessionUser) {
   const jar = await cookies();
-  jar.set(COOKIE_NAME, encodeSession(user), {
+  const token = await encodeSession(user);
+  jar.set(COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: MAX_AGE,
+    maxAge: getExpireMinutes() * 60,
   });
 }
 

@@ -23,6 +23,9 @@
     "faq": "FAQ",
     "contact": "Contact",
     "game": "Game",
+    "media": "Media",
+    "content": "Content",
+    "blog": "Tech Blog",
     "login": "Log in",
     "logout": "Log out",
     "inquiry": "Contact us",
@@ -836,6 +839,37 @@
       }
     ]
   },
+  "media": {
+    "metaTitle": "Content",
+    "metaDesc": "Explore the YouTube and Instagram content Codium Lab creates with AI.",
+    "eyebrow": "AI Content",
+    "heading": "Content made",
+    "highlight": "with AI",
+    "desc": "Videos and posts we planned and produced with AI, gathered in one place. Tap a card to watch right away.",
+    "filterAll": "All",
+    "typeYoutube": "YouTube",
+    "typeInstagram": "Instagram",
+    "typeOther": "Other",
+    "featuredLabel": "Featured",
+    "watchLabel": "Watch",
+    "openLabel": "Open",
+    "viewChannel": "View channel",
+    "more": "More content",
+    "empty": "Great content is on the way."
+  },
+  "blog": {
+    "metaTitle": "Tech Blog | Codium Lab",
+    "metaDesc": "Notes and insights from Codium Lab's work on LLMs, automation and architecture.",
+    "eyebrow": "Tech Blog",
+    "heading": "Codium Lab's",
+    "highlight": "engineering notes",
+    "desc": "Insights from looking closely at LLMs, automation and architecture — the stories behind solutions that go beyond a demo.",
+    "filterAll": "All",
+    "featuredLabel": "Featured",
+    "readMore": "Read more",
+    "backToList": "Back to blog",
+    "empty": "The first post is on the way."
+  },
   "game": {
     "metaTitle": "Game Hub | Codium Lab",
     "metaDesc": "Play web games made by Codium Lab directly in your browser. Snake Grow Battle — a battle royale snake game.",
@@ -1038,7 +1072,7 @@
   },
   "login": {
     "metaTitle": "Log in",
-    "heading": "Sign in to",
+    "heading": "Sign in to {brand}",
     "subheading": "Get started with a quick login",
     "errorMsg": "An error occurred during login.",
     "naverLabel": "Continue with Naver · Coming soon",
@@ -1047,6 +1081,7 @@
     "termsPrefix": "By logging in, you agree to our ",
     "termsLink": "Terms of Service",
     "termsSuffix": ".",
+    "adminLink": "Admin login",
     "loginLoadingTitle": "Signing in…"
   },
   "auth": {
