@@ -62,6 +62,8 @@ export type ManagedUser = {
   email: string | null;
   avatar: string | null;
   role: Role;
+  /** True for the env-defined root super admin, whose role can't be changed. */
+  envSuper: boolean;
   createdAt: number;
   lastLoginAt: number;
 };
@@ -88,14 +90,24 @@ export async function upsertUserOnLogin(user: SessionUser): Promise<void> {
   });
 }
 
-/** Role stored in the DB — only "user" or "admin" (never superAdmin). */
-async function getStoredRole(id: string): Promise<"user" | "admin"> {
+/**
+ * Role stored in the DB. A super admin can promote others to "superAdmin"
+ * (persisted here), so this may return any role. The env root super admin is
+ * resolved separately and always wins.
+ */
+function parseRole(raw: unknown): Role {
+  if (raw === "superAdmin") return "superAdmin";
+  if (raw === "admin") return "admin";
+  return "user";
+}
+
+async function getStoredRole(id: string): Promise<Role> {
   await ensureSchema();
   const rs = await getDb().execute({
     sql: `SELECT role FROM users WHERE id = ?`,
     args: [id],
   });
-  return rs.rows[0]?.role === "admin" ? "admin" : "user";
+  return parseRole(rs.rows[0]?.role);
 }
 
 /** Effective role: env super admin wins, otherwise the stored role. */
@@ -113,24 +125,27 @@ export async function listUsers(): Promise<ManagedUser[]> {
   const superIds = new Set(getSuperAdminIds());
   return rs.rows.map((row) => {
     const id = String(row.id);
-    const stored: "user" | "admin" = row.role === "admin" ? "admin" : "user";
+    const envSuper = superIds.has(id);
     return {
       id,
       provider: String(row.provider),
       name: row.name == null ? null : String(row.name),
       email: row.email == null ? null : String(row.email),
       avatar: row.avatar == null ? null : String(row.avatar),
-      role: superIds.has(id) ? "superAdmin" : stored,
+      role: envSuper ? "superAdmin" : parseRole(row.role),
+      envSuper,
       createdAt: Number(row.created_at),
       lastLoginAt: Number(row.last_login_at),
     };
   });
 }
 
-export async function setStoredRole(
-  id: string,
-  role: "admin" | "user",
-): Promise<void> {
+/**
+ * Persist a user's role. Super admins may grant "admin" or "superAdmin"; the
+ * env root super admin is enforced by callers (it must never be downgraded
+ * here, since the DB row is ignored for it anyway).
+ */
+export async function setStoredRole(id: string, role: Role): Promise<void> {
   await ensureSchema();
   await getDb().execute({
     sql: `UPDATE users SET role = ? WHERE id = ?`,

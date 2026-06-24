@@ -12,14 +12,14 @@ const T = {
   ko: {
     eyebrow: "관리 · 슈퍼관리자",
     title: "사용자 관리",
-    desc: "로그인한 사용자를 관리자로 지정/해제합니다. 슈퍼관리자는 환경변수(SUPER_ADMIN_IDS)로만 지정됩니다.",
+    desc: "로그인한 사용자에게 일반 · 관리자 · 슈퍼관리자 역할을 부여합니다. 슈퍼관리자는 다른 사용자를 슈퍼관리자로도 올릴 수 있습니다. 환경변수로 지정된 루트 슈퍼관리자와 본인 계정은 변경할 수 없습니다.",
     user: "사용자",
     role: "역할",
     lastLogin: "최근 로그인",
-    action: "관리",
-    makeAdmin: "관리자 지정",
-    removeAdmin: "관리자 해제",
-    locked: "변경 불가",
+    action: "역할 지정",
+    setRole: "(으)로 변경",
+    rootLocked: "루트 · 변경 불가",
+    selfLocked: "본인 · 변경 불가",
     me: "(나)",
     empty: "아직 로그인한 사용자가 없습니다.",
     noName: "(이름 없음)",
@@ -28,20 +28,22 @@ const T = {
   en: {
     eyebrow: "Manage · Super Admin",
     title: "User management",
-    desc: "Promote or demote members. Super admins are set only via SUPER_ADMIN_IDS.",
+    desc: "Assign member, admin or super-admin roles to anyone who has logged in. Super admins can grant super admin too. The env-defined root super admin and your own account can't be changed.",
     user: "User",
     role: "Role",
     lastLogin: "Last login",
-    action: "Action",
-    makeAdmin: "Make admin",
-    removeAdmin: "Remove admin",
-    locked: "Locked",
+    action: "Set role",
+    setRole: "Change to ",
+    rootLocked: "Root · locked",
+    selfLocked: "You · locked",
     me: "(you)",
     empty: "No users have logged in yet.",
     noName: "(no name)",
     roles: { superAdmin: "Super Admin", admin: "Admin", user: "Member" },
   },
 } as const;
+
+const ROLE_ORDER = ["user", "admin", "superAdmin"] as const;
 
 const ROLE_BADGE: Record<ManagedUser["role"], string> = {
   superAdmin:
@@ -88,8 +90,7 @@ export default async function UsersAdminPage({
               <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                 {users.map((u) => {
                   const isSelf = u.id === admin.id;
-                  const isSuper = u.role === "superAdmin";
-                  const nextRole = u.role === "admin" ? "user" : "admin";
+                  const locked = u.envSuper || isSelf;
                   return (
                     <tr key={u.id} className="bg-white dark:bg-zinc-900">
                       <td className="px-4 py-3">
@@ -131,27 +132,45 @@ export default async function UsersAdminPage({
                       <td className="hidden px-4 py-3 text-xs text-zinc-500 sm:table-cell dark:text-zinc-400">
                         {formatDateTime(u.lastLoginAt, lang)}
                       </td>
-                      <td className="px-4 py-3 text-right">
-                        {isSuper ? (
-                          <span className="text-xs text-zinc-400">
-                            {t.locked}
-                          </span>
+                      <td className="px-4 py-3">
+                        {locked ? (
+                          <div className="text-right text-xs text-zinc-400">
+                            {u.envSuper ? t.rootLocked : t.selfLocked}
+                          </div>
                         ) : (
-                          <form action={setUserRoleAction} className="inline">
-                            <input type="hidden" name="id" value={u.id} />
-                            <input type="hidden" name="role" value={nextRole} />
-                            <input type="hidden" name="lang" value={lang} />
-                            <button
-                              type="submit"
-                              className={`inline-flex items-center rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                                nextRole === "admin"
-                                  ? "bg-indigo-600 text-white hover:bg-indigo-500"
-                                  : "border border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
-                              }`}
-                            >
-                              {nextRole === "admin" ? t.makeAdmin : t.removeAdmin}
-                            </button>
-                          </form>
+                          <div className="flex flex-wrap items-center justify-end gap-1.5">
+                            {ROLE_ORDER.map((r) => {
+                              if (u.role === r) {
+                                return (
+                                  <span
+                                    key={r}
+                                    aria-current="true"
+                                    className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${ROLE_BADGE[r]}`}
+                                  >
+                                    {t.roles[r]}
+                                  </span>
+                                );
+                              }
+                              return (
+                                <form key={r} action={setUserRoleAction}>
+                                  <input type="hidden" name="id" value={u.id} />
+                                  <input type="hidden" name="role" value={r} />
+                                  <input type="hidden" name="lang" value={lang} />
+                                  <button
+                                    type="submit"
+                                    title={
+                                      lang === "en"
+                                        ? `${t.setRole}${t.roles[r]}`
+                                        : `${t.roles[r]}${t.setRole}`
+                                    }
+                                    className="inline-flex items-center rounded-full border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-500 transition hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                                  >
+                                    {t.roles[r]}
+                                  </button>
+                                </form>
+                              );
+                            })}
+                          </div>
                         )}
                       </td>
                     </tr>
