@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import type { SessionUser } from "@/lib/auth";
 import SessionMenu from "./auth/SessionMenu";
 import LanguageSwitcher from "./LanguageSwitcher";
+import ThemeToggle from "./theme/ThemeToggle";
 import type { Dictionary } from "@/app/[lang]/dictionaries";
 
 type NavLink = { href: string; label: string };
@@ -67,6 +68,8 @@ export default function NavLinks({
         <span aria-hidden className="mx-1.5 inline-block h-4 w-px bg-zinc-300/70 dark:bg-zinc-700/70" />
 
         <LanguageSwitcher currentLang={lang} />
+
+        <ThemeToggle lang={lang} className="ml-0.5" />
 
         <span aria-hidden className="mx-1 inline-block h-4 w-px bg-zinc-300/70 dark:bg-zinc-700/70" />
 
@@ -151,6 +154,8 @@ export default function NavLinks({
             <MobileLink href={faqLink.href} label={faqLink.label} active={isActive(faqLink.href)} onNavigate={() => setOpen(false)} />
 
             <LanguageSwitcher currentLang={lang} mobile onSwitch={() => setOpen(false)} />
+
+            <ThemeToggle lang={lang} withLabel />
 
             {session ? (
               <>

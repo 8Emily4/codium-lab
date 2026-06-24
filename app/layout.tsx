@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import { company } from "@/lib/brand";
 import PWARegister from "@/components/PWARegister";
+import { ThemeProvider, themeInitScript } from "@/components/theme/ThemeProvider";
 
 import "./globals.css";
 
@@ -135,15 +136,21 @@ export default async function RootLayout({
   return (
     <html
       lang={lang}
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth antialiased`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="flex min-h-full flex-col bg-white text-zinc-900 dark:bg-black dark:text-zinc-100">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: jsonLdHtml }}
         />
-        {children}
-        <PWARegister />
+        <ThemeProvider>
+          {children}
+          <PWARegister />
+        </ThemeProvider>
       </body>
     </html>
   );

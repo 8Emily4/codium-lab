@@ -4,21 +4,24 @@ import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react"
 
 /**
  * 클라이언트에서 Mermaid 다이어그램을 렌더링합니다.
- * - prefers-color-scheme 에 맞춰 라이트/다크 테마를 자동 전환
+ * - <html>.dark 클래스(테마 토글 결과)에 맞춰 라이트/다크 테마를 자동 전환
  * - 코디움랩 팔레트(인디고/바이올렛/푸시아)에 맞춘 themeVariables
  * - 렌더 실패 시 원본 소스를 코드 블록으로 폴백 노출
  */
 
 function subscribeDark(cb: () => void): () => void {
-  const mq = window.matchMedia("(prefers-color-scheme: dark)");
-  mq.addEventListener("change", cb);
-  return () => mq.removeEventListener("change", cb);
+  const obs = new MutationObserver(cb);
+  obs.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
+  return () => obs.disconnect();
 }
 
 function useDarkMode(): boolean {
   return useSyncExternalStore(
     subscribeDark,
-    () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+    () => document.documentElement.classList.contains("dark"),
     () => false,
   );
 }
