@@ -77,7 +77,7 @@ export default function NavLinks({
           <>
             <Link
               href={`/${lang}/work`}
-              className="mr-1 inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-500 px-3 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
+              className="mr-1 inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full border border-zinc-300/80 px-3 text-sm font-medium text-zinc-700 transition hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700/80 dark:text-zinc-300 dark:hover:border-zinc-500 dark:hover:text-zinc-50"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <rect x="3" y="3" width="7" height="7" rx="1.5" />

@@ -29,7 +29,7 @@ export default async function AuthLayout({
             <span>{lang === "en" ? company.nameEn : company.nameKo}</span>
           </Link>
           <div className="flex items-center gap-1.5">
-            <ThemeToggle lang={lang} className="bg-white/70 backdrop-blur dark:bg-zinc-900/60" />
+            <ThemeToggle lang={lang} className="h-9 border border-zinc-300/70 bg-white/70 px-2.5 backdrop-blur hover:border-zinc-400 dark:border-zinc-700/70 dark:bg-zinc-900/60 dark:hover:border-zinc-500" />
             <Link
               href={`/${lang}`}
               className="inline-flex h-9 items-center gap-1.5 rounded-full border border-zinc-300/70 bg-white/70 px-3.5 text-xs font-medium text-zinc-700 backdrop-blur transition hover:border-zinc-400 hover:bg-white dark:border-zinc-700/70 dark:bg-zinc-900/60 dark:text-zinc-300 dark:hover:border-zinc-500 dark:hover:bg-zinc-900"
