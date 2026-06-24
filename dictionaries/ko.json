@@ -24,6 +24,7 @@
     "contact": "문의",
     "game": "게임",
     "media": "미디어",
+    "gallery": "갤러리",
     "content": "콘텐츠",
     "blog": "기술블로그",
     "login": "로그인",
@@ -856,6 +857,19 @@
     "viewChannel": "채널 보기",
     "more": "추가 콘텐츠",
     "empty": "곧 멋진 콘텐츠로 찾아올게요."
+  },
+  "gallery": {
+    "metaTitle": "갤러리 | 코디움랩",
+    "metaDesc": "코디움랩의 재미있는 이미지와 영상을 한곳에서 만나보세요.",
+    "eyebrow": "갤러리",
+    "heading": "재미있는",
+    "highlight": "이야기",
+    "desc": "코디움랩의 소소하고 재미있는 순간들을 이미지와 영상으로 모았습니다. 카드를 눌러 크게 감상해 보세요.",
+    "imageLabel": "이미지",
+    "videoLabel": "영상",
+    "featuredLabel": "추천",
+    "watchLabel": "재생하기",
+    "empty": "곧 재미있는 콘텐츠로 찾아올게요."
   },
   "blog": {
     "metaTitle": "기술블로그 | 코디움랩",

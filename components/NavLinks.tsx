@@ -35,6 +35,7 @@ export default function NavLinks({
   ];
   const contentItems: NavLink[] = [
     { href: `/${lang}/media`, label: dict.nav.media },
+    { href: `/${lang}/gallery`, label: dict.nav.gallery },
     { href: `/${lang}/game`, label: dict.nav.game },
     ...(blogNavVisible
       ? [{ href: `/${lang}/blog`, label: dict.nav.blog }]
@@ -51,7 +52,7 @@ export default function NavLinks({
 
   return (
     <>
-      <nav className="hidden items-center gap-0.5 min-[900px]:flex">
+      <nav className="hidden flex-1 items-center gap-0.5 pl-6 min-[900px]:flex">
         {primaryLinks.map((l) => (
           <NavPill key={l.href} href={l.href} label={l.label} active={isActive(l.href)} />
         ))}
@@ -65,11 +66,20 @@ export default function NavLinks({
 
         <NavPill href={faqLink.href} label={faqLink.label} active={isActive(faqLink.href)} />
 
-        <span aria-hidden className="mx-1.5 inline-block h-4 w-px bg-zinc-300/70 dark:bg-zinc-700/70" />
+        <span aria-hidden className="mr-1.5 ml-auto inline-block h-4 w-px bg-zinc-300/70 dark:bg-zinc-700/70" />
 
         <LanguageSwitcher currentLang={lang} />
 
         <ThemeToggle lang={lang} className="ml-0.5" />
+
+        <span aria-hidden className="mx-1 inline-block h-4 w-px bg-zinc-300/70 dark:bg-zinc-700/70" />
+
+        <Link
+          href={`/${lang}/contact`}
+          className="inline-flex h-8 items-center whitespace-nowrap rounded-full bg-zinc-900 px-3 text-sm font-medium text-white transition hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+        >
+          {dict.nav.inquiry}
+        </Link>
 
         <span aria-hidden className="mx-1 inline-block h-4 w-px bg-zinc-300/70 dark:bg-zinc-700/70" />
 
@@ -97,12 +107,6 @@ export default function NavLinks({
             {dict.nav.login}
           </Link>
         )}
-        <Link
-          href={`/${lang}/contact`}
-          className="ml-1 inline-flex h-8 items-center whitespace-nowrap rounded-full bg-zinc-900 px-3 text-sm font-medium text-white transition hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
-          {dict.nav.inquiry}
-        </Link>
       </nav>
 
       <button
