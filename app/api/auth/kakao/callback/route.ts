@@ -147,8 +147,16 @@ export async function GET(req: Request) {
       issuedAt: Date.now(),
     };
 
-    // Record the login, then stamp the resolved role into the session.
-    await upsertUserOnLogin(user);
+    // Record the login (with the host they came in through, so local-dev vs
+    // production logins of the same person can be told apart), then stamp the
+    // resolved role into the session.
+    let loginHost: string | null = null;
+    try {
+      loginHost = new URL(origin).host;
+    } catch {
+      loginHost = null;
+    }
+    await upsertUserOnLogin(user, loginHost);
     user.role = await resolveRole(user.id);
     await setSession(user);
 

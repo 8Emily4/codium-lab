@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import type { Role } from "@/lib/auth";
 import {
+  deleteUser,
   isEnvSuperAdmin,
   requireSuperAdmin,
   setStoredRole,
@@ -33,5 +34,21 @@ export async function setUserRoleAction(formData: FormData) {
   }
 
   await setStoredRole(id, role);
+  revalidatePath(`/${lang}/work/admin/users`);
+}
+
+export async function deleteUserAction(formData: FormData) {
+  const admin = await requireSuperAdmin();
+  if (!admin) throw new Error("Unauthorized");
+
+  const id = String(formData.get("id") ?? "");
+  const lang = String(formData.get("lang") ?? "ko");
+  if (!id) throw new Error("Bad request");
+  // Same guards as role changes: the root super admin and your own account
+  // can never be removed.
+  if (isEnvSuperAdmin(id)) throw new Error("Cannot delete the root super admin");
+  if (id === admin.id) throw new Error("Cannot delete your own account");
+
+  await deleteUser(id);
   revalidatePath(`/${lang}/work/admin/users`);
 }

@@ -6,7 +6,7 @@ import {
   type ManagedUser,
 } from "@/lib/users";
 import { Card, EmptyState, WorkHeader, formatDateTime } from "@/components/work/ui";
-import { setUserRoleAction } from "./actions";
+import { deleteUserAction, setUserRoleAction } from "./actions";
 
 const T = {
   ko: {
@@ -23,6 +23,10 @@ const T = {
     me: "(나)",
     empty: "아직 로그인한 사용자가 없습니다.",
     noName: "(이름 없음)",
+    envLocal: "로컬",
+    envProd: "운영",
+    del: "삭제",
+    delTitle: "이 사용자 삭제",
     roles: { superAdmin: "슈퍼관리자", admin: "관리자", user: "일반" },
   },
   en: {
@@ -39,11 +43,23 @@ const T = {
     me: "(you)",
     empty: "No users have logged in yet.",
     noName: "(no name)",
+    envLocal: "Local",
+    envProd: "Production",
+    del: "Delete",
+    delTitle: "Delete this user",
     roles: { superAdmin: "Super Admin", admin: "Admin", user: "Member" },
   },
 } as const;
 
 const ROLE_ORDER = ["user", "admin", "superAdmin"] as const;
+
+/** Classify the host a user logged in through into local dev vs production. */
+function loginEnv(host: string | null): "local" | "prod" | null {
+  if (!host) return null;
+  return host.startsWith("localhost") || host.startsWith("127.")
+    ? "local"
+    : "prod";
+}
 
 const ROLE_BADGE: Record<ManagedUser["role"], string> = {
   superAdmin:
@@ -91,6 +107,7 @@ export default async function UsersAdminPage({
                 {users.map((u) => {
                   const isSelf = u.id === admin.id;
                   const locked = u.envSuper || isSelf;
+                  const env = loginEnv(u.lastLoginHost);
                   return (
                     <tr key={u.id} className="bg-white dark:bg-zinc-900">
                       <td className="px-4 py-3">
@@ -116,9 +133,23 @@ export default async function UsersAdminPage({
                                 </span>
                               )}
                             </p>
-                            <p className="truncate text-xs text-zinc-400">
-                              {u.email ?? u.id}
-                            </p>
+                            <div className="flex items-center gap-1.5">
+                              <p className="truncate text-xs text-zinc-400">
+                                {u.email ?? u.id}
+                              </p>
+                              {env && (
+                                <span
+                                  title={u.lastLoginHost ?? ""}
+                                  className={`inline-flex shrink-0 items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${
+                                    env === "local"
+                                      ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
+                                      : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+                                  }`}
+                                >
+                                  {env === "local" ? t.envLocal : t.envProd}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -170,6 +201,25 @@ export default async function UsersAdminPage({
                                 </form>
                               );
                             })}
+                            <form
+                              action={deleteUserAction}
+                              className="ml-1 border-l border-zinc-200 pl-2 dark:border-zinc-700"
+                            >
+                              <input type="hidden" name="id" value={u.id} />
+                              <input type="hidden" name="lang" value={lang} />
+                              <button
+                                type="submit"
+                                title={t.delTitle}
+                                aria-label={t.delTitle}
+                                className="inline-flex h-7 w-7 items-center justify-center rounded-full text-zinc-400 transition hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 dark:hover:text-rose-300"
+                              >
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                                  <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                                  <line x1="10" y1="11" x2="10" y2="17" />
+                                  <line x1="14" y1="11" x2="14" y2="17" />
+                                </svg>
+                              </button>
+                            </form>
                           </div>
                         )}
                       </td>
