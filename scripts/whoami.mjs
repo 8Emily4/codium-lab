@@ -32,6 +32,6 @@ for (const r of rs.rows) {
   );
 }
 console.log(
-  "슈퍼관리자로 지정하려면 위 ID를 .env.local 의 SUPER_ADMIN_IDS 에 추가한 뒤 서버를 재시작하세요.",
+  "슈퍼관리자로 지정하려면 위 ID를 .env 의 SUPER_ADMIN_IDS 에 추가한 뒤 서버를 재시작하세요.",
 );
 console.log("예) SUPER_ADMIN_IDS=kakao:1234567890\n");
