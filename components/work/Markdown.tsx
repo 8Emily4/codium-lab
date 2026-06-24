@@ -1,5 +1,28 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import Mermaid from "./Mermaid";
+
+/** ```mermaid 코드펜스 내용을 평문으로 뽑아낸다(렌더러 자식 → 문자열). */
+function extractText(node: React.ReactNode): string {
+  if (typeof node === "string") return node;
+  if (Array.isArray(node)) return node.map(extractText).join("");
+  if (node && typeof node === "object" && "props" in node) {
+    return extractText(
+      (node as { props?: { children?: React.ReactNode } }).props?.children,
+    );
+  }
+  return "";
+}
+
+/** pre/code 의 className 에 language-mermaid 가 있는지 검사. */
+function isMermaid(node: React.ReactNode): boolean {
+  if (Array.isArray(node)) return node.some(isMermaid);
+  if (node && typeof node === "object" && "props" in node) {
+    const cls = (node as { props?: { className?: string } }).props?.className;
+    return /language-mermaid/.test(cls ?? "");
+  }
+  return false;
+}
 
 /**
  * Hand-styled markdown renderer (no typography plugin dependency).
@@ -62,6 +85,9 @@ export default function Markdown({ children }: { children: string }) {
             </strong>
           ),
           code: ({ className, children }) => {
+            if (/language-mermaid/.test(className ?? "")) {
+              return <Mermaid chart={extractText(children).trim()} />;
+            }
             const isBlock = /language-/.test(className ?? "");
             if (isBlock) {
               return (
@@ -74,11 +100,21 @@ export default function Markdown({ children }: { children: string }) {
               </code>
             );
           },
-          pre: ({ children }) => (
-            <pre className="my-5 overflow-x-auto rounded-xl bg-zinc-900 p-4 font-mono text-[13px] leading-6 text-zinc-100 dark:bg-black dark:ring-1 dark:ring-zinc-800">
-              {children}
-            </pre>
-          ),
+          pre: ({ children }) => {
+            // 머메이드 블록은 코드 핸들러가 다이어그램으로 렌더하므로 pre 래퍼를 생략.
+            if (isMermaid(children)) {
+              return (
+                <div className="my-5 overflow-x-auto rounded-xl border border-zinc-200 bg-zinc-50/60 p-4 dark:border-zinc-800 dark:bg-zinc-900/40">
+                  {children}
+                </div>
+              );
+            }
+            return (
+              <pre className="my-5 overflow-x-auto rounded-xl bg-zinc-900 p-4 font-mono text-[13px] leading-6 text-zinc-100 dark:bg-black dark:ring-1 dark:ring-zinc-800">
+                {children}
+              </pre>
+            );
+          },
           table: ({ children }) => (
             <div className="my-5 overflow-x-auto">
               <table className="w-full border-collapse text-sm">{children}</table>
