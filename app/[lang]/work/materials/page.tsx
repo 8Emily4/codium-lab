@@ -22,18 +22,25 @@ const T = {
     eyebrow: "강의자료",
     title: "강의자료",
     descAdmin: "전체 자료를 미리 봅니다. 등록·접근권한은 [자료 관리]에서.",
-    descUser: "내게 열람 권한이 있는 자료입니다.",
-    empty: "열람 가능한 자료가 없습니다",
-    emptyDesc: "관리자가 접근권한을 부여하면 여기에 표시됩니다.",
+    descUser: "열람 가능한 자료와 유료 강의 안내입니다. 잠금 표시는 유료 강의자료예요.",
+    empty: "등록된 자료가 없습니다",
+    emptyDesc: "관리자가 자료를 등록하면 여기에 표시됩니다.",
     pick: "왼쪽에서 자료를 선택하세요.",
     noAccess: "이 자료에 접근할 권한이 없습니다.",
     until: (d: string) => `${d}까지 열람 가능`,
     fromBadge: (d: string) => `${d}부터`,
+    lockedBadge: "유료",
+    priceUnit: "원",
+    priceLabel: "수강료",
     expiredBadge: "기간 만료",
     upcomingBadge: "열람 예정",
     back: "목록",
     list: "자료 목록",
     emptyDoc: "_(빈 문서)_",
+    previewLabel: "미리보기",
+    lockedTitle: "유료 강의자료입니다",
+    lockedDesc:
+      "전체 내용은 유료 강의에서 제공됩니다. 관리자에게 문의해 열람 권한을 받으세요.",
     expiredTitle: "열람 기간이 만료되었습니다",
     expiredDesc:
       "이 자료를 다시 열람하려면 관리자에게 문의해 주세요. 기간을 연장해 드릴 수 있습니다.",
@@ -46,18 +53,25 @@ const T = {
     eyebrow: "Materials",
     title: "Materials",
     descAdmin: "Preview every material. Manage them under [Manage Materials].",
-    descUser: "Materials you currently have access to.",
-    empty: "No materials available",
-    emptyDesc: "They'll appear here once an admin grants you access.",
+    descUser: "Materials you can read, plus paid courses. Locked items are paid.",
+    empty: "No materials yet",
+    emptyDesc: "They'll appear here once an admin publishes a material.",
     pick: "Select a material on the left.",
     noAccess: "You don't have access to this material.",
     until: (d: string) => `Available until ${d}`,
     fromBadge: (d: string) => `From ${d}`,
+    lockedBadge: "Paid",
+    priceUnit: "KRW",
+    priceLabel: "Price",
     expiredBadge: "Expired",
     upcomingBadge: "Upcoming",
     back: "List",
     list: "Materials",
     emptyDoc: "_(empty document)_",
+    previewLabel: "Preview",
+    lockedTitle: "This is a paid material",
+    lockedDesc:
+      "The full content is part of a paid course. Contact an admin to get access.",
     expiredTitle: "Your access has expired",
     expiredDesc:
       "Please contact an administrator to view this material again — your access can be extended.",
@@ -75,7 +89,16 @@ function accessBadge(
   startsAt: number | null,
   lang: string,
   t: (typeof T)[keyof typeof T],
-): { text: string; tone: "active" | "expired" | "upcoming" } | null {
+  price: number | null = null,
+): { text: string; tone: "active" | "locked" | "expired" | "upcoming" } | null {
+  if (state === "locked")
+    return {
+      text:
+        price != null
+          ? `${t.lockedBadge} ${price.toLocaleString()}${t.priceUnit}`
+          : t.lockedBadge,
+      tone: "locked",
+    };
   if (state === "expired") return { text: t.expiredBadge, tone: "expired" };
   if (state === "upcoming")
     return {
@@ -90,6 +113,8 @@ function accessBadge(
 const BADGE_TONE = {
   active:
     "bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-300",
+  locked:
+    "bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-300",
   expired:
     "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-300",
   upcoming:
@@ -134,6 +159,7 @@ export default async function MaterialsPage({
         selectedMeta.accessStartsAt,
         lang,
         t,
+        selectedMeta.price,
       )
     : null;
 
@@ -166,6 +192,7 @@ export default async function MaterialsPage({
                   m.accessStartsAt,
                   lang,
                   t,
+                  m.price,
                 );
                 return (
                   <li key={m.id}>
@@ -278,13 +305,29 @@ export default async function MaterialsPage({
                   {isOpen && selected ? (
                     <Markdown>{selected.body || t.emptyDoc}</Markdown>
                   ) : (
-                    <LockedNotice
-                      state={selectedMeta.accessState}
-                      startsAt={selectedMeta.accessStartsAt}
-                      title={selectedMeta.title}
-                      lang={lang}
-                      t={t}
-                    />
+                    <>
+                      {selectedMeta.bodyPreview && (
+                        <div className="mb-6">
+                          <p className="mb-2 text-xs font-semibold tracking-wide text-zinc-400 uppercase">
+                            {t.previewLabel}
+                          </p>
+                          {/* Teaser only — the server sends just these few lines, so
+                              the rest of the body isn't in the page source either. */}
+                          <div className="relative max-h-56 overflow-hidden">
+                            <Markdown>{selectedMeta.bodyPreview}</Markdown>
+                            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-white dark:to-zinc-900" />
+                          </div>
+                        </div>
+                      )}
+                      <LockedNotice
+                        state={selectedMeta.accessState}
+                        startsAt={selectedMeta.accessStartsAt}
+                        title={selectedMeta.title}
+                        price={selectedMeta.price}
+                        lang={lang}
+                        t={t}
+                      />
+                    </>
                   )}
                 </div>
               </article>
@@ -302,20 +345,31 @@ function LockedNotice({
   state,
   startsAt,
   title,
+  price,
   lang,
   t,
 }: {
   state: ViewerAccessState;
   startsAt: number | null;
   title: string;
+  price: number | null;
   lang: string;
   t: (typeof T)[keyof typeof T];
 }) {
+  const locked = state === "locked";
   const expired = state === "expired";
-  const heading = expired ? t.expiredTitle : t.upcomingTitle;
-  const desc = expired
-    ? t.expiredDesc
-    : t.upcomingDesc(startsAt ? formatDateTime(startsAt, lang) : "");
+  const heading = locked
+    ? t.lockedTitle
+    : expired
+      ? t.expiredTitle
+      : t.upcomingTitle;
+  const desc = locked
+    ? t.lockedDesc
+    : expired
+      ? t.expiredDesc
+      : t.upcomingDesc(startsAt ? formatDateTime(startsAt, lang) : "");
+  // Paid + expired both route the reader to an admin; only "upcoming" just waits.
+  const showContact = locked || expired;
   const mailHref = `mailto:${company.contactEmail}?subject=${encodeURIComponent(
     t.mailSubject(title),
   )}`;
@@ -324,9 +378,11 @@ function LockedNotice({
     <div className="flex flex-col items-center rounded-xl border border-dashed border-zinc-300 bg-zinc-50/70 px-6 py-12 text-center dark:border-zinc-700 dark:bg-zinc-950/40">
       <div
         className={`mb-4 flex h-14 w-14 items-center justify-center rounded-full ${
-          expired
-            ? "bg-rose-50 text-rose-500 dark:bg-rose-950/40 dark:text-rose-300"
-            : "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300"
+          locked
+            ? "bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-300"
+            : expired
+              ? "bg-rose-50 text-rose-500 dark:bg-rose-950/40 dark:text-rose-300"
+              : "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300"
         }`}
       >
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -340,7 +396,18 @@ function LockedNotice({
       <p className="mt-1.5 max-w-md text-sm text-zinc-500 dark:text-zinc-400">
         {desc}
       </p>
-      {expired && (
+      {locked && price != null && (
+        <p className="mt-4 inline-flex items-baseline gap-1.5 rounded-xl bg-violet-50 px-4 py-2 dark:bg-violet-950/40">
+          <span className="text-xs font-medium text-violet-500 dark:text-violet-300">
+            {t.priceLabel}
+          </span>
+          <span className="text-lg font-bold text-violet-700 dark:text-violet-200">
+            {price.toLocaleString()}
+            {t.priceUnit}
+          </span>
+        </p>
+      )}
+      {showContact && (
         <a
           href={mailHref}
           className="mt-5 inline-flex h-10 items-center gap-2 rounded-xl bg-zinc-900 px-5 text-sm font-semibold text-white transition hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"

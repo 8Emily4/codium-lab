@@ -31,12 +31,20 @@ export default function GalleryView({
   items: GalleryCard[];
   strings: GalleryStrings;
 }) {
-  const [active, setActive] = useState<GalleryCard | null>(null);
+  // 라이트박스에서 좌우 이동하려면 단일 항목이 아니라 인덱스를 추적한다.
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const active = activeIndex === null ? null : items[activeIndex];
 
   useEffect(() => {
-    if (!active) return;
+    if (activeIndex === null) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setActive(null);
+      if (e.key === "Escape") setActiveIndex(null);
+      if (e.key === "ArrowLeft")
+        setActiveIndex((i) => (i === null ? i : Math.max(0, i - 1)));
+      if (e.key === "ArrowRight")
+        setActiveIndex((i) =>
+          i === null ? i : Math.min(items.length - 1, i + 1),
+        );
     };
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
@@ -45,7 +53,7 @@ export default function GalleryView({
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
     };
-  }, [active]);
+  }, [activeIndex, items.length]);
 
   if (items.length === 0) {
     return (
@@ -60,37 +68,77 @@ export default function GalleryView({
   return (
     <>
       <div className="mx-auto max-w-6xl px-6 pb-24">
-        {/* 세로 길이가 제각각인 이미지를 자연스럽게 배치하기 위한 CSS 컬럼(메이슨리). */}
-        <div className="columns-1 gap-5 sm:columns-2 lg:columns-3 [&>*]:mb-5">
-          {items.map((item) => (
+        {/* 크기가 일정한 카드 그리드. 각 카드는 고정 비율 썸네일을 가진다. */}
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          {items.map((item, i) => (
             <GalleryTile
               key={item.id}
               item={item}
               strings={strings}
-              onOpen={() => setActive(item)}
+              onOpen={() => setActiveIndex(i)}
             />
           ))}
         </div>
       </div>
 
-      {active && (
+      {active && activeIndex !== null && (
         <div
           role="dialog"
           aria-modal="true"
           aria-label={active.title}
-          onClick={() => setActive(null)}
+          onClick={() => setActiveIndex(null)}
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm sm:p-8"
         >
           <button
             type="button"
             aria-label="Close"
-            onClick={() => setActive(null)}
+            onClick={() => setActiveIndex(null)}
             className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
               <path d="M18 6 6 18M6 6l12 12" />
             </svg>
           </button>
+
+          {items.length > 1 && (
+            <span className="absolute left-1/2 top-4 -translate-x-1/2 rounded-full bg-white/10 px-3 py-1 text-sm text-white/80">
+              {activeIndex + 1} / {items.length}
+            </span>
+          )}
+
+          {activeIndex > 0 && (
+            <button
+              type="button"
+              aria-label="Previous"
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveIndex((i) => (i === null ? i : Math.max(0, i - 1)));
+              }}
+              className="absolute left-3 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 sm:left-5"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </button>
+          )}
+
+          {activeIndex < items.length - 1 && (
+            <button
+              type="button"
+              aria-label="Next"
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveIndex((i) =>
+                  i === null ? i : Math.min(items.length - 1, i + 1),
+                );
+              }}
+              className="absolute right-3 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 sm:right-5"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </button>
+          )}
 
           <div
             onClick={(e) => e.stopPropagation()}
@@ -138,27 +186,18 @@ function GalleryTile({
   strings: GalleryStrings;
   onOpen: () => void;
 }) {
-  const ratio =
-    item.kind === "image" && item.width && item.height
-      ? `${item.width} / ${item.height}`
-      : item.kind === "video"
-        ? "16 / 9"
-        : undefined;
-
   return (
     <button
       type="button"
       onClick={onOpen}
-      className={`group block w-full break-inside-avoid overflow-hidden rounded-2xl border bg-white text-left transition hover:-translate-y-0.5 hover:shadow-lg dark:bg-zinc-900 ${
+      className={`group flex w-full flex-col overflow-hidden rounded-2xl border bg-white text-left transition hover:-translate-y-0.5 hover:shadow-lg dark:bg-zinc-900 ${
         item.featured
           ? "border-amber-300 ring-1 ring-amber-200 dark:border-amber-500/50 dark:ring-amber-500/30"
           : "border-zinc-200 dark:border-zinc-800"
       }`}
     >
-      <div
-        className="relative w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800"
-        style={ratio ? { aspectRatio: ratio } : undefined}
-      >
+      {/* 카드 크기를 일정하게 유지하기 위해 썸네일은 고정 비율(4:3)로 잘라 보여준다. */}
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
         {item.src ? (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
@@ -168,7 +207,7 @@ function GalleryTile({
             className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="flex aspect-video items-center justify-center text-xs text-zinc-400">
+          <div className="flex h-full w-full items-center justify-center text-xs text-zinc-400">
             {item.title}
           </div>
         )}

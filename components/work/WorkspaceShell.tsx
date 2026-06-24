@@ -14,6 +14,8 @@ type NavItem = {
   icon: keyof typeof ICONS;
   adminOnly?: boolean;
   superOnly?: boolean;
+  /** 빨간 알림 배지 숫자(미확인 문의 등). 0/undefined 면 표시 안 함. */
+  badge?: number;
 };
 
 const L = {
@@ -28,6 +30,7 @@ const L = {
     manageGallery: "갤러리 관리",
     manageBlog: "블로그 관리",
     analytics: "방문 통계",
+    inquiries: "문의",
     users: "사용자",
     architecture: "아키텍처",
     backToSite: "사이트로",
@@ -45,6 +48,7 @@ const L = {
     manageGallery: "Gallery",
     manageBlog: "Tech Blog",
     analytics: "Analytics",
+    inquiries: "Inquiries",
     users: "Users",
     architecture: "Architecture",
     backToSite: "Back to site",
@@ -117,6 +121,12 @@ const ICONS = {
       <rect x="17" y="13" width="3" height="4" rx="0.5" />
     </>
   ),
+  inquiries: (
+    <>
+      <rect x="2" y="4" width="20" height="16" rx="2" />
+      <path d="m22 7-10 5L2 7" />
+    </>
+  ),
 } as const;
 
 function NavIcon({ name }: { name: keyof typeof ICONS }) {
@@ -149,11 +159,14 @@ export default function WorkspaceShell({
   lang,
   role,
   user,
+  newInquiryCount = 0,
   children,
 }: {
   lang: string;
   role: Role;
   user: { id: string; name: string; email?: string; avatar?: string };
+  /** 미확인(new) 문의 개수 — 문의 메뉴에 배지로 표시. */
+  newInquiryCount?: number;
   children: React.ReactNode;
 }) {
   const t = L[lang === "en" ? "en" : "ko"];
@@ -199,6 +212,14 @@ export default function WorkspaceShell({
       label: t.manageBlog,
       icon: "blog",
       adminOnly: true,
+    },
+    {
+      key: "admin-inquiries",
+      href: `${base}/admin/inquiries`,
+      label: t.inquiries,
+      icon: "inquiries",
+      adminOnly: true,
+      badge: newInquiryCount,
     },
     {
       key: "admin-analytics",
@@ -249,6 +270,17 @@ export default function WorkspaceShell({
           >
             <NavIcon name={item.icon} />
             <span className="truncate">{item.label}</span>
+            {item.badge ? (
+              <span
+                className={`ml-auto inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full px-1.5 text-[11px] font-bold ${
+                  active
+                    ? "bg-white/20 text-current dark:bg-zinc-900/20"
+                    : "bg-rose-500 text-white"
+                }`}
+              >
+                {item.badge > 99 ? "99+" : item.badge}
+              </span>
+            ) : null}
           </Link>
         );
       });

@@ -97,5 +97,26 @@ export async function ensureSchema(): Promise<void> {
   // Older `users` tables predate the login-source column — add it idempotently
   // so we can show whether a login came from local dev or production.
   await ensureColumn(db, "users", "last_login_host", "TEXT");
+  // 유료 강의자료의 가격(원, 정수). 무료(access=public)면 NULL.
+  await ensureColumn(db, "materials", "price", "INTEGER");
+
+  // 문의 진행 상태(new/inProgress/done/archived). 기존 행은 모두 'new' 로 시작.
+  await ensureColumn(db, "inquiries", "status", "TEXT NOT NULL DEFAULT 'new'");
+  await ensureColumn(db, "inquiries", "updated_at", "INTEGER");
+  // 진행 상태별 처리 메모 — 한 문의에 여러 개. status 는 작성 당시 상태 스냅샷.
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS inquiry_notes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      inquiry_id INTEGER NOT NULL,
+      body TEXT NOT NULL,
+      status TEXT,
+      author_id TEXT,
+      author_name TEXT,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch())
+    )
+  `);
+  await db.execute(
+    `CREATE INDEX IF NOT EXISTS idx_inquiry_notes_inquiry ON inquiry_notes (inquiry_id)`,
+  );
   migrated = true;
 }

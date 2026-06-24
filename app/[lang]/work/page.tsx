@@ -7,6 +7,11 @@ import {
   listMaterialsForViewer,
   type ViewerMaterial,
 } from "@/lib/materials";
+import { listAllPosts } from "@/lib/blog";
+import { listAllGallery } from "@/lib/gallery";
+import { listAllMedia } from "@/lib/media";
+import { getTotalVisitors } from "@/lib/analytics";
+import { countInquiriesByStatus } from "@/lib/inquiries";
 import {
   Card,
   EmptyState,
@@ -25,6 +30,16 @@ const T = {
     statMaterials: "전체 자료",
     statPublished: "공개 자료",
     statUsers: "사용자",
+    statInquiriesNew: "미확인 문의",
+    statBlog: "블로그 글",
+    statGallery: "갤러리",
+    statMedia: "콘텐츠",
+    statVisitors: "누적 방문",
+    inquiryAlert: (n: number) => `확인하지 않은 새 문의가 ${n}건 있습니다`,
+    inquiryAlertDesc: "문의자에게 빠르게 회신하세요.",
+    inquiryCta: "문의 확인",
+    inquiryTotal: (n: number) => `전체 ${n}건`,
+    summary: "운영 현황",
     myMaterials: "내 강의자료",
     available: "열람 가능",
     recent: "최근 자료",
@@ -34,6 +49,7 @@ const T = {
     emptyUser: "아직 열람 가능한 자료가 없습니다",
     emptyUserDesc: "관리자가 자료에 접근권한을 부여하면 여기에 표시됩니다.",
     until: (d: string) => `${d}까지`,
+    paid: "유료",
     expired: "기간 만료",
     upcoming: "열람 예정",
   },
@@ -45,6 +61,16 @@ const T = {
     statMaterials: "Total materials",
     statPublished: "Published",
     statUsers: "Users",
+    statInquiriesNew: "New inquiries",
+    statBlog: "Blog posts",
+    statGallery: "Gallery",
+    statMedia: "Content",
+    statVisitors: "Total visits",
+    inquiryAlert: (n: number) => `You have ${n} unread inquir${n === 1 ? "y" : "ies"}`,
+    inquiryAlertDesc: "Reply to the sender promptly.",
+    inquiryCta: "Review inquiries",
+    inquiryTotal: (n: number) => `${n} total`,
+    summary: "Overview",
     myMaterials: "My materials",
     available: "Available",
     recent: "Recent",
@@ -54,6 +80,7 @@ const T = {
     emptyUser: "No materials available yet",
     emptyUserDesc: "They'll appear here once an admin grants you access.",
     until: (d: string) => `until ${d}`,
+    paid: "Paid",
     expired: "Expired",
     upcoming: "Upcoming",
   },
@@ -75,8 +102,23 @@ export default async function WorkDashboard({
   const base = `/${lang}/work`;
 
   if (isAdmin) {
-    const [materials, users] = await Promise.all([listAllMaterials(), listUsers()]);
+    const [materials, users, posts, gallery, media, visitors, inquiryCounts] =
+      await Promise.all([
+        listAllMaterials(),
+        listUsers(),
+        listAllPosts(),
+        listAllGallery(),
+        listAllMedia(),
+        getTotalVisitors(),
+        countInquiriesByStatus(),
+      ]);
     const published = materials.filter((m) => m.status === "published").length;
+    const newInquiries = inquiryCounts.new;
+    const totalInquiries =
+      inquiryCounts.new +
+      inquiryCounts.inProgress +
+      inquiryCounts.done +
+      inquiryCounts.archived;
     return (
       <>
         <WorkHeader
@@ -84,17 +126,70 @@ export default async function WorkDashboard({
           title={t.hello(session.name)}
           description={t.descAdmin}
         />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+
+        {newInquiries > 0 && (
+          <Link
+            href={`${base}/admin/inquiries`}
+            className="mb-6 flex items-center gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 transition hover:bg-rose-100/70 dark:border-rose-900/60 dark:bg-rose-950/40 dark:hover:bg-rose-950/60"
+          >
+            <span className="relative flex h-2.5 w-2.5 shrink-0">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-rose-500" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-rose-800 dark:text-rose-200">
+                {t.inquiryAlert(newInquiries)}
+              </p>
+              <p className="text-xs text-rose-600/80 dark:text-rose-300/70">
+                {t.inquiryAlertDesc}
+              </p>
+            </div>
+            <span className="inline-flex h-9 shrink-0 items-center rounded-lg bg-rose-600 px-3 text-xs font-semibold text-white">
+              {t.inquiryCta}
+            </span>
+          </Link>
+        )}
+
+        <h2 className="mb-3 text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+          {t.summary}
+        </h2>
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <StatCard
             label={t.statMaterials}
             value={materials.length}
+            hint={`${t.statPublished} ${published}`}
             href={`${base}/admin/materials`}
           />
-          <StatCard label={t.statPublished} value={published} />
+          <StatCard
+            label={t.statInquiriesNew}
+            value={newInquiries}
+            hint={t.inquiryTotal(totalInquiries)}
+            href={`${base}/admin/inquiries`}
+          />
+          <StatCard
+            label={t.statBlog}
+            value={posts.length}
+            href={`${base}/admin/blog`}
+          />
+          <StatCard
+            label={t.statGallery}
+            value={gallery.length}
+            href={`${base}/admin/gallery`}
+          />
+          <StatCard
+            label={t.statMedia}
+            value={media.length}
+            href={`${base}/admin/content`}
+          />
           <StatCard
             label={t.statUsers}
             value={users.length}
             href={`${base}/admin/users`}
+          />
+          <StatCard
+            label={t.statVisitors}
+            value={visitors.toLocaleString()}
+            href={`${base}/admin/analytics`}
           />
         </div>
 
@@ -221,7 +316,11 @@ function ViewerList({
               {m.summary}
             </p>
           )}
-          {m.accessState === "expired" ? (
+          {m.accessState === "locked" ? (
+            <p className="mt-3 inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-medium text-violet-600 dark:bg-violet-950/40 dark:text-violet-300">
+              {t.paid}
+            </p>
+          ) : m.accessState === "expired" ? (
             <p className="mt-3 inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-medium text-rose-600 dark:bg-rose-950/40 dark:text-rose-300">
               {t.expired}
             </p>

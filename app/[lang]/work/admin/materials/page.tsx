@@ -10,12 +10,16 @@ import {
   type Material,
 } from "@/lib/materials";
 import {
-  Card,
   EmptyState,
   StatusBadge,
   WorkHeader,
   formatDate,
 } from "@/components/work/ui";
+import {
+  ListNavItem,
+  PaneLabel,
+  SplitLayout,
+} from "@/components/work/layout";
 import type { ManagedUser } from "@/lib/users";
 import {
   createMaterialAction,
@@ -24,7 +28,7 @@ import {
   revokeGrantAction,
   updateMaterialAction,
 } from "./actions";
-import MaterialForm from "./MaterialForm";
+import MaterialEditor from "./MaterialEditor";
 import GrantForm from "./GrantForm";
 
 const T = {
@@ -40,21 +44,28 @@ const T = {
     fCategory: "분류",
     fTags: "태그 (쉼표로 구분)",
     fStatus: "상태",
-    fAccess: "공개 범위",
+    fAccess: "유료/무료",
+    fPrice: "가격",
+    pricePh: "예: 50000",
+    priceUnit: "원",
     fBody: "본문 (마크다운)",
-    accessPublic: "전체 공개 (로그인 사용자 모두)",
-    accessRestricted: "제한 (권한 부여된 사용자만)",
+    accessPublic: "무료 (로그인 사용자 모두 열람)",
+    accessRestricted: "유료 (권한 부여된 사용자만 열람)",
+    badgeFree: "무료",
+    badgePaid: "유료",
     save: "저장",
     create: "등록",
     del: "삭제",
     preview: "미리보기",
+    detailTab: "상세",
+    detailNew: "새 자료",
     grants: "접근권한",
     grantsDesc: "제한 자료는 여기서 부여된 사용자만 열람할 수 있습니다.",
     addGrant: "권한 부여",
     grantUser: "사용자",
     grantStart: "시작 (선택)",
     grantEnd: "종료 (선택)",
-    grantBtn: "부여",
+    grantBtn: "권한 부여",
     noGrants: "부여된 권한이 없습니다.",
     revoke: "해제",
     active: "유효",
@@ -79,14 +90,21 @@ const T = {
     fCategory: "Category",
     fTags: "Tags (comma separated)",
     fStatus: "Status",
-    fAccess: "Visibility",
+    fAccess: "Pricing",
+    fPrice: "Price",
+    pricePh: "e.g. 50000",
+    priceUnit: "KRW",
     fBody: "Body (markdown)",
-    accessPublic: "Public (all logged-in users)",
-    accessRestricted: "Restricted (granted users only)",
+    accessPublic: "Free (all logged-in users)",
+    accessRestricted: "Paid (granted users only)",
+    badgeFree: "Free",
+    badgePaid: "Paid",
     save: "Save",
     create: "Create",
     del: "Delete",
     preview: "Preview",
+    detailTab: "Details",
+    detailNew: "New material",
     grants: "Access grants",
     grantsDesc: "For restricted materials, only granted users can view.",
     addGrant: "Grant access",
@@ -149,148 +167,113 @@ export default async function MaterialsAdminPage({
         }
       />
 
-      <div className="grid gap-5 lg:grid-cols-[300px_1fr]">
-        {/* List */}
-        <aside className="lg:sticky lg:top-20 lg:self-start">
-          <p className="mb-2 px-1 text-xs font-semibold tracking-wide text-zinc-400 uppercase">
-            {t.list} ({materials.length})
-          </p>
-          {materials.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-zinc-300 px-3 py-6 text-center text-xs text-zinc-400 dark:border-zinc-700">
-              {t.pick}
-            </p>
-          ) : (
-            <ul className="flex flex-col gap-2">
-              {materials.map((m) => {
-                const active = m.id === id;
-                return (
-                  <li key={m.id}>
-                    <Link
-                      href={`${base}?id=${m.id}`}
-                      className={`block rounded-xl border p-3 transition ${
-                        active
-                          ? "border-zinc-900 bg-zinc-900 text-white dark:border-white dark:bg-white dark:text-zinc-900"
-                          : "border-zinc-200 bg-white hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="line-clamp-1 text-sm font-semibold">
-                          {m.title}
-                        </p>
-                      </div>
-                      <div className="mt-2 flex items-center gap-2">
-                        <StatusBadge status={m.status} lang={lang} />
-                        {m.access === "restricted" && (
+      <SplitLayout
+        aside={
+          <>
+            <PaneLabel>
+              {t.list} ({materials.length})
+            </PaneLabel>
+            {materials.length === 0 ? (
+              <p className="rounded-xl border border-dashed border-zinc-300 px-3 py-6 text-center text-xs text-zinc-400 dark:border-zinc-700">
+                {t.pick}
+              </p>
+            ) : (
+              <ul className="flex flex-col gap-2">
+                {materials.map((m) => {
+                  const active = m.id === id;
+                  return (
+                    <li key={m.id}>
+                      <ListNavItem href={`${base}?id=${m.id}`} active={active}>
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="line-clamp-1 text-sm font-semibold">
+                            {m.title}
+                          </p>
+                        </div>
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          <StatusBadge status={m.status} lang={lang} />
                           <span
-                            className={`text-[11px] ${active ? "text-zinc-300 dark:text-zinc-600" : "text-zinc-400"}`}
+                            className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${
+                              active
+                                ? "bg-white/15 text-white dark:bg-zinc-900/10 dark:text-zinc-900"
+                                : m.access === "restricted"
+                                  ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
+                                  : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+                            }`}
                           >
-                            🔒 {m.grantCount ?? 0}
+                            {m.access === "restricted"
+                              ? m.price != null
+                                ? `${t.badgePaid} ${m.price.toLocaleString()}${t.priceUnit}`
+                                : t.badgePaid
+                              : t.badgeFree}
                           </span>
-                        )}
-                      </div>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </aside>
-
-        {/* Editor */}
-        <section className="min-w-0">
-          {isNew ? (
-            <MaterialCard lang={lang} t={t} mode="create" />
-          ) : editing ? (
-            <div className="space-y-6">
-              <MaterialCard
+                          {m.access === "restricted" && (
+                            <span
+                              className={`text-[11px] ${active ? "text-zinc-300 dark:text-zinc-600" : "text-zinc-400"}`}
+                            >
+                              🔒 {m.grantCount ?? 0}
+                            </span>
+                          )}
+                        </div>
+                      </ListNavItem>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </>
+        }
+        main={
+          <>
+            {(isNew || editing) && (
+              <PaneLabel>{isNew ? t.detailNew : editing!.title}</PaneLabel>
+            )}
+            {isNew ? (
+              <MaterialEditor
+                lang={lang}
+                t={t}
+                mode="create"
+                action={createMaterialAction}
+              />
+            ) : editing ? (
+              <MaterialEditor
                 lang={lang}
                 t={t}
                 mode="edit"
-                material={editing}
+                action={updateMaterialAction}
+                deleteAction={deleteMaterialAction}
+                previewHref={`/${lang}/work/materials?id=${editing.id}`}
+                material={{
+                  id: editing.id,
+                  title: editing.title,
+                  summary: editing.summary,
+                  category: editing.category,
+                  tags: editing.tags,
+                  status: editing.status,
+                  access: editing.access,
+                  price: editing.price,
+                  body: editing.body,
+                }}
+                grantsSlot={
+                  <GrantsContent
+                    lang={lang}
+                    t={t}
+                    material={editing}
+                    grants={grants}
+                    users={users}
+                  />
+                }
               />
-              <GrantsPanel
-                lang={lang}
-                t={t}
-                material={editing}
-                grants={grants}
-                users={users}
-              />
-            </div>
-          ) : (
-            <EmptyState title={t.pick} />
-          )}
-        </section>
-      </div>
+            ) : (
+              <EmptyState title={t.pick} />
+            )}
+          </>
+        }
+      />
     </>
   );
 }
 
-function MaterialCard({
-  lang,
-  t,
-  mode,
-  material,
-}: {
-  lang: string;
-  t: (typeof T)[keyof typeof T];
-  mode: "create" | "edit";
-  material?: Material;
-}) {
-  const base = `/${lang}/work`;
-  return (
-    <Card className="p-5 sm:p-6">
-      <MaterialForm
-        action={mode === "create" ? createMaterialAction : updateMaterialAction}
-        lang={lang}
-        t={t}
-        mode={mode}
-        material={
-          material
-            ? {
-                id: material.id,
-                title: material.title,
-                summary: material.summary,
-                category: material.category,
-                tags: material.tags,
-                status: material.status,
-                access: material.access,
-                body: material.body,
-              }
-            : undefined
-        }
-      />
-
-      {material && (
-        <div className="flex flex-wrap items-center gap-2 pt-3">
-          <Link
-            href={`${base}/materials?id=${material.id}`}
-            className="inline-flex h-10 items-center rounded-xl border border-zinc-200 px-4 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
-          >
-            {t.preview}
-          </Link>
-        </div>
-      )}
-
-      {material && (
-        <form
-          action={deleteMaterialAction}
-          className="mt-4 border-t border-zinc-100 pt-4 dark:border-zinc-800"
-        >
-          <input type="hidden" name="lang" value={lang} />
-          <input type="hidden" name="id" value={material.id} />
-          <button
-            type="submit"
-            className="text-xs font-medium text-red-500 underline-offset-4 hover:underline"
-          >
-            {t.del}
-          </button>
-        </form>
-      )}
-    </Card>
-  );
-}
-
-function GrantsPanel({
+function GrantsContent({
   lang,
   t,
   material,
@@ -304,22 +287,12 @@ function GrantsPanel({
   users: ManagedUser[];
 }) {
   if (material.access !== "restricted") {
-    return (
-      <Card className="p-5 sm:p-6">
-        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-          {t.grants}
-        </h3>
-        <p className="mt-2 text-sm text-zinc-400">{t.onlyRestricted}</p>
-      </Card>
-    );
+    return <p className="text-sm text-zinc-400">{t.onlyRestricted}</p>;
   }
 
   return (
-    <Card className="p-5 sm:p-6">
-      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-        {t.grants}
-      </h3>
-      <p className="mt-1 text-xs text-zinc-400">{t.grantsDesc}</p>
+    <div>
+      <p className="text-xs text-zinc-400">{t.grantsDesc}</p>
 
       {/* Add grant */}
       <GrantForm
@@ -339,9 +312,9 @@ function GrantsPanel({
             {grants.map((g) => (
               <li
                 key={g.id}
-                className="flex items-center justify-between gap-3 py-3"
+                className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex min-w-0 items-center gap-3">
                   {g.userAvatar ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
                     <img
@@ -358,7 +331,7 @@ function GrantsPanel({
                     <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-50">
                       {g.userName ?? g.userId}
                     </p>
-                    <p className="truncate text-xs text-zinc-400">
+                    <p className="text-xs text-zinc-400">
                       {t.period}:{" "}
                       {g.startsAt ? formatDate(g.startsAt, lang) : t.always}
                       {" ~ "}
@@ -393,6 +366,6 @@ function GrantsPanel({
           </ul>
         )}
       </div>
-    </Card>
+    </div>
   );
 }
