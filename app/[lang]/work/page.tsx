@@ -34,6 +34,8 @@ const T = {
     emptyUser: "아직 열람 가능한 자료가 없습니다",
     emptyUserDesc: "관리자가 자료에 접근권한을 부여하면 여기에 표시됩니다.",
     until: (d: string) => `${d}까지`,
+    expired: "기간 만료",
+    upcoming: "열람 예정",
   },
   en: {
     eyebrow: "Dashboard",
@@ -52,6 +54,8 @@ const T = {
     emptyUser: "No materials available yet",
     emptyUserDesc: "They'll appear here once an admin grants you access.",
     until: (d: string) => `until ${d}`,
+    expired: "Expired",
+    upcoming: "Upcoming",
   },
 } as const;
 
@@ -119,6 +123,9 @@ export default async function WorkDashboard({
 
   // Member view
   const materials = await listMaterialsForViewer(session.id, role);
+  const availableCount = materials.filter(
+    (m) => m.accessState === "open",
+  ).length;
   return (
     <>
       <WorkHeader
@@ -129,7 +136,7 @@ export default async function WorkDashboard({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <StatCard
           label={t.available}
-          value={materials.length}
+          value={availableCount}
           href={`${base}/materials`}
         />
       </div>
@@ -214,10 +221,20 @@ function ViewerList({
               {m.summary}
             </p>
           )}
-          {m.accessEndsAt && (
-            <p className="mt-3 inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-300">
-              {t.until(formatDate(m.accessEndsAt, lang))}
+          {m.accessState === "expired" ? (
+            <p className="mt-3 inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-medium text-rose-600 dark:bg-rose-950/40 dark:text-rose-300">
+              {t.expired}
             </p>
+          ) : m.accessState === "upcoming" ? (
+            <p className="mt-3 inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
+              {t.upcoming}
+            </p>
+          ) : (
+            m.accessEndsAt && (
+              <p className="mt-3 inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-300">
+                {t.until(formatDate(m.accessEndsAt, lang))}
+              </p>
+            )
           )}
         </Link>
       ))}

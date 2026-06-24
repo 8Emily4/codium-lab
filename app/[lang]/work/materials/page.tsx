@@ -5,8 +5,15 @@ import { getSessionWithRole } from "@/lib/users";
 import {
   getMaterialForViewer,
   listMaterialsForViewer,
+  type ViewerAccessState,
 } from "@/lib/materials";
-import { EmptyState, WorkHeader, formatDate } from "@/components/work/ui";
+import { company } from "@/lib/brand";
+import {
+  EmptyState,
+  WorkHeader,
+  formatDate,
+  formatDateTime,
+} from "@/components/work/ui";
 import Markdown from "@/components/work/Markdown";
 import MaterialPresentation from "@/components/work/MaterialPresentation";
 
@@ -21,9 +28,19 @@ const T = {
     pick: "왼쪽에서 자료를 선택하세요.",
     noAccess: "이 자료에 접근할 권한이 없습니다.",
     until: (d: string) => `${d}까지 열람 가능`,
+    fromBadge: (d: string) => `${d}부터`,
+    expiredBadge: "기간 만료",
+    upcomingBadge: "열람 예정",
     back: "목록",
     list: "자료 목록",
     emptyDoc: "_(빈 문서)_",
+    expiredTitle: "열람 기간이 만료되었습니다",
+    expiredDesc:
+      "이 자료를 다시 열람하려면 관리자에게 문의해 주세요. 기간을 연장해 드릴 수 있습니다.",
+    upcomingTitle: "아직 열람 시작 전입니다",
+    upcomingDesc: (d: string) => `${d}부터 열람할 수 있습니다.`,
+    contact: "관리자에게 문의",
+    mailSubject: (title: string) => `[강의자료 열람 문의] ${title}`,
   },
   en: {
     eyebrow: "Materials",
@@ -35,10 +52,48 @@ const T = {
     pick: "Select a material on the left.",
     noAccess: "You don't have access to this material.",
     until: (d: string) => `Available until ${d}`,
+    fromBadge: (d: string) => `From ${d}`,
+    expiredBadge: "Expired",
+    upcomingBadge: "Upcoming",
     back: "List",
     list: "Materials",
     emptyDoc: "_(empty document)_",
+    expiredTitle: "Your access has expired",
+    expiredDesc:
+      "Please contact an administrator to view this material again — your access can be extended.",
+    upcomingTitle: "Access hasn't started yet",
+    upcomingDesc: (d: string) => `Available from ${d}.`,
+    contact: "Contact an admin",
+    mailSubject: (title: string) => `[Material access] ${title}`,
   },
+} as const;
+
+/** Small status pill for a material in the list / header. */
+function accessBadge(
+  state: ViewerAccessState,
+  endsAt: number | null,
+  startsAt: number | null,
+  lang: string,
+  t: (typeof T)[keyof typeof T],
+): { text: string; tone: "active" | "expired" | "upcoming" } | null {
+  if (state === "expired") return { text: t.expiredBadge, tone: "expired" };
+  if (state === "upcoming")
+    return {
+      text: startsAt ? t.fromBadge(formatDate(startsAt, lang)) : t.upcomingBadge,
+      tone: "upcoming",
+    };
+  // open — only show a pill when there's an end date to count down to.
+  if (endsAt) return { text: t.until(formatDate(endsAt, lang)), tone: "active" };
+  return null;
+}
+
+const BADGE_TONE = {
+  active:
+    "bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-300",
+  expired:
+    "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-300",
+  upcoming:
+    "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300",
 } as const;
 
 export default async function MaterialsPage({
@@ -61,10 +116,26 @@ export default async function MaterialsPage({
 
   const list = await listMaterialsForViewer(session.id, role);
   const selectedId = id ?? list[0]?.id;
-  const selected = selectedId
-    ? await getMaterialForViewer(selectedId, session.id, role)
+  const selectedMeta = selectedId
+    ? (list.find((m) => m.id === selectedId) ?? null)
     : null;
-  const selectedMeta = list.find((m) => m.id === selectedId);
+  const isOpen = selectedMeta?.accessState === "open";
+  // Only fetch the body when the viewer may actually read it. getMaterialForViewer
+  // re-checks the grant window server-side, so locked content never reaches here.
+  const selected =
+    selectedMeta && isOpen
+      ? await getMaterialForViewer(selectedMeta.id, session.id, role)
+      : null;
+
+  const headerBadge = selectedMeta
+    ? accessBadge(
+        selectedMeta.accessState,
+        selectedMeta.accessEndsAt,
+        selectedMeta.accessStartsAt,
+        lang,
+        t,
+      )
+    : null;
 
   return (
     <>
@@ -88,6 +159,14 @@ export default async function MaterialsPage({
             <ul className="flex flex-col gap-2">
               {list.map((m) => {
                 const active = m.id === selectedId;
+                const locked = m.accessState !== "open";
+                const badge = accessBadge(
+                  m.accessState,
+                  m.accessEndsAt,
+                  m.accessStartsAt,
+                  lang,
+                  t,
+                );
                 return (
                   <li key={m.id}>
                     <Link
@@ -99,8 +178,25 @@ export default async function MaterialsPage({
                           : "border-zinc-200 bg-white hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
                       }`}
                     >
-                      <p className="line-clamp-1 text-sm font-semibold">
-                        {m.title}
+                      <p className="flex items-center gap-1.5 text-sm font-semibold">
+                        {locked && (
+                          <svg
+                            width="13"
+                            height="13"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden
+                            className={`shrink-0 ${active ? "" : "text-zinc-400"}`}
+                          >
+                            <rect x="3" y="11" width="18" height="11" rx="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                          </svg>
+                        )}
+                        <span className="line-clamp-1">{m.title}</span>
                       </p>
                       {m.summary && (
                         <p
@@ -109,11 +205,13 @@ export default async function MaterialsPage({
                           {m.summary}
                         </p>
                       )}
-                      {m.accessEndsAt && (
+                      {badge && (
                         <p
-                          className={`mt-2 text-[11px] font-medium ${active ? "text-indigo-200 dark:text-indigo-700" : "text-indigo-500 dark:text-indigo-400"}`}
+                          className={`mt-2 inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                            active ? "bg-white/15 text-current" : BADGE_TONE[badge.tone]
+                          }`}
                         >
-                          {t.until(formatDate(m.accessEndsAt, lang))}
+                          {badge.text}
                         </p>
                       )}
                     </Link>
@@ -136,28 +234,30 @@ export default async function MaterialsPage({
                 {t.back}
               </Link>
             )}
-            {selected ? (
+            {selectedMeta ? (
               <article className="rounded-2xl border border-zinc-200 bg-white p-6 sm:p-8 dark:border-zinc-800 dark:bg-zinc-900">
                 <div className="flex items-start justify-between gap-3">
                   <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                    {selected.title}
+                    {selectedMeta.title}
                   </h2>
-                  <MaterialPresentation
-                    lang={lang}
-                    title={selected.title}
-                    summary={selected.summary}
-                    tags={selected.tags}
-                    body={selected.body}
-                  />
+                  {isOpen && selected && (
+                    <MaterialPresentation
+                      lang={lang}
+                      title={selectedMeta.title}
+                      summary={selectedMeta.summary}
+                      tags={selectedMeta.tags}
+                      body={selected.body}
+                    />
+                  )}
                 </div>
-                {selected.summary && (
+                {selectedMeta.summary && (
                   <p className="mt-2 text-zinc-500 dark:text-zinc-400">
-                    {selected.summary}
+                    {selectedMeta.summary}
                   </p>
                 )}
-                {(selected.tags.length > 0 || selectedMeta?.accessEndsAt) && (
+                {(selectedMeta.tags.length > 0 || headerBadge) && (
                   <div className="mt-4 flex flex-wrap items-center gap-2">
-                    {selected.tags.map((tag) => (
+                    {selectedMeta.tags.map((tag) => (
                       <span
                         key={tag}
                         className="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
@@ -165,15 +265,27 @@ export default async function MaterialsPage({
                         #{tag}
                       </span>
                     ))}
-                    {selectedMeta?.accessEndsAt && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-300">
-                        ⏳ {t.until(formatDate(selectedMeta.accessEndsAt, lang))}
+                    {headerBadge && (
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${BADGE_TONE[headerBadge.tone]}`}
+                      >
+                        {headerBadge.text}
                       </span>
                     )}
                   </div>
                 )}
                 <div className="mt-6 border-t border-zinc-100 pt-6 dark:border-zinc-800">
-                  <Markdown>{selected.body || t.emptyDoc}</Markdown>
+                  {isOpen && selected ? (
+                    <Markdown>{selected.body || t.emptyDoc}</Markdown>
+                  ) : (
+                    <LockedNotice
+                      state={selectedMeta.accessState}
+                      startsAt={selectedMeta.accessStartsAt}
+                      title={selectedMeta.title}
+                      lang={lang}
+                      t={t}
+                    />
+                  )}
                 </div>
               </article>
             ) : (
@@ -183,5 +295,63 @@ export default async function MaterialsPage({
         </div>
       )}
     </>
+  );
+}
+
+function LockedNotice({
+  state,
+  startsAt,
+  title,
+  lang,
+  t,
+}: {
+  state: ViewerAccessState;
+  startsAt: number | null;
+  title: string;
+  lang: string;
+  t: (typeof T)[keyof typeof T];
+}) {
+  const expired = state === "expired";
+  const heading = expired ? t.expiredTitle : t.upcomingTitle;
+  const desc = expired
+    ? t.expiredDesc
+    : t.upcomingDesc(startsAt ? formatDateTime(startsAt, lang) : "");
+  const mailHref = `mailto:${company.contactEmail}?subject=${encodeURIComponent(
+    t.mailSubject(title),
+  )}`;
+
+  return (
+    <div className="flex flex-col items-center rounded-xl border border-dashed border-zinc-300 bg-zinc-50/70 px-6 py-12 text-center dark:border-zinc-700 dark:bg-zinc-950/40">
+      <div
+        className={`mb-4 flex h-14 w-14 items-center justify-center rounded-full ${
+          expired
+            ? "bg-rose-50 text-rose-500 dark:bg-rose-950/40 dark:text-rose-300"
+            : "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300"
+        }`}
+      >
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <rect x="3" y="11" width="18" height="11" rx="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+      </div>
+      <p className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+        {heading}
+      </p>
+      <p className="mt-1.5 max-w-md text-sm text-zinc-500 dark:text-zinc-400">
+        {desc}
+      </p>
+      {expired && (
+        <a
+          href={mailHref}
+          className="mt-5 inline-flex h-10 items-center gap-2 rounded-xl bg-zinc-900 px-5 text-sm font-semibold text-white transition hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m22 7-10 5L2 7" />
+          </svg>
+          {t.contact}
+        </a>
+      )}
+    </div>
   );
 }

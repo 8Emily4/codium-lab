@@ -28,9 +28,19 @@ export type MaterialListItem = Omit<Material, "body"> & {
   grantCount?: number;
 };
 
+/**
+ * Whether a viewer can actually read a material right now.
+ * - "open": admin, public, or an active grant → full body
+ * - "expired": had a grant whose window has ended → title only + locked notice
+ * - "upcoming": granted but the window hasn't started yet → title only + notice
+ */
+export type ViewerAccessState = "open" | "expired" | "upcoming";
+
 /** A material as seen by a viewer, plus how/why they can see it. */
 export type ViewerMaterial = MaterialListItem & {
   via: "admin" | "public" | "grant";
+  accessState: ViewerAccessState;
+  accessStartsAt: number | null;
   accessEndsAt: number | null;
 };
 
@@ -117,9 +127,12 @@ export async function listAllMaterials(): Promise<MaterialListItem[]> {
 }
 
 /**
- * Materials a given viewer is allowed to see.
- * - admins/super admins: everything
- * - everyone else: published materials that are either public or actively granted
+ * Materials a given viewer can see in their list.
+ * - admins/super admins: everything (always "open")
+ * - everyone else: published materials that are public, OR that they hold a
+ *   grant for. A grant is included even when its window has expired or hasn't
+ *   started yet — those stay visible by title only ("expired"/"upcoming") so
+ *   the reader knows to contact an admin, while the body is withheld.
  */
 export async function listMaterialsForViewer(
   userId: string,
@@ -128,29 +141,61 @@ export async function listMaterialsForViewer(
   await ensureSchema();
   if (isAdminRole(role)) {
     const all = await listAllMaterials();
-    return all.map((m) => ({ ...m, via: "admin", accessEndsAt: null }));
+    return all.map((m) => ({
+      ...m,
+      via: "admin",
+      accessState: "open",
+      accessStartsAt: null,
+      accessEndsAt: null,
+    }));
   }
   const now = nowSeconds();
   const rs = await getDb().execute({
     sql: `
-      SELECT m.*, g.ends_at AS grant_ends_at,
-        CASE WHEN m.access = 'public' THEN 'public' ELSE 'grant' END AS via
+      SELECT m.*,
+        g.id AS grant_id,
+        g.starts_at AS grant_starts_at,
+        g.ends_at AS grant_ends_at
       FROM materials m
       LEFT JOIN material_grants g
         ON g.material_id = m.id AND g.user_id = ?1
-        AND (g.starts_at IS NULL OR g.starts_at <= ?2)
-        AND (g.ends_at IS NULL OR g.ends_at >= ?2)
       WHERE m.status = 'published'
         AND (m.access = 'public' OR g.id IS NOT NULL)
       ORDER BY m.updated_at DESC
     `,
-    args: [userId, now],
+    args: [userId],
   });
-  return rs.rows.map((row) => ({
-    ...toListItem(row),
-    via: (row.via === "public" ? "public" : "grant") as "public" | "grant",
-    accessEndsAt: row.grant_ends_at == null ? null : Number(row.grant_ends_at),
-  }));
+  return rs.rows.map((row) => {
+    const item = toListItem(row);
+    // Public materials are always open to any logged-in user.
+    if (row.access === "public") {
+      return {
+        ...item,
+        via: "public" as const,
+        accessState: "open" as const,
+        accessStartsAt: null,
+        accessEndsAt: null,
+      };
+    }
+    const startsAt = row.grant_starts_at == null ? null : Number(row.grant_starts_at);
+    const endsAt = row.grant_ends_at == null ? null : Number(row.grant_ends_at);
+    const started = startsAt == null || startsAt <= now;
+    const notEnded = endsAt == null || endsAt >= now;
+    const accessState: ViewerAccessState = started
+      ? notEnded
+        ? "open"
+        : "expired"
+      : "upcoming";
+    return {
+      ...item,
+      // Never leak body text (not even the preview) for a locked material.
+      bodyPreview: accessState === "open" ? item.bodyPreview : "",
+      via: "grant" as const,
+      accessState,
+      accessStartsAt: startsAt,
+      accessEndsAt: endsAt,
+    };
+  });
 }
 
 /** Raw fetch by id (no access check) — admin/editor use. */
