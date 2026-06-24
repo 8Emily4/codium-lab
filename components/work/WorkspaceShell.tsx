@@ -25,6 +25,7 @@ const L = {
     manageMaterials: "자료 관리",
     manageContent: "콘텐츠 관리",
     manageBlog: "블로그 관리",
+    analytics: "방문 통계",
     users: "사용자",
     architecture: "아키텍처",
     backToSite: "사이트로",
@@ -40,6 +41,7 @@ const L = {
     manageMaterials: "Manage Materials",
     manageContent: "Content",
     manageBlog: "Tech Blog",
+    analytics: "Analytics",
     users: "Users",
     architecture: "Architecture",
     backToSite: "Back to site",
@@ -95,6 +97,14 @@ const ICONS = {
       <path d="m12 3 9 5-9 5-9-5 9-5z" />
       <path d="m3 13 9 5 9-5" />
       <path d="m3 8 9 5 9-5" />
+    </>
+  ),
+  analytics: (
+    <>
+      <path d="M3 3v18h18" />
+      <rect x="7" y="11" width="3" height="6" rx="0.5" />
+      <rect x="12" y="7" width="3" height="10" rx="0.5" />
+      <rect x="17" y="13" width="3" height="4" rx="0.5" />
     </>
   ),
 } as const;
@@ -171,6 +181,13 @@ export default function WorkspaceShell({
       href: `${base}/admin/blog`,
       label: t.manageBlog,
       icon: "blog",
+      adminOnly: true,
+    },
+    {
+      key: "admin-analytics",
+      href: `${base}/admin/analytics`,
+      label: t.analytics,
+      icon: "analytics",
       adminOnly: true,
     },
     {
