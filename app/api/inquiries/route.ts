@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { ensureSchema, getDb } from "@/lib/db";
+import { createInquiry, getInquiry } from "@/lib/inquiries";
+import { sendInquiryNotification } from "@/lib/mail";
 
 export const runtime = "nodejs";
 
@@ -45,12 +46,26 @@ export async function POST(request: Request) {
     );
   }
 
-  await ensureSchema();
-  await getDb().execute({
-    sql: `INSERT INTO inquiries (name, organization, email, phone, message)
-          VALUES (?, ?, ?, ?, ?)`,
-    args: [name, organization || null, email, phone || null, message],
+  const id = await createInquiry({
+    name,
+    organization: organization || null,
+    email,
+    phone: phone || null,
+    message,
   });
+
+  // 알림 메일은 부가 작업 — 실패해도 문의 접수(200)는 막지 않는다.
+  try {
+    const inquiry = await getInquiry(id);
+    if (inquiry) {
+      const result = await sendInquiryNotification(inquiry);
+      if (!result.ok && !result.skipped) {
+        console.warn("[inquiry] notification email failed:", result.error);
+      }
+    }
+  } catch (err) {
+    console.warn("[inquiry] notification email threw:", err);
+  }
 
   return NextResponse.json({ ok: true });
 }

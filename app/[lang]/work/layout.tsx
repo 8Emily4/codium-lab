@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { hasLocale } from "../dictionaries";
 import { getSessionWithRole } from "@/lib/users";
+import { countNewInquiries } from "@/lib/inquiries";
 import WorkspaceShell from "@/components/work/WorkspaceShell";
 
 export const metadata: Metadata = {
@@ -25,10 +26,13 @@ export default async function WorkLayout({
   }
 
   const { session, role } = ctx;
+  const isAdmin = role === "admin" || role === "superAdmin";
+  const newInquiryCount = isAdmin ? await countNewInquiries() : 0;
   return (
     <WorkspaceShell
       lang={lang}
       role={role}
+      newInquiryCount={newInquiryCount}
       user={{
         id: session.id,
         name: session.name,
