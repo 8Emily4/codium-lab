@@ -23,7 +23,9 @@
     "faq": "FAQ",
     "contact": "Contact",
     "game": "Game",
-    "media": "Content",
+    "media": "Media",
+    "content": "Content",
+    "blog": "Tech Blog",
     "login": "Log in",
     "logout": "Log out",
     "inquiry": "Contact us",
@@ -854,6 +856,19 @@
     "viewChannel": "View channel",
     "more": "More content",
     "empty": "Great content is on the way."
+  },
+  "blog": {
+    "metaTitle": "Tech Blog | Codium Lab",
+    "metaDesc": "Notes and insights from Codium Lab's work on LLMs, automation and architecture.",
+    "eyebrow": "Tech Blog",
+    "heading": "Codium Lab's",
+    "highlight": "engineering notes",
+    "desc": "Insights from looking closely at LLMs, automation and architecture — the stories behind solutions that go beyond a demo.",
+    "filterAll": "All",
+    "featuredLabel": "Featured",
+    "readMore": "Read more",
+    "backToList": "Back to blog",
+    "empty": "The first post is on the way."
   },
   "game": {
     "metaTitle": "Game Hub | Codium Lab",

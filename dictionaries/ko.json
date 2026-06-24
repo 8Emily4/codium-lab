@@ -23,7 +23,9 @@
     "faq": "FAQ",
     "contact": "문의",
     "game": "게임",
-    "media": "콘텐츠",
+    "media": "미디어",
+    "content": "콘텐츠",
+    "blog": "기술블로그",
     "login": "로그인",
     "logout": "로그아웃",
     "inquiry": "문의하기",
@@ -854,6 +856,19 @@
     "viewChannel": "채널 보기",
     "more": "추가 콘텐츠",
     "empty": "곧 멋진 콘텐츠로 찾아올게요."
+  },
+  "blog": {
+    "metaTitle": "기술블로그 | 코디움랩",
+    "metaDesc": "코디움랩이 LLM·자동화·아키텍처를 연구하며 얻은 기술 인사이트를 기록합니다.",
+    "eyebrow": "기술블로그",
+    "heading": "코디움랩의",
+    "highlight": "기술 기록",
+    "desc": "LLM과 자동화, 아키텍처를 깊이 들여다보며 얻은 인사이트를 정리합니다. 데모로 끝나지 않는 이야기를 담았습니다.",
+    "filterAll": "전체",
+    "featuredLabel": "추천",
+    "readMore": "읽어보기",
+    "backToList": "목록으로",
+    "empty": "곧 첫 번째 글로 찾아올게요."
   },
   "game": {
     "metaTitle": "게임 허브 | 코디움랩",

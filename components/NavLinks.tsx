@@ -14,48 +14,55 @@ export default function NavLinks({
   session,
   lang,
   dict,
+  blogNavVisible,
 }: {
   session: SessionUser | null;
   lang: string;
   dict: Dictionary;
+  /** When true, the 기술블로그 entry is added to the content menu. */
+  blogNavVisible: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  const links: NavLink[] = [
+  // Primary links stay flat; content-type pages are grouped under a dropdown
+  // so the bar stays tidy as more content surfaces are added.
+  const primaryLinks: NavLink[] = [
     { href: `/${lang}/about`, label: dict.nav.about },
     { href: `/${lang}/services`, label: dict.nav.services },
     { href: `/${lang}/ai`, label: dict.nav.ai },
-    { href: `/${lang}/faq`, label: dict.nav.faq },
+  ];
+  const contentItems: NavLink[] = [
     { href: `/${lang}/media`, label: dict.nav.media },
     { href: `/${lang}/game`, label: dict.nav.game },
+    ...(blogNavVisible
+      ? [{ href: `/${lang}/blog`, label: dict.nav.blog }]
+      : []),
   ];
+  const faqLink: NavLink = { href: `/${lang}/faq`, label: dict.nav.faq };
 
   function isActive(href: string) {
     if (href === `/${lang}`) return pathname === `/${lang}` || pathname === `/${lang}/`;
     return pathname === href || pathname?.startsWith(`${href}/`) || false;
   }
 
+  const contentActive = contentItems.some((i) => isActive(i.href));
+
   return (
     <>
       <nav className="hidden items-center gap-0.5 min-[900px]:flex">
-        {links.map((l) => {
-          const active = isActive(l.href);
-          return (
-            <Link
-              key={l.href}
-              href={l.href}
-              aria-current={active ? "page" : undefined}
-              className={`whitespace-nowrap rounded-full px-2.5 py-1.5 text-sm transition ${
-                active
-                  ? "bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white shadow-sm"
-                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
-              }`}
-            >
-              {l.label}
-            </Link>
-          );
-        })}
+        {primaryLinks.map((l) => (
+          <NavPill key={l.href} href={l.href} label={l.label} active={isActive(l.href)} />
+        ))}
+
+        <ContentMenu
+          label={dict.nav.content}
+          items={contentItems}
+          active={contentActive}
+          isActive={isActive}
+        />
+
+        <NavPill href={faqLink.href} label={faqLink.label} active={isActive(faqLink.href)} />
 
         <span aria-hidden className="mx-1.5 inline-block h-4 w-px bg-zinc-300/70 dark:bg-zinc-700/70" />
 
@@ -130,24 +137,18 @@ export default function NavLinks({
       {open && (
         <div className="absolute inset-x-0 top-16 border-t border-zinc-200/60 bg-white min-[900px]:hidden dark:border-zinc-800/60 dark:bg-black">
           <nav className="mx-auto flex max-w-6xl flex-col px-3 py-2">
-            {links.map((l) => {
-              const active = isActive(l.href);
-              return (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  onClick={() => setOpen(false)}
-                  aria-current={active ? "page" : undefined}
-                  className={`rounded-lg px-4 py-3 text-sm transition ${
-                    active
-                      ? "bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white"
-                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-900"
-                  }`}
-                >
-                  {l.label}
-                </Link>
-              );
-            })}
+            {primaryLinks.map((l) => (
+              <MobileLink key={l.href} href={l.href} label={l.label} active={isActive(l.href)} onNavigate={() => setOpen(false)} />
+            ))}
+
+            <p className="px-4 pt-3 pb-1 text-[10px] font-semibold tracking-[0.18em] text-zinc-400 uppercase">
+              {dict.nav.content}
+            </p>
+            {contentItems.map((l) => (
+              <MobileLink key={l.href} href={l.href} label={l.label} active={isActive(l.href)} onNavigate={() => setOpen(false)} indent />
+            ))}
+
+            <MobileLink href={faqLink.href} label={faqLink.label} active={isActive(faqLink.href)} onNavigate={() => setOpen(false)} />
 
             <LanguageSwitcher currentLang={lang} mobile onSwitch={() => setOpen(false)} />
 
@@ -200,5 +201,143 @@ export default function NavLinks({
         </div>
       )}
     </>
+  );
+}
+
+function NavPill({
+  href,
+  label,
+  active,
+}: {
+  href: string;
+  label: string;
+  active: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={`whitespace-nowrap rounded-full px-2.5 py-1.5 text-sm transition ${
+        active
+          ? "bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white shadow-sm"
+          : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
+      }`}
+    >
+      {label}
+    </Link>
+  );
+}
+
+function ContentMenu({
+  label,
+  items,
+  active,
+  isActive,
+}: {
+  label: string;
+  items: NavLink[];
+  active: boolean;
+  isActive: (href: string) => boolean;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false);
+      }}
+    >
+      <button
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1.5 text-sm transition ${
+          active || open
+            ? "bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white shadow-sm"
+            : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
+        }`}
+      >
+        {label}
+        <svg
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+          className={`transition ${open ? "rotate-180" : ""}`}
+        >
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </button>
+
+      {open && (
+        // Outer wrapper sits flush under the button (top-full) and uses a
+        // transparent pt-2 as a hover bridge, so moving the cursor down into
+        // the menu never crosses an empty gap that would close it.
+        <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-2">
+          <div
+            role="menu"
+            className="min-w-44 overflow-hidden rounded-2xl border border-zinc-200/80 bg-white p-1.5 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.25)] dark:border-zinc-800 dark:bg-zinc-950"
+          >
+            {items.map((item) => {
+              const a = isActive(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  role="menuitem"
+                  onClick={() => setOpen(false)}
+                  aria-current={a ? "page" : undefined}
+                  className={`block rounded-xl px-3.5 py-2 text-sm transition ${
+                    a
+                      ? "bg-zinc-900 font-medium text-white dark:bg-white dark:text-zinc-900"
+                      : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MobileLink({
+  href,
+  label,
+  active,
+  onNavigate,
+  indent = false,
+}: {
+  href: string;
+  label: string;
+  active: boolean;
+  onNavigate: () => void;
+  indent?: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      onClick={onNavigate}
+      aria-current={active ? "page" : undefined}
+      className={`rounded-lg py-3 text-sm transition ${indent ? "pl-7 pr-4" : "px-4"} ${
+        active
+          ? "bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white"
+          : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-900"
+      }`}
+    >
+      {label}
+    </Link>
   );
 }

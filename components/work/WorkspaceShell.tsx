@@ -24,6 +24,7 @@ const L = {
     materials: "강의자료",
     manageMaterials: "자료 관리",
     manageContent: "콘텐츠 관리",
+    manageBlog: "블로그 관리",
     users: "사용자",
     architecture: "아키텍처",
     backToSite: "사이트로",
@@ -38,6 +39,7 @@ const L = {
     materials: "Materials",
     manageMaterials: "Manage Materials",
     manageContent: "Content",
+    manageBlog: "Tech Blog",
     users: "Users",
     architecture: "Architecture",
     backToSite: "Back to site",
@@ -71,6 +73,13 @@ const ICONS = {
     <>
       <rect x="2" y="4" width="20" height="16" rx="2.5" />
       <path d="m10 9 5 3-5 3z" />
+    </>
+  ),
+  blog: (
+    <>
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+      <path d="M9 7h7M9 11h5" />
     </>
   ),
   users: (
@@ -155,6 +164,13 @@ export default function WorkspaceShell({
       href: `${base}/admin/content`,
       label: t.manageContent,
       icon: "content",
+      adminOnly: true,
+    },
+    {
+      key: "admin-blog",
+      href: `${base}/admin/blog`,
+      label: t.manageBlog,
+      icon: "blog",
       adminOnly: true,
     },
     {
