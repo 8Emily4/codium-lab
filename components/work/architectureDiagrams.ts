@@ -32,7 +32,7 @@ export const SYSTEM_ARCHITECTURE = `flowchart TB
 
   subgraph domain["📦 도메인 레이어 (lib/)"]
     direction LR
-    AUTHLIB["auth.ts<br/>HMAC 서명 세션 쿠키"]
+    AUTHLIB["auth.ts<br/>JWT 세션 쿠키(jose)"]
     USERS["users.ts<br/>역할(RBAC) 해석"]
     MATS["materials.ts<br/>강의자료·접근권한"]
     MEDIA["media.ts<br/>미디어 콘텐츠"]
@@ -160,14 +160,14 @@ export const AUTH_FLOW = `sequenceDiagram
   CB->>K: code → access token 교환
   K-->>CB: 사용자 프로필
   CB->>DB: upsertUserOnLogin (역할은 보존)
-  CB->>CB: HMAC 서명 세션 쿠키 발급
+  CB->>CB: JWT 세션 쿠키 발급 (HS256)
   CB-->>B: httpOnly 쿠키 Set + 리다이렉트
 
   Note over B,W: 이후 보호 라우트 접근
   B->>W: /work 요청 (세션 쿠키)
-  W->>W: decodeSession() HMAC 검증
+  W->>W: decodeSession() JWT 검증
   W->>DB: resolveRole(id)
-  Note right of W: ENV SUPER_ADMIN_IDS → superAdmin<br/>그 외 → DB role(user/admin)
+  Note right of W: ENV SUPER_ADMIN_EMAIL → superAdmin<br/>그 외 → DB role(user/admin)
   DB-->>W: 유효 역할
   W-->>B: 역할별 화면 렌더 (RBAC)
 `;
