@@ -1081,6 +1081,7 @@
     "termsPrefix": "로그인하면 ",
     "termsLink": "이용약관",
     "termsSuffix": "에 동의하게 됩니다.",
+    "adminLink": "관리자 로그인",
     "loginLoadingTitle": "로그인 중…"
   },
   "auth": {

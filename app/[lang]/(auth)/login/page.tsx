@@ -88,6 +88,15 @@ export default async function LoginPage({
             </Link>
             {login.termsSuffix}
           </p>
+
+          <p className="mt-3 text-center">
+            <Link
+              href={`/${lang}/login/admin${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`}
+              className="text-[11px] text-zinc-400 underline-offset-4 transition hover:text-zinc-600 hover:underline dark:text-zinc-500 dark:hover:text-zinc-300"
+            >
+              {login.adminLink}
+            </Link>
+          </p>
         </div>
       </div>
     </div>

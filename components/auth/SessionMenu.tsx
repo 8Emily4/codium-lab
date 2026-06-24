@@ -9,6 +9,7 @@ const PROVIDER_LABEL: Record<SessionUser["provider"], string> = {
   naver: "Naver",
   google: "Google",
   meta: "Meta",
+  local: "관리자",
 };
 
 const ROLE_LABEL: Record<Role, { ko: string; en: string; cls: string }> = {

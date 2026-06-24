@@ -1081,6 +1081,7 @@
     "termsPrefix": "By logging in, you agree to our ",
     "termsLink": "Terms of Service",
     "termsSuffix": ".",
+    "adminLink": "Admin login",
     "loginLoadingTitle": "Signing in…"
   },
   "auth": {

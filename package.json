@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "whoami": "node --env-file-if-exists=.env scripts/whoami.mjs",
+    "admin:hash": "node scripts/admin-hash.mjs",
     "material:register": "node --env-file-if-exists=.env scripts/register-material.mjs"
   },
   "dependencies": {

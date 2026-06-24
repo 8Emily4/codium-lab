@@ -5,7 +5,8 @@ export type Role = "user" | "admin" | "superAdmin";
 
 export type SessionUser = {
   id: string;
-  provider: "kakao" | "naver" | "google" | "meta";
+  // "local" = email/password super-admin login (no social provider).
+  provider: "kakao" | "naver" | "google" | "meta" | "local";
   name: string;
   email?: string;
   avatar?: string;

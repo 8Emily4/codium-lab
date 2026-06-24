@@ -1,22 +1,64 @@
 import "server-only";
+import { scryptSync, timingSafeEqual } from "node:crypto";
 import { ensureSchema, getDb } from "@/lib/db";
 import { getSession, type Role, type SessionUser } from "@/lib/auth";
 
 /**
- * Super admins are defined ONLY via the SUPER_ADMIN_IDS env var
- * (comma-separated session ids, e.g. "kakao:123456,kakao:789").
- * They can never be granted or revoked through the database, so the
- * super-admin role can't be tampered with by editing user rows.
+ * Super admins come from two env-only sources (never the DB, so they can't be
+ * tampered with by editing user rows):
+ *   1. SUPER_ADMIN_IDS — comma-separated social session ids (e.g. "kakao:123").
+ *   2. SUPER_ADMIN_EMAIL + SUPER_ADMIN_PASSWORD_HASH — an email/password login
+ *      that yields the session id "local:<email>". This is environment-stable
+ *      (unlike per-app Kakao ids), so the same credentials work in dev/QA/prod.
  */
 export function getSuperAdminIds(): string[] {
-  return (process.env.SUPER_ADMIN_IDS ?? "")
+  const ids = (process.env.SUPER_ADMIN_IDS ?? "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
+  const credId = getCredentialAdminId();
+  if (credId && !ids.includes(credId)) ids.push(credId);
+  return ids;
 }
 
 export function isEnvSuperAdmin(id: string): boolean {
   return getSuperAdminIds().includes(id);
+}
+
+/* ── Credential (email/password) super admin ─────────────────────────── */
+
+export function getCredentialAdminEmail(): string | null {
+  const email = process.env.SUPER_ADMIN_EMAIL?.trim().toLowerCase();
+  return email || null;
+}
+
+/** Session id for the credential admin, e.g. "local:owner@example.com". */
+export function getCredentialAdminId(): string | null {
+  const email = getCredentialAdminEmail();
+  return email ? `local:${email}` : null;
+}
+
+/** Verify a password against SUPER_ADMIN_PASSWORD_HASH ("scrypt:<salt>:<key>"). */
+export function verifyAdminPassword(password: string): boolean {
+  const stored = process.env.SUPER_ADMIN_PASSWORD_HASH?.trim();
+  if (!stored || !password) return false;
+  const [scheme, saltHex, keyHex] = stored.split(":");
+  if (scheme !== "scrypt" || !saltHex || !keyHex) return false;
+  try {
+    const expected = Buffer.from(keyHex, "hex");
+    const actual = scryptSync(password, Buffer.from(saltHex, "hex"), expected.length);
+    return expected.length === actual.length && timingSafeEqual(expected, actual);
+  } catch {
+    return false;
+  }
+}
+
+/** True only when both the email matches and the password verifies. */
+export function verifyAdminCredentials(email: string, password: string): boolean {
+  const adminEmail = getCredentialAdminEmail();
+  if (!adminEmail) return false;
+  if (email.trim().toLowerCase() !== adminEmail) return false;
+  return verifyAdminPassword(password);
 }
 
 export type ManagedUser = {
