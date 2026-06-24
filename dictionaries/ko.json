@@ -1072,7 +1072,7 @@
   },
   "login": {
     "metaTitle": "로그인",
-    "heading": "에 로그인",
+    "heading": "{brand}에 로그인",
     "subheading": "간편 로그인으로 시작하세요",
     "errorMsg": "로그인 중 오류가 발생했습니다.",
     "naverLabel": "네이버로 시작 · 준비 중",

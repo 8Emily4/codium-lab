@@ -5,20 +5,31 @@ import { useRouter } from "next/navigation";
 import FloatingTokens from "@/components/FloatingTokens";
 import type { SessionUser } from "@/lib/auth";
 
-const STEPS = [
-  { label: "세션 발급", code: "auth.session.issue()" },
-  { label: "프로필 동기화", code: "profile.sync(provider)" },
-  { label: "환경 준비", code: "workspace.warmup()" },
-  { label: "준비 완료", code: "redirect → home" },
-] as const;
+const STEPS_BY_LANG = {
+  ko: [
+    { label: "세션 발급", code: "auth.session.issue()" },
+    { label: "프로필 동기화", code: "profile.sync(provider)" },
+    { label: "환경 준비", code: "workspace.warmup()" },
+    { label: "준비 완료", code: "redirect → home" },
+  ],
+  en: [
+    { label: "Issue session", code: "auth.session.issue()" },
+    { label: "Sync profile", code: "profile.sync(provider)" },
+    { label: "Warm up workspace", code: "workspace.warmup()" },
+    { label: "Ready", code: "redirect → home" },
+  ],
+} as const;
 
 export default function LoginTransition({
   user,
   returnTo,
+  lang = "ko",
 }: {
   user: SessionUser;
   returnTo: string;
+  lang?: string;
 }) {
+  const STEPS = STEPS_BY_LANG[lang === "en" ? "en" : "ko"];
   const router = useRouter();
   const [step, setStep] = useState(0);
 
@@ -49,10 +60,12 @@ export default function LoginTransition({
             Welcome
           </p>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-            {user.name}님, 환영합니다
+            {lang === "en" ? `Welcome, ${user.name}` : `${user.name}님, 환영합니다`}
           </h1>
           <p className="mt-1.5 text-sm text-zinc-500 dark:text-zinc-400">
-            워크스페이스를 준비하고 있습니다…
+            {lang === "en"
+              ? "Setting up your workspace…"
+              : "워크스페이스를 준비하고 있습니다…"}
           </p>
 
           {/* Progress bar */}
@@ -125,7 +138,9 @@ export default function LoginTransition({
         </div>
 
         <p className="mt-6 text-xs text-zinc-500 dark:text-zinc-400">
-          잠시만 기다려주세요. 자동으로 이동합니다.
+          {lang === "en"
+            ? "Please wait — redirecting automatically."
+            : "잠시만 기다려주세요. 자동으로 이동합니다."}
         </p>
       </div>
     </div>

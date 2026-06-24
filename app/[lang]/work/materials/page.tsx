@@ -22,6 +22,7 @@ const T = {
     until: (d: string) => `${d}까지 열람 가능`,
     back: "목록",
     list: "자료 목록",
+    emptyDoc: "_(빈 문서)_",
   },
   en: {
     eyebrow: "Materials",
@@ -35,6 +36,7 @@ const T = {
     until: (d: string) => `Available until ${d}`,
     back: "List",
     list: "Materials",
+    emptyDoc: "_(empty document)_",
   },
 } as const;
 
@@ -161,7 +163,7 @@ export default async function MaterialsPage({
                   </div>
                 )}
                 <div className="mt-6 border-t border-zinc-100 pt-6 dark:border-zinc-800">
-                  <Markdown>{selected.body || "_(빈 문서)_"}</Markdown>
+                  <Markdown>{selected.body || t.emptyDoc}</Markdown>
                 </div>
               </article>
             ) : (

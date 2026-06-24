@@ -52,7 +52,7 @@ export default async function LoginPage({
               CL
             </span>
             <h1 className="mt-5 text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-              {lang === "en" ? company.nameEn : company.nameKo}{login.heading}
+              {login.heading.replace("{brand}", lang === "en" ? company.nameEn : company.nameKo)}
             </h1>
             <p className="mt-1.5 text-sm text-zinc-500 dark:text-zinc-400">
               {login.subheading}
@@ -66,7 +66,7 @@ export default async function LoginPage({
           )}
 
           <div className="mt-8 space-y-3">
-            <KakaoLoginButton returnTo={returnTo} />
+            <KakaoLoginButton returnTo={returnTo} lang={lang} />
             <button type="button" disabled title="준비 중" className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-zinc-300 bg-white text-sm font-medium text-zinc-400 opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-500">
               <span className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-[#03C75A] text-[10px] font-bold text-white">N</span>
               {login.naverLabel}

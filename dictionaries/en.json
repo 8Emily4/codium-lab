@@ -1072,7 +1072,7 @@
   },
   "login": {
     "metaTitle": "Log in",
-    "heading": "Sign in to",
+    "heading": "Sign in to {brand}",
     "subheading": "Get started with a quick login",
     "errorMsg": "An error occurred during login.",
     "naverLabel": "Continue with Naver · Coming soon",

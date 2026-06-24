@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function KakaoLoginButton({ returnTo = "/" }: { returnTo?: string }) {
+export default function KakaoLoginButton({ returnTo = "/", lang = "ko" }: { returnTo?: string; lang?: string }) {
   const [loading, setLoading] = useState(false);
 
   function onClick() {
@@ -31,7 +31,15 @@ export default function KakaoLoginButton({ returnTo = "/" }: { returnTo?: string
           fill="currentColor"
         />
       </svg>
-      <span>{loading ? "이동 중…" : "카카오로 3초 만에 시작"}</span>
+      <span>
+        {loading
+          ? lang === "en"
+            ? "Redirecting…"
+            : "이동 중…"
+          : lang === "en"
+            ? "Start with Kakao in 3 seconds"
+            : "카카오로 3초 만에 시작"}
+      </span>
       {loading && (
         <span
           aria-hidden

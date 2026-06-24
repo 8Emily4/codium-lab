@@ -26,5 +26,5 @@ export default async function LoginLoadingPage({
   const sp = await searchParams;
   const returnTo = sp.returnTo ?? `/${lang}`;
 
-  return <LoginTransition user={session} returnTo={returnTo} />;
+  return <LoginTransition user={session} returnTo={returnTo} lang={lang} />;
 }

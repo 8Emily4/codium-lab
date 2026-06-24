@@ -20,6 +20,21 @@ const STACK = [
   "Vercel",
 ];
 
+const T = {
+  ko: {
+    eyebrow: "관리 · 아키텍처",
+    title: "코디움랩 아키텍처",
+    description:
+      "코디움랩이 어떤 기술 스택과 구조, 데이터 모델로 만들어졌는지 한눈에 확인할 수 있는 관리자 전용 문서입니다.",
+  },
+  en: {
+    eyebrow: "Admin · Architecture",
+    title: "Codium Lab Architecture",
+    description:
+      "An admin-only document for understanding at a glance the tech stack, structure, and data model that Codium Lab is built on.",
+  },
+} as const;
+
 export default async function ArchitecturePage({
   params,
 }: {
@@ -32,12 +47,15 @@ export default async function ArchitecturePage({
   const ctx = await requireAdmin();
   if (!ctx) notFound();
 
+  const locale = lang === "en" ? "en" : "ko";
+  const t = T[locale];
+
   return (
     <>
       <WorkHeader
-        eyebrow="관리 · 아키텍처"
-        title="코디움랩 아키텍처"
-        description="코디움랩이 어떤 기술 스택과 구조, 데이터 모델로 만들어졌는지 한눈에 확인할 수 있는 관리자 전용 문서입니다."
+        eyebrow={t.eyebrow}
+        title={t.title}
+        description={t.description}
       />
 
       <div className="mb-8 flex flex-wrap gap-2">
@@ -51,7 +69,7 @@ export default async function ArchitecturePage({
         ))}
       </div>
 
-      <ArchitectureTabs />
+      <ArchitectureTabs lang={locale} />
     </>
   );
 }
