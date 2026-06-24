@@ -68,6 +68,16 @@ export async function ensureMediaSchema(): Promise<void> {
       updated_at INTEGER NOT NULL DEFAULT (unixepoch())
     )
   `);
+  // Last-known-good uploads per channel. YouTube's RSS feed is intermittently
+  // flaky (5xx/429); when a live fetch fails we fall back to this cache so a
+  // registered channel never blinks out of the page on a transient hiccup.
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS media_channel_videos (
+      channel_id TEXT PRIMARY KEY,
+      videos TEXT NOT NULL DEFAULT '[]',
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+    )
+  `);
   migrated = true;
 }
 
@@ -394,14 +404,13 @@ export async function fetchChannelVideos(
       headers: { "User-Agent": YT_UA },
       next: { revalidate: 600 },
     });
-    if (!res.ok) {
+    if (res.ok) {
+      xml = await res.text();
+    } else {
       console.warn(`[media] YouTube feed ${res.status} for ${channelId} (${feedUrl})`);
-      return { title: "", videos: [] };
     }
-    xml = await res.text();
   } catch (e) {
     console.warn(`[media] YouTube feed fetch failed for ${channelId}:`, e);
-    return { title: "", videos: [] };
   }
 
   // Feed-level <title> is the channel name (first <title> before any <entry>).
@@ -431,7 +440,59 @@ export async function fetchChannelVideos(
       publishedAt,
     });
   }
+
+  if (videos.length > 0) {
+    // Live fetch succeeded — refresh the last-known-good cache (best-effort).
+    await cacheChannelVideos(channelId, videos).catch(() => {});
+    return { title: feedTitle, videos };
+  }
+
+  // Live fetch failed or returned nothing — fall back to cached uploads so a
+  // transient YouTube outage doesn't make the registered channel disappear.
+  const cached = await readCachedVideos(channelId).catch(() => []);
+  if (cached.length > 0) {
+    console.warn(`[media] serving ${cached.length} cached uploads for ${channelId}`);
+    return { title: feedTitle, videos: cached.slice(0, limit) };
+  }
   return { title: feedTitle, videos };
+}
+
+/** Persist the latest uploads for a channel; skips the write when unchanged. */
+async function cacheChannelVideos(
+  channelId: string,
+  videos: ChannelVideo[],
+): Promise<void> {
+  await ensureMediaSchema();
+  const db = getDb();
+  const json = JSON.stringify(videos);
+  const existing = await db.execute({
+    sql: `SELECT videos FROM media_channel_videos WHERE channel_id = ?`,
+    args: [channelId],
+  });
+  if (existing.rows[0] && String(existing.rows[0].videos) === json) return;
+  await db.execute({
+    sql: `INSERT INTO media_channel_videos (channel_id, videos, updated_at)
+          VALUES (?, ?, unixepoch())
+          ON CONFLICT(channel_id) DO UPDATE
+            SET videos = excluded.videos, updated_at = excluded.updated_at`,
+    args: [channelId, json],
+  });
+}
+
+/** Read the last-known-good uploads for a channel (empty if none cached). */
+async function readCachedVideos(channelId: string): Promise<ChannelVideo[]> {
+  await ensureMediaSchema();
+  const rs = await getDb().execute({
+    sql: `SELECT videos FROM media_channel_videos WHERE channel_id = ?`,
+    args: [channelId],
+  });
+  if (!rs.rows[0]) return [];
+  try {
+    const arr = JSON.parse(String(rs.rows[0].videos));
+    return Array.isArray(arr) ? (arr as ChannelVideo[]) : [];
+  } catch {
+    return [];
+  }
 }
 
 function mapChannelRow(row: Row): MediaChannel {

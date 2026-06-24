@@ -64,30 +64,53 @@ export type ManagedUser = {
   role: Role;
   /** True for the env-defined root super admin, whose role can't be changed. */
   envSuper: boolean;
+  /** Host the user last logged in through, e.g. "localhost:3000" / "codiumlab.ai.kr". */
+  lastLoginHost: string | null;
   createdAt: number;
   lastLoginAt: number;
 };
 
-/** Record (or refresh) a user when they log in. Never overwrites their role. */
-export async function upsertUserOnLogin(user: SessionUser): Promise<void> {
+/**
+ * Record (or refresh) a user when they log in. Never overwrites their role.
+ * `loginHost` is the host they came in through, so the same person logging in
+ * from local dev vs production (which Kakao assigns different ids to) can be
+ * told apart in the admin list.
+ */
+export async function upsertUserOnLogin(
+  user: SessionUser,
+  loginHost?: string | null,
+): Promise<void> {
   await ensureSchema();
   await getDb().execute({
-    sql: `INSERT INTO users (id, provider, name, email, avatar, last_login_at)
-          VALUES (?, ?, ?, ?, ?, unixepoch())
+    sql: `INSERT INTO users (id, provider, name, email, avatar, last_login_at, last_login_host)
+          VALUES (?, ?, ?, ?, ?, unixepoch(), ?)
           ON CONFLICT(id) DO UPDATE SET
             provider = excluded.provider,
             name = excluded.name,
             email = excluded.email,
             avatar = excluded.avatar,
-            last_login_at = unixepoch()`,
+            last_login_at = unixepoch(),
+            last_login_host = excluded.last_login_host`,
     args: [
       user.id,
       user.provider,
       user.name,
       user.email ?? null,
       user.avatar ?? null,
+      loginHost ?? null,
     ],
   });
+}
+
+/** Permanently remove a user and any material grants tied to them. */
+export async function deleteUser(id: string): Promise<void> {
+  await ensureSchema();
+  const db = getDb();
+  await db.execute({
+    sql: `DELETE FROM material_grants WHERE user_id = ?`,
+    args: [id],
+  });
+  await db.execute({ sql: `DELETE FROM users WHERE id = ?`, args: [id] });
 }
 
 /**
@@ -119,7 +142,7 @@ export async function resolveRole(id: string): Promise<Role> {
 export async function listUsers(): Promise<ManagedUser[]> {
   await ensureSchema();
   const rs = await getDb().execute(
-    `SELECT id, provider, name, email, avatar, role, created_at, last_login_at
+    `SELECT id, provider, name, email, avatar, role, created_at, last_login_at, last_login_host
      FROM users ORDER BY last_login_at DESC`,
   );
   const superIds = new Set(getSuperAdminIds());
@@ -134,6 +157,8 @@ export async function listUsers(): Promise<ManagedUser[]> {
       avatar: row.avatar == null ? null : String(row.avatar),
       role: envSuper ? "superAdmin" : parseRole(row.role),
       envSuper,
+      lastLoginHost:
+        row.last_login_host == null ? null : String(row.last_login_host),
       createdAt: Number(row.created_at),
       lastLoginAt: Number(row.last_login_at),
     };

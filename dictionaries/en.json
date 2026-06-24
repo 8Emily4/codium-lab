@@ -24,6 +24,7 @@
     "contact": "Contact",
     "game": "Game",
     "media": "Media",
+    "gallery": "Gallery",
     "content": "Content",
     "blog": "Tech Blog",
     "login": "Log in",
@@ -856,6 +857,19 @@
     "viewChannel": "View channel",
     "more": "More content",
     "empty": "Great content is on the way."
+  },
+  "gallery": {
+    "metaTitle": "Gallery | Codium Lab",
+    "metaDesc": "Browse fun images and videos from Codium Lab, all in one place.",
+    "eyebrow": "Gallery",
+    "heading": "Fun",
+    "highlight": "moments",
+    "desc": "Little fun moments from Codium Lab, gathered as images and videos. Tap a card to view it larger.",
+    "imageLabel": "Image",
+    "videoLabel": "Video",
+    "featuredLabel": "Featured",
+    "watchLabel": "Watch",
+    "empty": "Fun content is on the way."
   },
   "blog": {
     "metaTitle": "Tech Blog | Codium Lab",

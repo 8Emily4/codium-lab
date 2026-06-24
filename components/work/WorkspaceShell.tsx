@@ -25,6 +25,7 @@ const L = {
     materials: "강의자료",
     manageMaterials: "자료 관리",
     manageContent: "콘텐츠 관리",
+    manageGallery: "갤러리 관리",
     manageBlog: "블로그 관리",
     analytics: "방문 통계",
     users: "사용자",
@@ -41,6 +42,7 @@ const L = {
     materials: "Materials",
     manageMaterials: "Manage Materials",
     manageContent: "Content",
+    manageGallery: "Gallery",
     manageBlog: "Tech Blog",
     analytics: "Analytics",
     users: "Users",
@@ -76,6 +78,13 @@ const ICONS = {
     <>
       <rect x="2" y="4" width="20" height="16" rx="2.5" />
       <path d="m10 9 5 3-5 3z" />
+    </>
+  ),
+  gallery: (
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="2.5" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <path d="m21 15-5-5L5 21" />
     </>
   ),
   blog: (
@@ -175,6 +184,13 @@ export default function WorkspaceShell({
       href: `${base}/admin/content`,
       label: t.manageContent,
       icon: "content",
+      adminOnly: true,
+    },
+    {
+      key: "admin-gallery",
+      href: `${base}/admin/gallery`,
+      label: t.manageGallery,
+      icon: "gallery",
       adminOnly: true,
     },
     {

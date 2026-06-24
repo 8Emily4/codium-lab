@@ -3,6 +3,20 @@ import { createClient, type Client } from "@libsql/client";
 let client: Client | null = null;
 let migrated = false;
 
+/** Add a column to an existing table only if it isn't already there. */
+async function ensureColumn(
+  db: Client,
+  table: string,
+  column: string,
+  type: string,
+): Promise<void> {
+  const info = await db.execute(`PRAGMA table_info(${table})`);
+  const exists = info.rows.some((r) => String(r.name) === column);
+  if (!exists) {
+    await db.execute(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`);
+  }
+}
+
 export function getDb(): Client {
   if (client) return client;
 
@@ -80,5 +94,8 @@ export async function ensureSchema(): Promise<void> {
   await db.execute(
     `CREATE INDEX IF NOT EXISTS idx_grants_user ON material_grants (user_id)`,
   );
+  // Older `users` tables predate the login-source column — add it idempotently
+  // so we can show whether a login came from local dev or production.
+  await ensureColumn(db, "users", "last_login_host", "TEXT");
   migrated = true;
 }
