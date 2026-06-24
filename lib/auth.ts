@@ -1,12 +1,15 @@
 import { cookies } from "next/headers";
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 
+export type Role = "user" | "admin" | "superAdmin";
+
 export type SessionUser = {
   id: string;
   provider: "kakao" | "naver" | "google" | "meta";
   name: string;
   email?: string;
   avatar?: string;
+  role?: Role;
   issuedAt: number;
 };
 

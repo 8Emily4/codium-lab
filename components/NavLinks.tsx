@@ -27,6 +27,7 @@ export default function NavLinks({
     { href: `/${lang}/services`, label: dict.nav.services },
     { href: `/${lang}/ai`, label: dict.nav.ai },
     { href: `/${lang}/faq`, label: dict.nav.faq },
+    { href: `/${lang}/media`, label: dict.nav.media },
     { href: `/${lang}/game`, label: dict.nav.game },
   ];
 
@@ -63,7 +64,21 @@ export default function NavLinks({
         <span aria-hidden className="mx-1 inline-block h-4 w-px bg-zinc-300/70 dark:bg-zinc-700/70" />
 
         {session ? (
-          <SessionMenu user={session} />
+          <>
+            <Link
+              href={`/${lang}/work`}
+              className="mr-1 inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-500 px-3 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                <rect x="3" y="14" width="7" height="7" rx="1.5" />
+              </svg>
+              {lang === "en" ? "Workspace" : "워크스페이스"}
+            </Link>
+            <SessionMenu user={session} lang={lang} />
+          </>
         ) : (
           <Link
             href={`/${lang}/login`}
@@ -137,19 +152,34 @@ export default function NavLinks({
             <LanguageSwitcher currentLang={lang} mobile onSwitch={() => setOpen(false)} />
 
             {session ? (
-              <div className="mt-2 flex items-center justify-between rounded-lg bg-zinc-100 px-4 py-3 text-sm dark:bg-zinc-900">
-                <span className="truncate font-medium text-zinc-800 dark:text-zinc-100">
-                  {session.name}
-                </span>
-                <form action="/api/auth/logout" method="POST">
-                  <button
-                    type="submit"
-                    className="text-xs text-zinc-600 underline-offset-4 hover:underline dark:text-zinc-400"
-                  >
-                    {dict.nav.logout}
-                  </button>
-                </form>
-              </div>
+              <>
+                <Link
+                  href={`/${lang}/work`}
+                  onClick={() => setOpen(false)}
+                  className="mt-2 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-500 px-4 text-sm font-semibold text-white"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                    <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                    <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                    <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                  </svg>
+                  {lang === "en" ? "Open Workspace" : "워크스페이스 열기"}
+                </Link>
+                <div className="mt-2 flex items-center justify-between rounded-lg bg-zinc-100 px-4 py-3 text-sm dark:bg-zinc-900">
+                  <span className="truncate font-medium text-zinc-800 dark:text-zinc-100">
+                    {session.name}
+                  </span>
+                  <form action="/api/auth/logout" method="POST">
+                    <button
+                      type="submit"
+                      className="text-xs text-zinc-600 underline-offset-4 hover:underline dark:text-zinc-400"
+                    >
+                      {dict.nav.logout}
+                    </button>
+                  </form>
+                </div>
+              </>
             ) : (
               <Link
                 href={`/${lang}/login`}

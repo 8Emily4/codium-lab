@@ -4,6 +4,7 @@ import {
   setSession,
   type SessionUser,
 } from "@/lib/auth";
+import { resolveRole, upsertUserOnLogin } from "@/lib/users";
 
 type KakaoTokenResponse = {
   access_token: string;
@@ -98,6 +99,10 @@ export async function GET(req: Request) {
     avatar,
     issuedAt: Date.now(),
   };
+
+  // Record the login, then stamp the resolved role into the session.
+  await upsertUserOnLogin(user);
+  user.role = await resolveRole(user.id);
   await setSession(user);
 
   // Redirect to the post-login splash, which animates and then forwards to returnTo

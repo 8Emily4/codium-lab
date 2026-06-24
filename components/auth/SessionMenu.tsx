@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { SessionUser } from "@/lib/auth";
+import Link from "next/link";
+import type { Role, SessionUser } from "@/lib/auth";
 
 const PROVIDER_LABEL: Record<SessionUser["provider"], string> = {
   kakao: "Kakao",
@@ -10,7 +11,31 @@ const PROVIDER_LABEL: Record<SessionUser["provider"], string> = {
   meta: "Meta",
 };
 
-export default function SessionMenu({ user }: { user: SessionUser }) {
+const ROLE_LABEL: Record<Role, { ko: string; en: string; cls: string }> = {
+  superAdmin: {
+    ko: "슈퍼관리자",
+    en: "Super Admin",
+    cls: "bg-fuchsia-50 text-fuchsia-700 ring-fuchsia-200 dark:bg-fuchsia-950/50 dark:text-fuchsia-300 dark:ring-fuchsia-900",
+  },
+  admin: {
+    ko: "관리자",
+    en: "Admin",
+    cls: "bg-indigo-50 text-indigo-700 ring-indigo-200 dark:bg-indigo-950/50 dark:text-indigo-300 dark:ring-indigo-900",
+  },
+  user: {
+    ko: "멤버",
+    en: "Member",
+    cls: "bg-zinc-100 text-zinc-500 ring-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:ring-zinc-700",
+  },
+};
+
+export default function SessionMenu({
+  user,
+  lang = "ko",
+}: {
+  user: SessionUser;
+  lang?: string;
+}) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -31,6 +56,7 @@ export default function SessionMenu({ user }: { user: SessionUser }) {
   }, [open]);
 
   const initial = user.name?.[0]?.toUpperCase() ?? "U";
+  const role: Role = user.role ?? "user";
 
   return (
     <div ref={ref} className="relative">
@@ -84,12 +110,36 @@ export default function SessionMenu({ user }: { user: SessionUser }) {
                 {user.email}
               </p>
             )}
-            <p className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold tracking-[0.16em] text-indigo-600 uppercase ring-1 ring-zinc-200 dark:bg-zinc-950 dark:text-indigo-300 dark:ring-zinc-800">
-              {PROVIDER_LABEL[user.provider]} 로그인
-            </p>
+            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+              <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold tracking-[0.16em] text-indigo-600 uppercase ring-1 ring-zinc-200 dark:bg-zinc-950 dark:text-indigo-300 dark:ring-zinc-800">
+                {PROVIDER_LABEL[user.provider]} 로그인
+              </span>
+              {role !== "user" && (
+                <span
+                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ${ROLE_LABEL[role].cls}`}
+                >
+                  {lang === "en" ? ROLE_LABEL[role].en : ROLE_LABEL[role].ko}
+                </span>
+              )}
+            </div>
           </div>
 
-          <form action="/api/auth/logout" method="POST" className="mt-2">
+          <Link
+            href={`/${lang}/work`}
+            role="menuitem"
+            onClick={() => setOpen(false)}
+            className="mt-2 inline-flex w-full items-center gap-2 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 px-3 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <rect x="3" y="3" width="7" height="7" rx="1.5" />
+              <rect x="14" y="3" width="7" height="7" rx="1.5" />
+              <rect x="14" y="14" width="7" height="7" rx="1.5" />
+              <rect x="3" y="14" width="7" height="7" rx="1.5" />
+            </svg>
+            {lang === "en" ? "Open Workspace" : "워크스페이스 열기"}
+          </Link>
+
+          <form action="/api/auth/logout" method="POST" className="mt-1">
             <button
               type="submit"
               className="inline-flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-zinc-700 transition hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-900"

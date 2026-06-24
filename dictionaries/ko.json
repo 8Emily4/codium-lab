@@ -23,6 +23,7 @@
     "faq": "FAQ",
     "contact": "문의",
     "game": "게임",
+    "media": "콘텐츠",
     "login": "로그인",
     "logout": "로그아웃",
     "inquiry": "문의하기",
@@ -835,6 +836,22 @@
         "body": "프롬프트·모델·도구의 변경 비용까지 함께 책임집니다. '마법 같은 데모'가 아니라 운영 가능한 시스템."
       }
     ]
+  },
+  "media": {
+    "metaTitle": "콘텐츠",
+    "metaDesc": "코디움랩이 AI로 제작한 유튜브·인스타그램 콘텐츠를 한곳에서 만나보세요.",
+    "eyebrow": "AI 콘텐츠",
+    "heading": "AI로 만든",
+    "highlight": "콘텐츠",
+    "desc": "직접 AI로 기획하고 제작한 영상과 게시물을 한곳에 모았습니다. 카드를 눌러 바로 감상해 보세요.",
+    "filterAll": "전체",
+    "typeYoutube": "유튜브",
+    "typeInstagram": "인스타그램",
+    "typeOther": "기타",
+    "featuredLabel": "추천",
+    "watchLabel": "재생하기",
+    "openLabel": "보러가기",
+    "empty": "곧 멋진 콘텐츠로 찾아올게요."
   },
   "game": {
     "metaTitle": "게임 허브 | 코디움랩",

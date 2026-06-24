@@ -23,6 +23,7 @@
     "faq": "FAQ",
     "contact": "Contact",
     "game": "Game",
+    "media": "Content",
     "login": "Log in",
     "logout": "Log out",
     "inquiry": "Contact us",
@@ -835,6 +836,22 @@
         "body": "We take responsibility for the cost of changing prompts, models, and tools. Production-ready systems, not magic demos."
       }
     ]
+  },
+  "media": {
+    "metaTitle": "Content",
+    "metaDesc": "Explore the YouTube and Instagram content Codium Lab creates with AI.",
+    "eyebrow": "AI Content",
+    "heading": "Content made",
+    "highlight": "with AI",
+    "desc": "Videos and posts we planned and produced with AI, gathered in one place. Tap a card to watch right away.",
+    "filterAll": "All",
+    "typeYoutube": "YouTube",
+    "typeInstagram": "Instagram",
+    "typeOther": "Other",
+    "featuredLabel": "Featured",
+    "watchLabel": "Watch",
+    "openLabel": "Open",
+    "empty": "Great content is on the way."
   },
   "game": {
     "metaTitle": "Game Hub | Codium Lab",

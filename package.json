@@ -6,16 +6,21 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "whoami": "node --env-file-if-exists=.env.local scripts/whoami.mjs",
+    "material:register": "node --env-file-if-exists=.env.local scripts/register-material.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@libsql/client": "^0.17.3",
     "clsx": "^2.1.1",
+    "mermaid": "^11.15.0",
     "next": "16.2.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.76.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.6.0",
     "zod": "^4.4.3"
   },
