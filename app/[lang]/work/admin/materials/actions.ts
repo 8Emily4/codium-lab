@@ -43,6 +43,18 @@ function pickAccess(v: string): MaterialAccess {
   return (ACCESSES as string[]).includes(v) ? (v as MaterialAccess) : "restricted";
 }
 
+/**
+ * 가격(원) 파싱. 무료(public)면 항상 null, 유료(restricted)면 0 이상 정수만 허용.
+ * 숫자 외 문자는 제거(예: "50,000원" → 50000).
+ */
+function pickPrice(value: string, access: MaterialAccess): number | null {
+  if (access !== "restricted") return null;
+  const digits = value.replace(/[^\d]/g, "");
+  if (!digits) return null;
+  const n = Number(digits);
+  return Number.isFinite(n) && n >= 0 ? Math.floor(n) : null;
+}
+
 export async function createMaterialAction(formData: FormData) {
   const ctx = await requireAdmin();
   if (!ctx) throw new Error("Unauthorized");
@@ -50,6 +62,7 @@ export async function createMaterialAction(formData: FormData) {
   const title = s(formData, "title");
   if (!title) throw new Error("title required");
 
+  const access = pickAccess(s(formData, "access"));
   const id = await createMaterial({
     title,
     summary: s(formData, "summary") || null,
@@ -57,7 +70,8 @@ export async function createMaterialAction(formData: FormData) {
     category: s(formData, "category") || null,
     tags: parseTags(s(formData, "tags")),
     status: pickStatus(s(formData, "status")),
-    access: pickAccess(s(formData, "access")),
+    access,
+    price: pickPrice(s(formData, "price"), access),
     authorId: ctx.session.id,
     authorName: ctx.session.name,
   });
@@ -74,6 +88,7 @@ export async function updateMaterialAction(formData: FormData) {
   const title = s(formData, "title");
   if (!id || !title) throw new Error("Bad request");
 
+  const access = pickAccess(s(formData, "access"));
   await updateMaterial(id, {
     title,
     summary: s(formData, "summary") || null,
@@ -81,7 +96,8 @@ export async function updateMaterialAction(formData: FormData) {
     category: s(formData, "category") || null,
     tags: parseTags(s(formData, "tags")),
     status: pickStatus(s(formData, "status")),
-    access: pickAccess(s(formData, "access")),
+    access,
+    price: pickPrice(s(formData, "price"), access),
   });
 
   revalidatePath(`/${lang}/work/admin/materials`);

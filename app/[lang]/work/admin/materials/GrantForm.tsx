@@ -57,6 +57,14 @@ export default function GrantForm({
     defaultValues: { userId: users[0]?.id ?? "" },
   });
 
+  const openPicker = (e: React.MouseEvent<HTMLInputElement>) => {
+    try {
+      e.currentTarget.showPicker();
+    } catch {
+      // showPicker 미지원 브라우저는 기본 동작 유지
+    }
+  };
+
   const onValid = () => {
     const fd = new FormData(formRef.current!);
     startTransition(async () => {
@@ -70,7 +78,7 @@ export default function GrantForm({
       ref={formRef}
       onSubmit={handleSubmit(onValid)}
       noValidate
-      className="mt-4 grid gap-3 rounded-xl bg-zinc-50 p-4 sm:grid-cols-[1fr_auto_auto_auto] sm:items-end dark:bg-zinc-900/60"
+      className="mt-4 flex flex-col gap-3 rounded-xl bg-zinc-50 p-4 dark:bg-zinc-900/60"
     >
       <input type="hidden" name="lang" value={lang} />
       <input type="hidden" name="materialId" value={materialId} />
@@ -94,26 +102,30 @@ export default function GrantForm({
           </p>
         )}
       </div>
-      <div>
-        <label className={labelCls}>{t.grantStart}</label>
-        <input
-          type="datetime-local"
-          name="startsAt"
-          className={`${inputCls} sm:w-auto`}
-        />
-      </div>
-      <div>
-        <label className={labelCls}>{t.grantEnd}</label>
-        <input
-          type="datetime-local"
-          name="endsAt"
-          className={`${inputCls} sm:w-auto`}
-        />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div>
+          <label className={labelCls}>{t.grantStart}</label>
+          <input
+            type="datetime-local"
+            name="startsAt"
+            className={inputCls}
+            onClick={openPicker}
+          />
+        </div>
+        <div>
+          <label className={labelCls}>{t.grantEnd}</label>
+          <input
+            type="datetime-local"
+            name="endsAt"
+            className={inputCls}
+            onClick={openPicker}
+          />
+        </div>
       </div>
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex h-10 items-center justify-center rounded-xl bg-zinc-900 px-4 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+        className="inline-flex h-10 items-center justify-center rounded-xl bg-zinc-900 px-4 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 sm:self-start dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
       >
         {t.grantBtn}
       </button>

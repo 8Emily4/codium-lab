@@ -15,6 +15,8 @@ export type Material = {
   body: string;
   status: MaterialStatus;
   access: MaterialAccess;
+  /** 유료(access=restricted) 자료의 가격(원). 무료/미설정이면 null. */
+  price: number | null;
   category: string | null;
   tags: string[];
   authorId: string | null;
@@ -31,10 +33,27 @@ export type MaterialListItem = Omit<Material, "body"> & {
 /**
  * Whether a viewer can actually read a material right now.
  * - "open": admin, public, or an active grant → full body
- * - "expired": had a grant whose window has ended → title only + locked notice
- * - "upcoming": granted but the window hasn't started yet → title only + notice
+ * - "locked": a restricted (paid) material the viewer holds no grant for →
+ *   title + a short teaser only, advertising that a paid course exists
+ * - "expired": had a grant whose window has ended → title + teaser + locked notice
+ * - "upcoming": granted but the window hasn't started yet → title + teaser + notice
  */
-export type ViewerAccessState = "open" | "expired" | "upcoming";
+export type ViewerAccessState = "open" | "locked" | "expired" | "upcoming";
+
+/**
+ * How much of the body to reveal as a teaser for a locked material. Cut on the
+ * SERVER so the rest never reaches the browser — not even via "view source".
+ */
+const TEASER_CHARS = 300;
+
+/** First few lines of the body, cut on a word/line boundary near TEASER_CHARS. */
+function teaserOf(body: string): string {
+  if (body.length <= TEASER_CHARS) return body;
+  const raw = body.slice(0, TEASER_CHARS + 20);
+  const nl = raw.lastIndexOf("\n");
+  const cut = nl > 120 ? nl : raw.lastIndexOf(" ");
+  return (cut > 120 ? raw.slice(0, cut) : raw.slice(0, TEASER_CHARS)).trimEnd();
+}
 
 /** A material as seen by a viewer, plus how/why they can see it. */
 export type ViewerMaterial = MaterialListItem & {
@@ -94,6 +113,7 @@ function toMaterial(row: Row): Material {
     access: (VALID_ACCESS.includes(row.access as MaterialAccess)
       ? row.access
       : "restricted") as MaterialAccess,
+    price: row.price == null ? null : Number(row.price),
     category: str(row.category),
     tags: parseTags(row.tags),
     authorId: str(row.author_id),
@@ -129,10 +149,10 @@ export async function listAllMaterials(): Promise<MaterialListItem[]> {
 /**
  * Materials a given viewer can see in their list.
  * - admins/super admins: everything (always "open")
- * - everyone else: published materials that are public, OR that they hold a
- *   grant for. A grant is included even when its window has expired or hasn't
- *   started yet — those stay visible by title only ("expired"/"upcoming") so
- *   the reader knows to contact an admin, while the body is withheld.
+ * - everyone else: every published material. Public ones and active grants are
+ *   "open" (full body). Restricted ones with no/expired/upcoming grant are
+ *   shown by title + a short server-cut teaser ("locked"/"expired"/"upcoming")
+ *   so the reader knows a paid course exists; the rest of the body is withheld.
  */
 export async function listMaterialsForViewer(
   userId: string,
@@ -160,12 +180,11 @@ export async function listMaterialsForViewer(
       LEFT JOIN material_grants g
         ON g.material_id = m.id AND g.user_id = ?1
       WHERE m.status = 'published'
-        AND (m.access = 'public' OR g.id IS NOT NULL)
       ORDER BY m.updated_at DESC
     `,
     args: [userId],
   });
-  return rs.rows.map((row) => {
+  const items = rs.rows.map((row) => {
     const item = toListItem(row);
     // Public materials are always open to any logged-in user.
     if (row.access === "public") {
@@ -177,25 +196,41 @@ export async function listMaterialsForViewer(
         accessEndsAt: null,
       };
     }
+    // restricted (paid). No grant row at all → "locked" teaser.
+    const hasGrant = row.grant_id != null;
     const startsAt = row.grant_starts_at == null ? null : Number(row.grant_starts_at);
     const endsAt = row.grant_ends_at == null ? null : Number(row.grant_ends_at);
     const started = startsAt == null || startsAt <= now;
     const notEnded = endsAt == null || endsAt >= now;
-    const accessState: ViewerAccessState = started
-      ? notEnded
-        ? "open"
-        : "expired"
-      : "upcoming";
+    const accessState: ViewerAccessState = !hasGrant
+      ? "locked"
+      : started
+        ? notEnded
+          ? "open"
+          : "expired"
+        : "upcoming";
     return {
       ...item,
-      // Never leak body text (not even the preview) for a locked material.
-      bodyPreview: accessState === "open" ? item.bodyPreview : "",
-      via: "grant" as const,
+      // Locked materials reveal only a short teaser, cut on the server so the
+      // rest of the body never reaches the browser.
+      bodyPreview:
+        accessState === "open" ? item.bodyPreview : teaserOf(String(row.body ?? "")),
+      via: hasGrant ? ("grant" as const) : ("public" as const),
       accessState,
       accessStartsAt: startsAt,
       accessEndsAt: endsAt,
     };
   });
+  // Order for the reader: subscribed & readable first, then subscriptions that
+  // haven't started, then expired ones, and unsubscribed (paid) at the bottom.
+  // Stable sort keeps the SQL "updated_at DESC" order within each group.
+  const RANK: Record<ViewerAccessState, number> = {
+    open: 0,
+    upcoming: 1,
+    expired: 2,
+    locked: 3,
+  };
+  return items.sort((a, b) => RANK[a.accessState] - RANK[b.accessState]);
 }
 
 /** Raw fetch by id (no access check) — admin/editor use. */
@@ -240,6 +275,7 @@ export type MaterialInput = {
   body?: string;
   status?: MaterialStatus;
   access?: MaterialAccess;
+  price?: number | null;
   category?: string | null;
   tags?: string[];
   authorId?: string | null;
@@ -251,8 +287,8 @@ export async function createMaterial(input: MaterialInput): Promise<string> {
   const id = randomUUID();
   await getDb().execute({
     sql: `INSERT INTO materials
-            (id, title, summary, body, status, access, category, tags, author_id, author_name)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            (id, title, summary, body, status, access, price, category, tags, author_id, author_name)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       id,
       input.title,
@@ -260,6 +296,7 @@ export async function createMaterial(input: MaterialInput): Promise<string> {
       input.body ?? "",
       input.status ?? "draft",
       input.access ?? "restricted",
+      input.price ?? null,
       input.category ?? null,
       JSON.stringify(input.tags ?? []),
       input.authorId ?? null,
@@ -285,6 +322,7 @@ export async function updateMaterial(
   if (patch.body !== undefined) push("body", patch.body);
   if (patch.status !== undefined) push("status", patch.status);
   if (patch.access !== undefined) push("access", patch.access);
+  if (patch.price !== undefined) push("price", patch.price ?? null);
   if (patch.category !== undefined) push("category", patch.category ?? null);
   if (patch.tags !== undefined) push("tags", JSON.stringify(patch.tags));
   if (sets.length === 0) return;

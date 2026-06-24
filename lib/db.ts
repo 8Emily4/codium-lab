@@ -97,6 +97,8 @@ export async function ensureSchema(): Promise<void> {
   // Older `users` tables predate the login-source column — add it idempotently
   // so we can show whether a login came from local dev or production.
   await ensureColumn(db, "users", "last_login_host", "TEXT");
+  // 유료 강의자료의 가격(원, 정수). 무료(access=public)면 NULL.
+  await ensureColumn(db, "materials", "price", "INTEGER");
 
   // 문의 진행 상태(new/inProgress/done/archived). 기존 행은 모두 'new' 로 시작.
   await ensureColumn(db, "inquiries", "status", "TEXT NOT NULL DEFAULT 'new'");

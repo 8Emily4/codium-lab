@@ -10,7 +10,8 @@
 //   summary?  — 한 줄 요약
 //   body?     — 본문 마크다운
 //   status?   — draft | published | archived (기본 draft)
-//   access?   — public | restricted (기본 restricted)
+//   access?   — public(무료) | restricted(유료) (기본 restricted)
+//   price?    — 유료 자료의 가격(원, 정수). 무료(public)면 무시되어 NULL 저장.
 //   category? — 분류
 //   tags?     — string[]
 //   authorName? — 작성자명
@@ -63,11 +64,27 @@ await client.execute(`
   )
 `);
 
+// price 컬럼은 나중에 추가됨 — 기존 테이블에도 멱등하게 보강(앱 ensureSchema 와 동일).
+const info = await client.execute(`PRAGMA table_info(materials)`);
+if (!info.rows.some((r) => String(r.name) === "price")) {
+  await client.execute(`ALTER TABLE materials ADD COLUMN price INTEGER`);
+}
+
 const tags = Array.isArray(data.tags)
   ? JSON.stringify(data.tags.map(String))
   : undefined;
 const status = STATUS.includes(data.status) ? data.status : undefined;
 const access = ACCESS.includes(data.access) ? data.access : undefined;
+// 가격: 유료(restricted)일 때만 의미 있음. 숫자만 남겨 정수화, 무료면 null.
+function normPrice(raw, acc) {
+  if (acc === "public") return null;
+  if (raw == null || raw === "") return undefined; // 미전달 → 수정 시 변경 안 함
+  const digits = String(raw).replace(/[^\d]/g, "");
+  if (!digits) return null;
+  const n = Math.floor(Number(digits));
+  return Number.isFinite(n) && n >= 0 ? n : null;
+}
+const price = normPrice(data.price, access);
 
 if (data.id) {
   // 수정 — 전달된 필드만 갱신
@@ -84,6 +101,7 @@ if (data.id) {
   set("body", data.body);
   set("status", status);
   set("access", access);
+  set("price", price);
   set("category", data.category ?? undefined);
   set("tags", tags);
   set("author_name", data.authorName);
@@ -107,8 +125,8 @@ if (data.id) {
   const id = randomUUID();
   await client.execute({
     sql: `INSERT INTO materials
-            (id, title, summary, body, status, access, category, tags, author_name)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            (id, title, summary, body, status, access, price, category, tags, author_name)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       id,
       data.title,
@@ -116,6 +134,7 @@ if (data.id) {
       data.body ?? "",
       status ?? "draft",
       access ?? "restricted",
+      price ?? null,
       data.category ?? null,
       tags ?? "[]",
       data.authorName ?? null,
