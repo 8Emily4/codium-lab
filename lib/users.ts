@@ -4,21 +4,15 @@ import { ensureSchema, getDb } from "@/lib/db";
 import { getSession, type Role, type SessionUser } from "@/lib/auth";
 
 /**
- * Super admins come from two env-only sources (never the DB, so they can't be
- * tampered with by editing user rows):
- *   1. SUPER_ADMIN_IDS — comma-separated social session ids (e.g. "kakao:123").
- *   2. SUPER_ADMIN_EMAIL + SUPER_ADMIN_PASSWORD_HASH — an email/password login
- *      that yields the session id "local:<email>". This is environment-stable
- *      (unlike per-app Kakao ids), so the same credentials work in dev/QA/prod.
+ * The super admin is defined ONLY by the env credentials
+ * SUPER_ADMIN_EMAIL + SUPER_ADMIN_PASSWORD_HASH, which yield the session id
+ * "local:<email>". It's never stored in the DB (so it can't be tampered with by
+ * editing user rows) and is environment-stable — the same credentials work in
+ * dev/QA/prod, unlike per-app Kakao member ids.
  */
 export function getSuperAdminIds(): string[] {
-  const ids = (process.env.SUPER_ADMIN_IDS ?? "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
   const credId = getCredentialAdminId();
-  if (credId && !ids.includes(credId)) ids.push(credId);
-  return ids;
+  return credId ? [credId] : [];
 }
 
 export function isEnvSuperAdmin(id: string): boolean {

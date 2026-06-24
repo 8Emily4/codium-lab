@@ -1,5 +1,6 @@
-// 로그인한 사용자 목록을 출력합니다 — 슈퍼관리자로 지정할 카카오 ID 확인용.
-// 사용: npm run whoami  (한 번 이상 카카오 로그인한 뒤 실행)
+// 로그인한 사용자 목록을 출력합니다 — 누구에게 admin 권한을 줄지 확인용.
+// (슈퍼관리자는 이메일/비밀번호 SUPER_ADMIN_EMAIL 로 로그인합니다 — `npm run admin:hash`)
+// 사용: npm run whoami  (한 번 이상 로그인한 뒤 실행)
 import { createClient } from "@libsql/client";
 
 const url = process.env.TURSO_DATABASE_URL || "file:./local.db";
@@ -32,6 +33,6 @@ for (const r of rs.rows) {
   );
 }
 console.log(
-  "슈퍼관리자로 지정하려면 위 ID를 .env 의 SUPER_ADMIN_IDS 에 추가한 뒤 서버를 재시작하세요.",
+  "슈퍼관리자로 로그인한 뒤, 워크스페이스 '사용자 관리'에서 위 사용자에게 admin 권한을 줄 수 있습니다.",
 );
-console.log("예) SUPER_ADMIN_IDS=kakao:1234567890\n");
+console.log("(슈퍼관리자 계정 설정: `npm run admin:hash` → .env 의 SUPER_ADMIN_EMAIL/PASSWORD_HASH)\n");
