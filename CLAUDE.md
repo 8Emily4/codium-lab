@@ -8,7 +8,7 @@
 
 | 명령 | 설명 |
 | --- | --- |
-| `npm run dev` | 개발 서버 (http://localhost:3000) |
+| `npm run dev` | 개발 서버 (포트는 `.env` 의 `PORT`, 기본 http://localhost:10380) |
 | `npm run build` / `npm run start` | 프로덕션 빌드 / 실행 |
 | `npm run lint` | ESLint (`eslint-config-next`) |
 | `npx tsc --noEmit` | 타입체크 (커밋 전 권장) |
