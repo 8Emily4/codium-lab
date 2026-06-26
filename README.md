@@ -12,7 +12,7 @@ cp .env.example .env      # 값 채우기 (.env 는 git에 커밋되지 않음)
 npm run dev
 ```
 
-http://localhost:3000 접속 → 미들웨어가 언어(`/ko` 또는 `/en`)로 리다이렉트합니다. 로컬에서는 `.env` 의 `TURSO_DATABASE_URL=file:./local.db` 로 파일 DB가 자동 생성되고, 스키마는 첫 쿼리 시 멱등하게 만들어집니다.
+http://localhost:10380 접속 → 미들웨어가 언어(`/ko` 또는 `/en`)로 리다이렉트합니다. (포트는 `.env` 의 `PORT` 로 변경 가능 — 기본 10380, 다른 프로젝트와의 충돌 방지용) 로컬에서는 `.env` 의 `TURSO_DATABASE_URL=file:./local.db` 로 파일 DB가 자동 생성되고, 스키마는 첫 쿼리 시 멱등하게 만들어집니다.
 
 > 슈퍼관리자 로그인이 필요하면: `npm run admin:hash` 로 비밀번호 해시를 만들어 `.env` 의 `SUPER_ADMIN_EMAIL` / `SUPER_ADMIN_PASSWORD_HASH` 에 채운 뒤 `/ko/login/admin` 으로 로그인합니다.
 
